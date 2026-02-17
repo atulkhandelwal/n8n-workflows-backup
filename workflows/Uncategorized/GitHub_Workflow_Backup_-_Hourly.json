@@ -1,0 +1,665 @@
+{
+  "updatedAt": "2026-02-17T13:30:08.446Z",
+  "createdAt": "2026-02-17T12:34:36.398Z",
+  "id": "bzWz4GuJcyWDdg2V",
+  "name": "GitHub Workflow Backup - Hourly",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "m1",
+      "name": "Hourly Backup Trigger",
+      "position": [
+        112,
+        304
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "url": "https://n8n-vps.chatsocialai.in/api/v1/workflows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "m2",
+      "name": "Get All n8n Workflows",
+      "position": [
+        304,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ji0pS5rixp63wv5z",
+          "name": "n8n-api-auth-github"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the HTTP response - n8n API returns { data: [...workflows...] }\nconst httpResponse = $input.first().json;\n\n// Extract workflows array from the API response\nconst allWorkflows = httpResponse.data || [];\n\n// Define tag categories for folder organization\nconst tagCategories = ['Prod', 'Test', 'New', 'Temp', 'IMP'];\nconst excludeTag = 'STOP GIT';\n\n// Filter and process workflows\nconst filteredWorkflows = [];\n\nfor (const workflow of allWorkflows) {\n  const workflowTags = workflow.tags || [];\n\n  // Check if workflow has STOP GIT tag (case insensitive)\n  const hasExcludeTag = workflowTags.some(tag => \n    tag.name && tag.name.toUpperCase() === excludeTag.toUpperCase()\n  );\n\n  // Skip if has exclude tag\n  if (hasExcludeTag) {\n    continue;\n  }\n\n  // Determine folder based on first matching tag\n  let folderName = 'Uncategorized';\n  for (const tag of workflowTags) {\n    if (tag.name && tagCategories.includes(tag.name)) {\n      folderName = tag.name;\n      break;\n    }\n  }\n\n  // Prepare workflow data - each workflow becomes its own item\n  filteredWorkflows.push({\n    json: {\n      id: workflow.id,\n      name: workflow.name,\n      active: workflow.active,\n      tags: workflowTags,\n      folderName: folderName,\n      workflowData: workflow,\n      updatedAt: workflow.updatedAt || new Date().toISOString()\n    }\n  });\n}\n\n// Return all filtered workflows as separate items\nreturn filteredWorkflows;"
+      },
+      "id": "m3",
+      "name": "Filter Workflows (Exclude STOP GIT)",
+      "position": [
+        512,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cond-m4",
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "m4",
+      "name": "Any Workflows to Backup?",
+      "position": [
+        704,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/atulkhandelwal/n8n-workflows-backup",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "m5",
+      "name": "Check if GitHub Repo Exists",
+      "position": [
+        912,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uUVtkOC00GB2EKCM",
+          "name": "github-api-auth"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-m6",
+              "leftValue": "={{ $('Check if GitHub Repo Exists').item.json.id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "number"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          }
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "m6",
+      "name": "Does Repo Exist?",
+      "position": [
+        1104,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/user/repos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"name\": \"n8n-workflows-backup\", \"description\": \"Automated backup of n8n workflows - Created by n8n automation\", \"private\": false, \"auto_init\": true}",
+        "options": {}
+      },
+      "id": "m7",
+      "name": "Create GitHub Repository",
+      "position": [
+        1216,
+        512
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uUVtkOC00GB2EKCM",
+          "name": "github-api-auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pure JS hash function (FNV-1a) - no require('crypto') needed\nfunction fnv1aHash(str) {\n  let hash = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    hash ^= str.charCodeAt(i);\n    hash = (hash * 16777619) >>> 0;\n  }\n  return hash.toString(16).padStart(8, '0');\n}\n\n// CRITICAL: $input.all() here contains GitHub repo API response data\n// because Check if GitHub Repo Exists HTTP node replaces the item data.\n// We must reference the ORIGINAL workflow data from the Filter node.\nconst originalWorkflows = $('Filter Workflows (Exclude STOP GIT)').all();\n\n// Initialize tracking\nconst backupSession = {\n  timestamp: new Date().toISOString(),\n  timestampIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),\n  totalWorkflows: originalWorkflows.length,\n  newWorkflows: [],\n  modifiedWorkflows: [],\n  unchangedWorkflows: [],\n  errorWorkflows: []\n};\n\n// Process each workflow and add hash\nconst processedWorkflows = originalWorkflows.map(item => {\n  const workflow = item.json;\n\n  // Create deterministic JSON string for hashing\n  const workflowJSON = JSON.stringify(workflow.workflowData, null, 2);\n\n  // Calculate hash using pure JS FNV-1a\n  const hash = fnv1aHash(workflowJSON);\n\n  return {\n    json: {\n      ...workflow,\n      workflowJSON: workflowJSON,\n      workflowHash: hash,\n      fileName: `${workflow.name.replace(/[^a-zA-Z0-9-_]/g, '_')}.json`,\n      filePath: `workflows/${workflow.folderName}/${workflow.name.replace(/[^a-zA-Z0-9-_]/g, '_')}.json`,\n      backupSession: backupSession\n    }\n  };\n});\n\nreturn processedWorkflows;"
+      },
+      "id": "m8",
+      "name": "Initialize Backup Session",
+      "position": [
+        1312,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "m9",
+      "name": "Process Each Workflow",
+      "position": [
+        1504,
+        304
+      ],
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/atulkhandelwal/n8n-workflows-backup/contents/{{ $json.filePath }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "main"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "m10",
+      "name": "Get Existing Workflow File",
+      "position": [
+        1712,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uUVtkOC00GB2EKCM",
+          "name": "github-api-auth"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-m11",
+              "leftValue": "={{ $('Get Existing Workflow File').item.json.sha }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          }
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "m11",
+      "name": "File Exists on GitHub?",
+      "position": [
+        1904,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pure JS hash function (FNV-1a) - same as Initialize Backup Session\nfunction fnv1aHash(str) {\n  let hash = 2166136261;\n  for (let i = 0; i < str.length; i++) {\n    hash ^= str.charCodeAt(i);\n    hash = (hash * 16777619) >>> 0;\n  }\n  return hash.toString(16).padStart(8, '0');\n}\n\n// Get current workflow data from the batch loop\nconst currentWorkflow = $('Process Each Workflow').item.json;\nconst existingFileData = $('Get Existing Workflow File').item.json;\n\n// Decode existing file content from GitHub (base64)\n// Buffer.from IS available in n8n Code nodes\nconst existingContent = Buffer.from(existingFileData.content, 'base64').toString('utf-8');\n\n// Calculate hash of existing content using pure JS\nconst existingHash = fnv1aHash(existingContent);\n\n// Compare hashes\nconst hasChanged = currentWorkflow.workflowHash !== existingHash;\n\nreturn [{\n  json: {\n    ...currentWorkflow,\n    existingFileSHA: existingFileData.sha,\n    existingHash: existingHash,\n    hasChanged: hasChanged,\n    changeStatus: hasChanged ? 'MODIFIED' : 'UNCHANGED'\n  }\n}];"
+      },
+      "id": "m12",
+      "name": "Compare Hashes (Detect Changes)",
+      "position": [
+        2112,
+        256
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cond-m13",
+              "leftValue": "={{ $json.hasChanged }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          }
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "id": "m13",
+      "name": "Workflow Modified?",
+      "position": [
+        2304,
+        256
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get workflow data from the SplitInBatches node (original workflow data)\n// NOT from $input which may contain HTTP error response on the NEW workflow path\nconst item = $('Process Each Workflow').item.json;\n\n// Also check if we have Compare Hashes data (MODIFIED path)\n// On NEW path, $input comes from File Exists on GitHub? FALSE output\nlet existingFileSHA = null;\ntry {\n  const compareData = $input.first().json;\n  existingFileSHA = compareData.existingFileSHA || null;\n} catch (e) {\n  existingFileSHA = null;\n}\n\n// Determine change status\nconst changeStatus = item.changeStatus || (existingFileSHA ? 'MODIFIED' : 'NEW');\n\n// Base64 encode the workflow JSON\n// Buffer.from IS available in n8n Code nodes (confirmed)\nconst base64Content = Buffer.from(item.workflowJSON).toString('base64');\n\n// Build the request body for GitHub API\nconst requestBody = {\n  message: `[${changeStatus}] ${item.name} - ${item.backupSession.timestampIST}`,\n  content: base64Content,\n  branch: 'main',\n  committer: {\n    name: 'n8n Atul',\n    email: 'gupta.atulgupta13@gmail.com'\n  }\n};\n\n// Add SHA only if updating existing file (MODIFIED workflows)\nif (existingFileSHA) {\n  requestBody.sha = existingFileSHA;\n}\n\nreturn [{\n  json: {\n    ...item,\n    changeStatus: changeStatus,\n    githubRequestBody: JSON.stringify(requestBody)\n  }\n}];"
+      },
+      "id": "m14",
+      "name": "Prepare GitHub Upload",
+      "position": [
+        2512,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/atulkhandelwal/n8n-workflows-backup/contents/{{ $json.filePath }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.githubRequestBody }}",
+        "options": {}
+      },
+      "id": "m15",
+      "name": "Upload Workflow to GitHub",
+      "position": [
+        2704,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uUVtkOC00GB2EKCM",
+          "name": "github-api-auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the ORIGINAL workflow data from the batch loop, not the HTTP upload response\nconst workflow = $('Process Each Workflow').item.json;\nconst uploadResponse = $('Upload Workflow to GitHub').item.json;\n\n// Track this change\nconst changeRecord = {\n  workflowName: workflow.name,\n  status: workflow.changeStatus || 'UPLOADED',\n  filePath: workflow.filePath,\n  commitSHA: uploadResponse.commit?.sha || 'unknown',\n  timestamp: workflow.backupSession.timestampIST\n};\n\nreturn [{\n  json: {\n    ...workflow,\n    uploadSuccess: true,\n    changeRecord: changeRecord\n  }\n}];"
+      },
+      "id": "m16",
+      "name": "Log Success",
+      "position": [
+        2912,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {},
+      "id": "m17",
+      "name": "Skip (No Changes)",
+      "position": [
+        2512,
+        160
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const allResults = $input.all();\n\n// Count statistics\nlet newCount = 0;\nlet modifiedCount = 0;\nlet unchangedCount = 0;\nlet errorCount = 0;\n\nconst changeDetails = [];\n\nfor (const item of allResults) {\n  const workflow = item.json;\n\n  if (workflow.changeStatus === 'NEW') {\n    newCount++;\n    changeDetails.push(`NEW: ${workflow.name}`);\n  } else if (workflow.changeStatus === 'MODIFIED') {\n    modifiedCount++;\n    changeDetails.push(`MODIFIED: ${workflow.name}`);\n  } else if (workflow.changeStatus === 'UNCHANGED') {\n    unchangedCount++;\n  }\n}\n\nconst totalProcessed = newCount + modifiedCount + unchangedCount;\nconst totalUploaded = newCount + modifiedCount;\n\n// Generate summary message\nlet summaryMessage = `[Automated Backup] `;\n\nif (totalUploaded === 0) {\n  summaryMessage += `No changes detected - ${totalProcessed} workflows checked`;\n} else {\n  const parts = [];\n  if (newCount > 0) parts.push(`Added ${newCount} new workflow${newCount > 1 ? 's' : ''}`);\n  if (modifiedCount > 0) parts.push(`Updated ${modifiedCount} workflow${modifiedCount > 1 ? 's' : ''}`);\n  summaryMessage += parts.join(', ');\n  summaryMessage += ` - ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`;\n}\n\nreturn [{\n  json: {\n    summary: {\n      timestamp: new Date().toISOString(),\n      timestampIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),\n      totalWorkflows: totalProcessed,\n      newWorkflows: newCount,\n      modifiedWorkflows: modifiedCount,\n      unchangedWorkflows: unchangedCount,\n      totalUploaded: totalUploaded,\n      summaryMessage: summaryMessage,\n      changeDetails: changeDetails\n    }\n  }\n}];"
+      },
+      "id": "m18",
+      "name": "Generate Backup Summary",
+      "position": [
+        1712,
+        512
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {},
+      "id": "m19",
+      "name": "Backup Complete",
+      "position": [
+        1904,
+        512
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Any Workflows to Backup?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check if GitHub Repo Exists",
+            "type": "main"
+          }
+        ],
+        []
+      ]
+    },
+    "Check if GitHub Repo Exists": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Does Repo Exist?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Compare Hashes (Detect Changes)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Workflow Modified?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Create GitHub Repository": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Initialize Backup Session",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Does Repo Exist?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Initialize Backup Session",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Create GitHub Repository",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "File Exists on GitHub?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Compare Hashes (Detect Changes)",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Prepare GitHub Upload",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Filter Workflows (Exclude STOP GIT)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Any Workflows to Backup?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Generate Backup Summary": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Backup Complete",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Get All n8n Workflows": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Filter Workflows (Exclude STOP GIT)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Get Existing Workflow File": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "File Exists on GitHub?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Hourly Backup Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Get All n8n Workflows",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Initialize Backup Session": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Process Each Workflow",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Log Success": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Process Each Workflow",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Prepare GitHub Upload": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Upload Workflow to GitHub",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Process Each Workflow": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Generate Backup Summary",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Get Existing Workflow File",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Skip (No Changes)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Process Each Workflow",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Upload Workflow to GitHub": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Log Success",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Workflow Modified?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Prepare GitHub Upload",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Skip (No Changes)",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "none",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "SjtJ7OpRhKfvfRCa"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b4fce51f-3b4c-4af8-9d41-2d8f952c70fe",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-17T12:34:36.401Z",
+      "createdAt": "2026-02-17T12:34:36.401Z",
+      "role": "workflow:owner",
+      "workflowId": "bzWz4GuJcyWDdg2V",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
