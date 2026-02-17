@@ -1,0 +1,657 @@
+{
+  "updatedAt": "2026-02-09T12:59:14.836Z",
+  "createdAt": "2026-02-09T11:56:44.625Z",
+  "id": "TAcCj7bCE8GnXBwK",
+  "name": "Facebook CTWA Lead Discovery -v2 Production Ready",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "0d1690a8-021c-4452-bd13-451e52f6e8fa",
+      "name": "Daily 2AM IST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "search-terms",
+              "name": "searchTerms",
+              "value": "=['clothing', 'boutique']",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "354e60a7-141f-4c53-841f-68383d2e5159",
+      "name": "Set Search Terms",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2608,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9e081f0b-ace7-4454-84a3-eae633318589",
+      "name": "Split Terms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2400,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get ALL items from Apify node (each ad is a separate item)\nconst allItems = $input.all();\nconst items = [];\n\ntry {\n  // Check if we have any data\n  if (!allItems || allItems.length === 0) {\n    return [{ json: { noResults: true } }];\n  }\n  \n  // Process each ad item from the Apify node\n  for (const item of allItems) {\n    const ad = item.json;\n    \n    // Skip if no valid data\n    if (!ad || typeof ad !== 'object') {\n      continue;\n    }\n    \n    // Normalize field names (actor may use different naming conventions)\n    items.push({\n      json: {\n        page_id: ad.page_id || ad.pageId || ad.pageid || 'unknown',\n        page_name: ad.page_name || ad.pageName || ad.pagename || 'Unknown',\n        ad_id: ad.ad_id || ad.adId || ad.id || String(Date.now()),\n        ad_snapshot_url: ad.ad_snapshot_url || ad.adSnapshotUrl || ad.snapshot_url || '',\n        ad_delivery_start_time: ad.ad_delivery_start_time || ad.adDeliveryStartTime || ad.start_time || null,\n        ad_creative_bodies: ad.ad_creative_bodies || ad.adCreativeBodies || ad.bodies || [],\n        ad_creative_link_url: ad.ad_creative_link_url || ad.adCreativeLinkUrl || ad.link_url || ''\n      }\n    });\n  }\n  \n  // Return items or noResults indicator\n  if (items.length === 0) {\n    return [{ json: { noResults: true } }];\n  }\n  \n  return items;\n  \n} catch (error) {\n  return [{ json: { error: true, errorMessage: error.message } }];\n}"
+      },
+      "id": "5196ba99-c63d-4232-8108-ffdd7041fc45",
+      "name": "Parse Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fd9f520c-4664-4eb0-b8bc-9f1b2dafd53e",
+      "name": "Has Error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1552,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ads = $input.all();\nconst pageMap = new Map();\n\nfor (const item of ads) {\n  const ad = item.json;\n  const pid = ad.page_id;\n  \n  if (!pid || pid === 'unknown') continue;\n  \n  if (!pageMap.has(pid)) {\n    pageMap.set(pid, {\n      page_id: pid,\n      page_name: ad.page_name,\n      ad_count: 0,\n      sample_ad: ad,\n      earliest_start: ad.ad_delivery_start_time,\n      all_bodies: [],\n      landing_url: ad.ad_creative_link_url || ad.ad_snapshot_url\n    });\n  }\n  \n  const page = pageMap.get(pid);\n  page.ad_count++;\n  \n  if (ad.ad_delivery_start_time) {\n    if (!page.earliest_start || ad.ad_delivery_start_time < page.earliest_start) {\n      page.earliest_start = ad.ad_delivery_start_time;\n    }\n  }\n  \n  if (Array.isArray(ad.ad_creative_bodies)) {\n    page.all_bodies.push(...ad.ad_creative_bodies);\n  }\n}\n\nconst output = [];\nfor (const [pid, page] of pageMap.entries()) {\n  output.push({ json: page });\n}\n\nreturn output.length > 0 ? output : [{ json: { noPages: true } }];"
+      },
+      "id": "a0e5074b-663b-4df7-94a0-912b49e7a1e3",
+      "name": "Aggregate by Page",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "08baae0a-ab81-4105-8a7c-c82ac22cc687",
+      "name": "Split Pages",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.landing_url }}",
+        "options": {}
+      },
+      "id": "f0d82fe0-5ff8-4f7f-be27-c5c0c7cef10e",
+      "name": "Fetch Landing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -960,
+        112
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst pd = item.json;\nlet html = '';\n\ntry {\n  if (item.binary && item.binary.data && item.binary.data.data) {\n    html = Buffer.from(item.binary.data.data, 'base64').toString('utf-8');\n  }\n} catch(e) {}\n\nconst WA = /(api\\.whatsapp\\.com\\/send|wa\\.me\\/|\\bwhatsapp\\b|click\\.to\\.whatsapp)/gi;\nconst JP = /\\b(jaipur|pink city)\\b/gi;\nconst PX = /(fbq\\(|fbevents)/gi;\nconst CTWA = /(click\\.to\\.whatsapp)/gi;\n\nfunction check(txt, rx) {\n  if (!txt) return false;\n  try { return rx.test(txt); } catch(e) { return false; }\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\nconst allText = [pd.page_name || '', join(pd.all_bodies), html].join(' ');\n\nconst hasWA = check(allText, WA);\nconst hasJP = check(allText, JP);\nconst hasPX = check(html, PX);\nconst hasCTWA = check(allText, CTWA);\n\nconst cnt = pd.ad_count || 1;\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 30) vol = 25;\nelse if (cnt >= 15) vol = 20;\nelse if (cnt >= 8) vol = 15;\nelse if (cnt >= 4) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = join(pd.all_bodies).length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nif ((pd.all_bodies || []).length > 5) soph += 6;\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 20);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 9;\n    else if (d >= 14) long = 6;\n    else if (d >= 7) long = 3;\n  } catch(e) {}\n}\n\nconst track = hasPX ? 15 : 0;\nconst loc = hasJP ? 10 : 0;\nconst wa = hasWA ? 10 : 0;\nconst ctwa = hasCTWA ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa + ctwa;\n\nlet inq = 'N/A';\nif (hasWA) {\n  if (tot >= 85 && vol >= 25) inq = '50+ inquiries/day';\n  else if (tot >= 75 && vol >= 20) inq = '20-50 inquiries/day';\n  else if (tot >= 65 && vol >= 15) inq = '10-20 inquiries/day';\n  else if (tot >= 50 && vol >= 10) inq = '5-10 inquiries/day';\n  else inq = '<5 inquiries/day';\n}\n\nlet pri = 'IGNORE';\nif (tot >= 80 && hasWA && hasJP) pri = 'HIGH';\nelse if (tot >= 70 && hasWA) pri = 'MEDIUM';\nelse if (tot >= 50) pri = 'LOW';\n\nif (tot < 70 && !hasWA) {\n  return [{ json: { filtered: true, reason: 'Below threshold' } }];\n}\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWA,\n    local_signal_jaipur: hasJP,\n    pixel_present: hasPX,\n    score: tot,\n    estimated_inquiries_bucket: inq,\n    priority: pri,\n    notes: cnt + ' ads. ' + (hasCTWA ? 'CTWA! ' : '') + (hasWA ? 'WA. ' : '') + (hasJP ? 'JP.' : '')\n  }\n}];"
+      },
+      "id": "04444c8a-1afb-46a0-9fa2-a29a34b8c03e",
+      "name": "Score & Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-qualified",
+              "leftValue": "={{ $json.filtered }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "27e68c89-dc4c-4099-a17c-6ebd69234103",
+      "name": "Is Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -560,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DQRx_FHAkwAjg3-lS4qgNZK3B6p3q2dwWZZ6lEQzjEg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AD_Data",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_name",
+              "displayName": "page_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_id",
+              "displayName": "page_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_snapshot_url",
+              "displayName": "ad_snapshot_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "landing_url",
+              "displayName": "landing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_creative_count",
+              "displayName": "ad_creative_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "creative_types",
+              "displayName": "creative_types",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp_cta",
+              "displayName": "whatsapp_cta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "local_signal_jaipur",
+              "displayName": "local_signal_jaipur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pixel_present",
+              "displayName": "pixel_present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score ",
+              "displayName": "score ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estimated_inquiries_bucket ",
+              "displayName": "estimated_inquiries_bucket ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority ",
+              "displayName": "priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes ",
+              "displayName": "notes ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "id": "f9cf0d54-4d6c-4149-9ccf-428245d0e3b2",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -352,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {},
+      "id": "0b50d444-4144-4816-8d02-410d55e6f617",
+      "name": "Error End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        352
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "ff560570-380e-4d00-ac9f-e251f3c6e492",
+      "name": "Filtered End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const term = $input.first().json.searchTerms || 'clothing';\n\nreturn [{\n  json: {\n    urls: [`https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=IN&media_type=all&q=${term}`]\n  }\n}];"
+      },
+      "id": "801f3629-2974-4237-a6ca-5c94ee8e6b3a",
+      "name": "Prepare Apify Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2096,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "XtaWFhbtfxyzqrFmd",
+          "mode": "list",
+          "cachedResultName": "Facebook Ads Library Scraper (curious_coder/facebook-ads-library-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/XtaWFhbtfxyzqrFmd/input"
+        },
+        "customBody": "={\n  \"startUrls\": [\n    {\n      \"url\": \"https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=IN&media_type=all&q={{ $json.searchTerms }}\"\n    }\n  ]\n}",
+        "timeout": 120,
+        "memory": 2048
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -1968,
+        208
+      ],
+      "id": "c3fac873-153d-43eb-9886-20bc996a96e3",
+      "name": "Apify Scrap Facebook Leads",
+      "credentials": {
+        "apifyApi": {
+          "id": "sRQp03pY3CPKMDIf",
+          "name": "Apify Facebook Lead Scrap"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2784,
+        48
+      ],
+      "id": "95382671-d585-48a6-8eac-c50e7a77e468",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Daily 2AM IST": {
+      "main": [
+        []
+      ]
+    },
+    "Set Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Terms": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Apify Scrap Facebook Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Results": {
+      "main": [
+        [
+          {
+            "node": "Has Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [
+          {
+            "node": "Error End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate by Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate by Page": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Pages": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Landing Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Landing Page": {
+      "main": [
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score & Filter": {
+      "main": [
+        [
+          {
+            "node": "Is Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtered End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Apify Input": {
+      "main": [
+        []
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtered End": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apify Scrap Facebook Leads": {
+      "main": [
+        [
+          {
+            "node": "Parse Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "045702a8-ac23-4f51-ba06-7d899a88a543",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-09T11:56:44.630Z",
+      "createdAt": "2026-02-09T11:56:44.630Z",
+      "role": "workflow:owner",
+      "workflowId": "TAcCj7bCE8GnXBwK",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
