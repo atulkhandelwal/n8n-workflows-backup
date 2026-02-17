@@ -1,0 +1,1049 @@
+{
+  "updatedAt": "2026-02-12T12:20:54.469Z",
+  "createdAt": "2026-02-11T12:24:12.501Z",
+  "id": "VVbPvwG8fMnoi7tf",
+  "name": "Facebook CTWA Lead Discovery -v6 Trial",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "83250d52-c535-4b23-8ddf-69fc2b3bb636",
+      "name": "Daily 2AM IST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "search-terms",
+              "name": "searchTerms",
+              "value": "=['saree', 'kurti']",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "11096fc5-8e49-4c41-a725-3a3f9b456006",
+      "name": "Set Search Terms",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2752,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "76a5f70b-3e74-4b95-9a10-c471841acdbd",
+      "name": "Split Terms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2384,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// PARSE RESULTS NODE - WITH PAGINATION SUPPORT\n// Updated: Feb 12, 2026\n// Purpose: Extract ads + detect pagination cursor\n// ============================================================================\n\nconst response = $input.first().json;\nconst items = [];\n\ntry {\n  if (response.error) {\n    const errorMsg = response.error.error_user_msg || response.error.message || 'Unknown API error';\n    console.error('❌ Facebook API Error:', errorMsg, 'Code:', response.error.code);\n    return [{ \n      json: { \n        error: true, \n        errorMessage: errorMsg,\n        errorCode: response.error.code,\n        errorType: response.error.type\n      } \n    }];\n  }\n  \n  const ads = response.data || [];\n  \n  // ===== CHECK FOR PAGINATION =====\n  const paging = response.paging || {};\n  const hasMore = !!(paging.cursors && paging.cursors.after);\n  const nextCursor = hasMore ? paging.cursors.after : null;\n  \n  console.log(`📄 Pagination Info: hasMore=${hasMore}, nextCursor=${nextCursor ? nextCursor.substring(0, 20) + '...' : 'null'}`);\n  \n  if (!Array.isArray(ads) || ads.length === 0) {\n    console.log('⚠️ No ads found in this batch');\n    return [{ \n      json: { \n        noResults: true,\n        hasMore: hasMore,\n        nextCursor: nextCursor\n      } \n    }];\n  }\n  \n  console.log(`📊 Processing ${ads.length} ads from Facebook Ad Library API`);\n  \n  const OBVIOUS_IRRELEVANT = /\\b(watch|laikrodžiai|lithuania|tauras|mobile phone|smartphone|laptop|computer|electronics|gadget|food|restaurant|hotel|travel package|insurance|loan|père|kathy|novel|drama|story|fiction|book|game|gaming|astrology|horoscope|casino|betting)\\b/gi;\n  \n  function extractContactInfo(ad) {\n    const contact = {\n      business_website: null,\n      whatsapp_url: null,\n      whatsapp_number: null,\n      instagram_url: null,\n      facebook_url: null,\n      phone_number: null,\n      url_type: 'UNKNOWN'\n    };\n    \n    const allText = [\n      ad.page_name || '',\n      ...(ad.ad_creative_bodies || []),\n      ...(ad.ad_creative_link_captions || []),\n      ...(ad.ad_creative_link_descriptions || []),\n      ...(ad.ad_creative_link_titles || [])\n    ].join(' ');\n    \n    const waUrlMatch = allText.match(/(?:wa\\.me\\/|api\\.whatsapp\\.com\\/send\\?phone=)(\\+?91)?([6-9]\\d{9})/i);\n    if (waUrlMatch) {\n      const number = waUrlMatch[2];\n      contact.whatsapp_number = number;\n      contact.phone_number = number;\n      contact.whatsapp_url = `https://wa.me/91${number}`;\n    }\n    \n    if (!contact.whatsapp_number) {\n      const phonePatterns = [\n        /(?:\\+91[-\\s]?|91[-\\s]?|0)?([6-9]\\d{9})\\b/g,\n        /([6-9]\\d{2})[-\\s]?(\\d{3})[-\\s]?(\\d{4})/g\n      ];\n      \n      for (const pattern of phonePatterns) {\n        const matches = allText.matchAll(pattern);\n        for (const match of matches) {\n          let number;\n          if (match.length === 2) {\n            number = match[1];\n          } else if (match.length === 4) {\n            number = match[1] + match[2] + match[3];\n          }\n          \n          if (number && /^[6-9]\\d{9}$/.test(number)) {\n            contact.phone_number = number;\n            contact.whatsapp_number = number;\n            contact.whatsapp_url = `https://wa.me/91${number}`;\n            break;\n          }\n        }\n        if (contact.whatsapp_number) break;\n      }\n    }\n    \n    const urlRegex = /(https?:\\/\\/[^\\s<>\"{}|\\\\^`\\[\\]]+)/gi;\n    const foundUrls = allText.match(urlRegex) || [];\n    \n    for (const url of foundUrls) {\n      const lowerUrl = url.toLowerCase();\n      \n      if (lowerUrl.includes('facebook.com/ads/archive')) {\n        continue;\n      }\n      \n      if (lowerUrl.includes('instagram.com/')) {\n        const handleMatch = url.match(/instagram\\.com\\/([a-zA-Z0-9._]+)/);\n        if (handleMatch && handleMatch[1] && !handleMatch[1].includes('p/')) {\n          contact.instagram_url = url;\n        }\n      }\n      else if (lowerUrl.includes('facebook.com/')) {\n        contact.facebook_url = url;\n      }\n      else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp')) {\n        contact.whatsapp_url = url;\n        if (!contact.whatsapp_number) {\n          const waNum = url.match(/wa\\.me\\/(?:\\+?91)?([6-9]\\d{9})/i);\n          if (waNum) {\n            contact.whatsapp_number = waNum[1];\n            contact.phone_number = waNum[1];\n          }\n        }\n      }\n      else if (!contact.business_website) {\n        contact.business_website = url;\n      }\n    }\n    \n    if (!contact.business_website) {\n      const domainMatch = allText.match(/\\b([a-z0-9-]+\\.(com|in|co\\.in|org|net))\\b/i);\n      if (domainMatch && domainMatch[1]) {\n        const domain = domainMatch[1].toLowerCase();\n        if (!domain.includes('instagram') && !domain.includes('facebook') && !domain.includes('youtube')) {\n          contact.business_website = `https://${domainMatch[1]}`;\n        }\n      }\n    }\n    \n    if (!contact.business_website && !contact.whatsapp_url && !contact.instagram_url && ad.page_id) {\n      contact.facebook_url = `https://www.facebook.com/${ad.page_id}`;\n    }\n    \n    if (contact.business_website) {\n      contact.url_type = 'WEBSITE';\n    } else if (contact.whatsapp_url) {\n      contact.url_type = 'WHATSAPP';\n    } else if (contact.instagram_url) {\n      contact.url_type = 'INSTAGRAM';\n    } else if (contact.facebook_url) {\n      contact.url_type = 'FACEBOOK_PAGE';\n    }\n    \n    return contact;\n  }\n  \n  let acceptedCount = 0;\n  let filteredCount = 0;\n  \n  for (const ad of ads) {\n    if (!ad || typeof ad !== 'object' || !ad.id) {\n      continue;\n    }\n    \n    const pageName = (ad.page_name || '').toLowerCase();\n    \n    if (OBVIOUS_IRRELEVANT.test(pageName)) {\n      filteredCount++;\n      continue;\n    }\n    \n    const contact = extractContactInfo(ad);\n    \n    let landingUrl = contact.business_website || \n                     contact.whatsapp_url || \n                     contact.instagram_url || \n                     contact.facebook_url || \n                     ad.ad_snapshot_url;\n    \n    acceptedCount++;\n    \n    items.push({\n      json: {\n        page_id: ad.page_id || 'unknown',\n        page_name: ad.page_name || 'Unknown Business',\n        ad_id: ad.id || String(Date.now()),\n        ad_snapshot_url: ad.ad_snapshot_url || '',\n        ad_creative_bodies: ad.ad_creative_bodies || [],\n        ad_creative_link_url: landingUrl,\n        business_website: contact.business_website,\n        whatsapp_url: contact.whatsapp_url,\n        whatsapp_number: contact.whatsapp_number,\n        instagram_url: contact.instagram_url,\n        facebook_url: contact.facebook_url,\n        phone_number: contact.phone_number,\n        url_type: contact.url_type,\n        ad_delivery_start_time: ad.ad_delivery_start_time || null,\n        ad_delivery_stop_time: ad.ad_delivery_stop_time || null,\n        currency: ad.currency || 'INR',\n        spend: ad.spend || null,\n        scraped_at: new Date().toISOString(),\n        filter_passed: true,\n        search_term_used: $input.first().json.searchTerm || 'unknown',\n        \n        // ===== PAGINATION METADATA (CRITICAL) =====\n        _pagination_hasMore: hasMore,\n        _pagination_nextCursor: nextCursor\n      }\n    });\n  }\n  \n  console.log(`✅ Accepted: ${acceptedCount} | ❌ Filtered: ${filteredCount} | Total: ${ads.length}`);\n  console.log(`📄 This page has ${hasMore ? 'MORE' : 'NO MORE'} results`);\n  \n  return items;\n  \n} catch (error) {\n  console.error('Parse error:', error.message, error.stack);\n  return [{ \n    json: { \n      error: true, \n      errorMessage: `Parse error: ${error.message}`,\n      errorStack: error.stack\n    } \n  }];\n}"
+      },
+      "id": "6023a83c-b8b4-4cc8-ac26-94e219540eb4",
+      "name": "Parse Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "78e049b8-f02b-40ba-864a-a12c9a2efa98",
+      "name": "Has Error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1568,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// AGGREGATE BY PAGE NODE - WITH PAGINATION PASSTHROUGH\n// Updated: Feb 12, 2026\n// ============================================================================\n\nconst ads = $input.all();\nconst pageMap = new Map();\n\n// ===== CAPTURE PAGINATION INFO FROM FIRST ITEM =====\nlet paginationInfo = {\n  hasMore: false,\n  nextCursor: null,\n  searchTerm: null\n};\n\nfor (const item of ads) {\n  const ad = item.json;\n  \n  // Capture pagination metadata from any ad (they all have same pagination)\n  if (ad._pagination_hasMore !== undefined) {\n    paginationInfo.hasMore = ad._pagination_hasMore;\n    paginationInfo.nextCursor = ad._pagination_nextCursor;\n    paginationInfo.searchTerm = ad.search_term_used;\n  }\n  \n  const pid = ad.page_id;\n  \n  if (!pid || pid === 'unknown') continue;\n  \n  if (!pageMap.has(pid)) {\n    pageMap.set(pid, {\n      page_id: pid,\n      page_name: ad.page_name,\n      ad_count: 0,\n      sample_ad: ad,\n      earliest_start: ad.ad_delivery_start_time,\n      all_bodies: [],\n      business_website: ad.business_website,\n      whatsapp_url: ad.whatsapp_url,\n      whatsapp_number: ad.whatsapp_number,\n      instagram_url: ad.instagram_url,\n      facebook_url: ad.facebook_url,\n      phone_number: ad.phone_number,\n      url_type: ad.url_type,\n      landing_url: ad.business_website || ad.whatsapp_url || ad.instagram_url || ad.facebook_url\n    });\n  }\n  \n  const page = pageMap.get(pid);\n  page.ad_count++;\n  \n  if (ad.business_website && !page.business_website) {\n    page.business_website = ad.business_website;\n    page.landing_url = ad.business_website;\n  }\n  if (ad.whatsapp_url && !page.whatsapp_url) {\n    page.whatsapp_url = ad.whatsapp_url;\n  }\n  if (ad.whatsapp_number && !page.whatsapp_number) {\n    page.whatsapp_number = ad.whatsapp_number;\n    page.phone_number = ad.whatsapp_number;\n  }\n  \n  if (ad.ad_delivery_start_time) {\n    if (!page.earliest_start || ad.ad_delivery_start_time < page.earliest_start) {\n      page.earliest_start = ad.ad_delivery_start_time;\n    }\n  }\n  \n  if (Array.isArray(ad.ad_creative_bodies)) {\n    page.all_bodies.push(...ad.ad_creative_bodies);\n  }\n}\n\nconst output = [];\nfor (const [pid, page] of pageMap.entries()) {\n  // Add pagination metadata to each page\n  page._pagination_hasMore = paginationInfo.hasMore;\n  page._pagination_nextCursor = paginationInfo.nextCursor;\n  page._pagination_searchTerm = paginationInfo.searchTerm;\n  \n  output.push({ json: page });\n}\n\nconsole.log(`📊 Aggregated ${output.length} unique pages`);\nconsole.log(`📄 Pagination: hasMore=${paginationInfo.hasMore}, cursor=${paginationInfo.nextCursor ? paginationInfo.nextCursor.substring(0, 20) + '...' : 'null'}`);\n\nreturn output.length > 0 ? output : [{ json: { noPages: true } }];"
+      },
+      "id": "95b67b50-4a21-409e-9905-c8b89a079c96",
+      "name": "Aggregate by Page",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.landing_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "430cd0d0-036b-44e6-81cd-962d089f760a",
+      "name": "Fetch Landing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -912,
+        -112
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// SCORE & FILTER NODE - CORRECTED PROPERTY ACCESS\n// Fixed: Using snake_case (with underscores) to match Aggregate by Page output\n// ============================================================================\n\nconsole.log('='.repeat(80));\nconsole.log('🚀 SCORE & FILTER NODE STARTED');\nconsole.log('='.repeat(80));\n\n// ===== Access page data from Aggregate by Page node =====\nconst pd = $('Aggregate by Page').item.json;\n\nconsole.log('📊 Raw Page Data:', JSON.stringify(pd, null, 2).substring(0, 500));\n\nconsole.log('📊 Page Data Loaded:');\nconsole.log(`   Page Name: \"${pd.page_name}\"`);\nconsole.log(`   Page ID: ${pd.page_id}`);\nconsole.log(`   Ad Count: ${pd.ad_count}`);\nconsole.log(`   URL Type: ${pd.url_type}`);\nconsole.log(`   Business Website: ${pd.business_website || 'None'}`);\nconsole.log(`   WhatsApp Number: ${pd.whatsapp_number || 'None'}`);\nconsole.log(`   WhatsApp URL: ${pd.whatsapp_url || 'None'}`);\nconsole.log(`   Instagram URL: ${pd.instagram_url || 'None'}`);\nconsole.log(`   Phone Number: ${pd.phone_number || 'None'}`);\nconsole.log(`   Sample Ad:`, pd.sample_ad);\n\nlet html = '';\nlet htmlFetchError = false;\n\ntry {\n  const fetchPageItems = $input.all();\n  \n  if (fetchPageItems && fetchPageItems.length > 0) {\n    const fetchPageData = fetchPageItems[0];\n    \n    if (fetchPageData.json && fetchPageData.json.error) {\n      htmlFetchError = true;\n      console.warn(`⚠️  Fetch Landing Page failed: ${fetchPageData.json.error.message || 'Unknown error'}`);\n    } else {\n      if (fetchPageData.binary && fetchPageData.binary.data && fetchPageData.binary.data.data) {\n        html = Buffer.from(fetchPageData.binary.data.data, 'base64').toString('utf-8');\n        console.log(`✅ HTML extracted from binary: ${html.length} chars`);\n      } else if (fetchPageData.json && fetchPageData.json.data) {\n        html = String(fetchPageData.json.data);\n        console.log(`✅ HTML extracted from json.data: ${html.length} chars`);\n      } else if (typeof fetchPageData.json === 'string') {\n        html = fetchPageData.json;\n        console.log(`✅ HTML extracted from json string: ${html.length} chars`);\n      } else {\n        console.warn(`⚠️  No HTML data found in Fetch Landing Page response`);\n      }\n    }\n  } else {\n    console.warn(`⚠️  No Fetch Landing Page data (likely skipped for ${pd.url_type})`);\n  }\n} catch(e) {\n  console.error(`❌ Error extracting HTML: ${e.message}`);\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x && typeof x === 'string').join(' ') : '';\n}\n\nconst pageName = pd.page_name || '';\nconst allBodies = join(pd.all_bodies);\nconst allText = [pageName, allBodies, html].join(' ');\n\nconsole.log('📝 Text Analysis:');\nconsole.log(`   Page Name: ${pageName.length} chars`);\nconsole.log(`   Ad Bodies: ${allBodies.length} chars`);\nconsole.log(`   HTML: ${html.length} chars`);\nconsole.log(`   Total Text: ${allText.length} chars`);\n\nconst OBVIOUS_IRRELEVANT = /\\b(watch|laikrodžiai|lithuania|tauras|mobile phone|smartphone|laptop|computer|electronics|gadget|food|restaurant|hotel|travel package|insurance|loan|père|kathy|novel|drama|story|fiction|book|game|gaming|astrology|horoscope|casino|betting)\\b/gi;\n\nconst pageNameLower = pageName.toLowerCase();\nconst isObviouslyIrrelevant = OBVIOUS_IRRELEVANT.test(pageNameLower);\n\nif (isObviouslyIrrelevant) {\n  console.log(`❌ REJECTED: \"${pd.page_name}\" - Obviously irrelevant category (not fashion/clothing)`);\n  return [{ \n    json: { \n      filtered: true, \n      reason: `Irrelevant category detected in page name: ${pageNameLower}` \n    } \n  }];\n}\n\nconsole.log(`✅ PASSED MINIMAL FILTER: \"${pd.page_name}\"`);\n\nconst WA_NUMBER = /\\b[6-9]\\d{9}\\b/g;\nconst WA_KEYWORD = /whatsapp|wa\\.me|click\\.to\\.whatsapp/gi;\nconst hasWANumber = WA_NUMBER.test(allText) || !!pd.whatsapp_number;\nconst hasWAKeyword = WA_KEYWORD.test(allText) || !!pd.whatsapp_url;\nconst hasWhatsApp = hasWANumber || hasWAKeyword || !!pd.phone_number;\n\nconst PRICE_SPECIFIC = /(rs\\.?|₹)\\s*\\d+|price[:\\s]*\\d+/gi;\nconst PRICE_DM = /dm\\s*(for|to\\s*get)?\\s*price|comment\\s*(for|to\\s*get)?\\s*(price|detail|link)|whatsapp\\s*for\\s*price|message\\s*for\\s*price/gi;\nconst hasSpecificPrice = PRICE_SPECIFIC.test(allText);\nconst hasDMPrice = PRICE_DM.test(allText);\nconst hasPricing = hasSpecificPrice || hasDMPrice;\n\nconst hasCommercialWebsite = !!pd.business_website;\n\nconst LOCATION = /\\b(jaipur|delhi|mumbai|surat|ahmedabad|bangalore|bengaluru|hyderabad|chennai|kolkata|pune|lucknow|kanpur|nagpur|indore|bhopal|chandigarh)\\b/gi;\nconst JAIPUR = /\\b(jaipur|pink city)\\b/gi;\nconst hasLocation = LOCATION.test(allText);\nconst hasJaipur = JAIPUR.test(allText);\n\nconst PIXEL = /(fbq\\(|fbevents)/gi;\nconst hasPixel = html.length > 0 ? PIXEL.test(html) : false;\n\nconst hasInstagram = !!pd.instagram_url;\nconst hasFacebookPage = !!pd.facebook_url;\n\nconsole.log('🔍 Quality Signals Detected:');\nconsole.log(`   WhatsApp: ${hasWhatsApp}`);\nconsole.log(`   WhatsApp Number: ${pd.whatsapp_number || 'None'}`);\nconsole.log(`   Commercial Website: ${hasCommercialWebsite}`);\nconsole.log(`   Pricing Info: ${hasPricing}`);\nconsole.log(`   Location Mentioned: ${hasLocation}`);\nconsole.log(`   Jaipur Local: ${hasJaipur}`);\nconsole.log(`   Facebook Pixel: ${hasPixel}`);\nconsole.log(`   Instagram: ${hasInstagram}`);\nconsole.log(`   Facebook Page: ${hasFacebookPage}`);\n\nconst cnt = pd.ad_count;\nlet tier = '';\nlet priority = 'LOW';\nlet reason = '';\n\nif (hasWhatsApp && hasCommercialWebsite) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Commercial Website';\n} else if (hasWhatsApp && hasPricing) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Pricing Info';\n} else if (hasWhatsApp && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Multiple Ads';\n} else if (hasCommercialWebsite && hasPricing) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'Website + Pricing Info';\n}\nelse if (hasCommercialWebsite) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Has Commercial Website';\n} else if (hasWhatsApp) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Has WhatsApp Contact';\n} else if (hasDMPrice) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'DM for Price (Potential WhatsApp)';\n} else if (hasLocation && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Physical Location + Multiple Ads';\n} else if (cnt >= 3) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Running 3+ Ads (Active Marketer)';\n}\nelse if (hasInstagram && hasPricing) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Instagram + Pricing';\n} else if (hasInstagram && cnt >= 2) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Instagram + Multiple Ads';\n} else if (hasPricing) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Shows Pricing Info';\n} else if (cnt >= 2) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Running 2+ Ads';\n} else if (hasFacebookPage) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Active Facebook Page';\n}\nelse {\n  tier = 'TIER_3';\n  priority = 'LOWEST';\n  reason = 'Single Ad, Minimal Signals (Review Manually)';\n}\n\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 25) vol = 25;\nelse if (cnt >= 12) vol = 20;\nelse if (cnt >= 6) vol = 15;\nelse if (cnt >= 3) vol = 10;\nelse if (cnt >= 2) vol = 5;\nelse vol = 2;\n\nconst len = allBodies.length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\nelse if (len > 50) soph += 1;\n\nconst variationCount = (pd.all_bodies || []).length;\nif (variationCount >= 5) soph += 8;\nelse if (variationCount >= 3) soph += 5;\nelse if (variationCount >= 2) soph += 2;\n\nif (html.length > 0 && html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 22);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 10;\n    else if (d >= 14) long = 7;\n    else if (d >= 7) long = 5;\n    else if (d >= 3) long = 2;\n  } catch(e) {}\n}\n\nconst track = hasPixel ? 8 : 0;\nconst loc = hasJaipur ? 10 : 0;\nconst wa = hasWhatsApp ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa;\n\nlet inquiryEstimate = 'N/A';\n\nif (hasWhatsApp) {\n  if (hasCommercialWebsite && hasPixel && cnt >= 5) {\n    inquiryEstimate = '30-50+ inquiries/day';\n  } else if (hasCommercialWebsite && cnt >= 3) {\n    inquiryEstimate = '15-30 inquiries/day';\n  } else if (cnt >= 3) {\n    inquiryEstimate = '10-20 inquiries/day';\n  } else if (cnt >= 2) {\n    inquiryEstimate = '5-12 inquiries/day';\n  } else {\n    inquiryEstimate = '2-8 inquiries/day';\n  }\n}\nelse if (hasCommercialWebsite) {\n  if (hasPixel && cnt >= 3) {\n    inquiryEstimate = '8-15 inquiries/day';\n  } else if (cnt >= 2) {\n    inquiryEstimate = '3-10 inquiries/day';\n  } else {\n    inquiryEstimate = '1-5 inquiries/day';\n  }\n}\nelse if (hasInstagram || hasFacebookPage) {\n  if (hasPricing && cnt >= 2) {\n    inquiryEstimate = '2-5 inquiries/day';\n  } else {\n    inquiryEstimate = '<2 inquiries/day';\n  }\n}\nelse {\n  inquiryEstimate = 'Unknown - needs contact method setup';\n}\n\nconsole.log('='.repeat(80));\nconsole.log(`✅ ${tier} ACCEPTED: \"${pd.page_name}\"`);\nconsole.log(`   Priority: ${priority}`);\nconsole.log(`   Reason: ${reason}`);\nconsole.log(`   Score: ${tot}`);\nconsole.log(`   Estimated Inquiries: ${inquiryEstimate}`);\nconsole.log(`   WhatsApp Number: ${pd.whatsapp_number || 'NOT FOUND'}`);\nconsole.log('='.repeat(80));\n\n// ===== OUTPUT - Using snake_case for both input AND output =====\nreturn [{\n  json: {\n    // Timestamps\n    timestamp: new Date().toISOString(),\n    \n    // Business Identity\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad?.ad_id || 'unknown',\n    ad_snapshot_url: pd.sample_ad?.ad_snapshot_url || '',\n    \n    // URLs & Contact Info\n    landing_url: pd.landing_url,\n    business_website: pd.business_website,\n    whatsapp_url: pd.whatsapp_url,\n    instagram_url: pd.instagram_url,\n    facebook_url: pd.facebook_url,\n    phone_number: pd.phone_number,\n    url_type: pd.url_type,\n    \n    // Ad Metrics\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    \n    // Quality Signals (Boolean)\n    whatsapp_detected: hasWhatsApp,\n    whatsapp_cta: hasWhatsApp,\n    has_commercial_website: hasCommercialWebsite,\n    has_website: hasCommercialWebsite,\n    has_pricing: hasPricing,\n    has_location: hasLocation,\n    location_jaipur: hasJaipur,\n    local_signal_jaipur: hasJaipur,\n    pixel_present: hasPixel,\n    \n    // Quality Signals (Details)\n    commercial_websites: pd.business_website || '',\n    pricing_type: hasSpecificPrice ? 'Specific price shown' : (hasDMPrice ? 'DM for price' : 'None'),\n    \n    // Scoring & Tier\n    tier: tier,\n    priority: priority,\n    accept_reason: reason,\n    score: tot,\n    estimated_inquiries: inquiryEstimate,\n    estimated_inquiries_bucket: inquiryEstimate,\n    \n    // Debug Info\n    html_length: html.length,\n    html_fetch_error: htmlFetchError,\n    data_source: 'Aggregate by Page via $() + Fetch Landing Page via $input',\n    \n    // Notes\n    notes: `${tier} | ${cnt} ads | ${hasWhatsApp ? 'WhatsApp✓' : ''} ${hasCommercialWebsite ? 'Website✓' : ''} ${hasPricing ? 'Price✓' : ''} ${hasLocation ? 'Location✓' : ''} | Score: ${tot}`\n  }\n}];"
+      },
+      "id": "4ab3c37d-a397-4ffc-ac62-4acda75029d5",
+      "name": "Score & Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-qualified",
+              "leftValue": "={{ $json.filtered }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "50afec0b-70d9-4a0a-b76f-1915aa0dac12",
+      "name": "Is Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -336,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DQRx_FHAkwAjg3-lS4qgNZK3B6p3q2dwWZZ6lEQzjEg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AD_Data",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_name",
+              "displayName": "page_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_id",
+              "displayName": "page_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_snapshot_url",
+              "displayName": "ad_snapshot_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "landing_url",
+              "displayName": "landing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_website",
+              "displayName": "business_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_url",
+              "displayName": "whatsapp_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "instagram_url",
+              "displayName": "instagram_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "facebook_url",
+              "displayName": "facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone_number",
+              "displayName": "phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url_type",
+              "displayName": "url_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ad_creative_count",
+              "displayName": "ad_creative_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "creative_types",
+              "displayName": "creative_types",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_detected",
+              "displayName": "whatsapp_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_cta",
+              "displayName": "whatsapp_cta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_commercial_website",
+              "displayName": "has_commercial_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_website",
+              "displayName": "has_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_pricing",
+              "displayName": "has_pricing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_location",
+              "displayName": "has_location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location_jaipur",
+              "displayName": "location_jaipur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "local_signal_jaipur",
+              "displayName": "local_signal_jaipur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pixel_present",
+              "displayName": "pixel_present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "commercial_websites",
+              "displayName": "commercial_websites",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pricing_type",
+              "displayName": "pricing_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tier",
+              "displayName": "tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accept_reason",
+              "displayName": "accept_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estimated_inquiries",
+              "displayName": "estimated_inquiries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estimated_inquiries_bucket",
+              "displayName": "estimated_inquiries_bucket",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "html_length",
+              "displayName": "html_length",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "html_fetch_error",
+              "displayName": "html_fetch_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_source",
+              "displayName": "data_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "f1e35f15-099b-4091-8d1b-46b961ac988a",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -112,
+        -112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {},
+      "id": "84cd37ba-51dc-4c01-82c0-1f538f0c0446",
+      "name": "Error End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -112
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "770e93fe-9007-49fb-a488-9ea2083e6dfe",
+      "name": "Filtered End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        64
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2944,
+        64
+      ],
+      "id": "63fcdb84-990b-4388-989b-2441209e469c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// BUILD FACEBOOK API REQUEST - WITH PAGINATION SUPPORT\n// Updated: Feb 12, 2026\n// ============================================================================\n\n// Get input data\nconst inputData = $input.first().json;\n\n// Determine if this is a pagination request or initial request\nconst afterCursor = inputData.afterCursor || null;\nconst searchTerm = inputData.searchTerm || inputData.searchTerms;\n\n// Access token\nconst accessToken = 'EAATGHDjCPo0BQtmRpCVZAu2fv1V0MYZCJPWdqkoSa3C5I8ZCoJyAOF6sFUGmRqXpzXWcqZBsz91B8ZAjZAhU437wsMxJgD4dOnp2h3MBL0z93PmvLuJAvZAPUJqZBTZCPPlYLTDbdWp6dANHUYrZC7yXB86JwFDdZAqwVZBq61tX7yaXgCexnKYDEleAPb1Vit2vb6UJcvPXLOgCqD1xMZAuHcJgZD';\n\n// Build API URL\nconst apiBaseUrl = 'https://graph.facebook.com/v21.0/ads_archive';\n\n// Build parameters\nconst params = {\n  access_token: accessToken,\n  search_terms: searchTerm,\n  ad_reached_countries: JSON.stringify(['IN']),\n  ad_active_status: 'ACTIVE',\n  limit: '100',  // Fetch 100 ads per page\n  fields: 'id,page_id,page_name,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_titles,ad_snapshot_url,ad_delivery_start_time,ad_delivery_stop_time,currency,spend'\n};\n\n// ===== ADD PAGINATION CURSOR IF AVAILABLE =====\nif (afterCursor) {\n  params.after = afterCursor;\n  console.log(`📄 PAGINATION REQUEST for \"${searchTerm}\" | Cursor: ${afterCursor.substring(0, 30)}...`);\n} else {\n  console.log(`🔍 INITIAL REQUEST for \"${searchTerm}\"`);\n}\n\n// Build query string\nconst queryParts = [];\nfor (const key in params) {\n  if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== null) {\n    const encodedKey = encodeURIComponent(key);\n    const encodedValue = encodeURIComponent(params[key]);\n    queryParts.push(encodedKey + '=' + encodedValue);\n  }\n}\n\nconst queryString = queryParts.join('&');\nconst fullUrl = apiBaseUrl + '?' + queryString;\n\nreturn [{\n  json: {\n    url: fullUrl,\n    searchTerm: searchTerm,\n    isPaginationRequest: !!afterCursor,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        80
+      ],
+      "id": "5507c9a7-e785-4195-af4d-5f72693d22c0",
+      "name": "Build Facebook API Request"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1952,
+        80
+      ],
+      "id": "0f7bbc5a-9f71-4536-8b9c-af5227bc0801",
+      "name": "Call Facebook Ad Library API",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "699ba757-a1a2-4af4-afb3-ceeeca13a158",
+              "leftValue": "={{ $json.url_type }}",
+              "rightValue": "WEBSITE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1088,
+        48
+      ],
+      "id": "29db3055-3f51-4ff8-85b0-4ea23eac64a8",
+      "name": "Should Fetch Website?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert array of search terms into separate items\nconst searchTerms = ['saree'];\n\n// Return one item per search term\nreturn searchTerms.map(term => ({\n  json: {\n    searchTerm: term  // ← Note: singular \"searchTerm\", not \"searchTerms\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2576,
+        80
+      ],
+      "id": "2ae33929-9913-419d-aa6c-69f65cb2f41e",
+      "name": "Set Search Terms2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// CHECK PAGINATION NODE - VERIFIED FIX\n// Purpose: Check pagination data from \"Aggregate by Page\" node\n// Official n8n syntax: $('Node Name').all() \n// Reference: https://docs.n8n.io/code/code-node/\n// ============================================================================\n\n// ===== CRITICAL: Access \"Aggregate by Page\" node explicitly =====\n// DO NOT use $input.all() - it only returns previous node data\n// USE $('Node Name').all() to access specific node\n\nconst aggregatedPages = $('Aggregate by Page').all();\n\nconsole.log(`========================================`);\nconsole.log(`📊 CHECK PAGINATION NODE STARTED`);\nconsole.log(`========================================`);\nconsole.log(`Total pages from Aggregate by Page: ${aggregatedPages.length}`);\n\n// Check if any page has pagination info\nlet hasMore = false;\nlet nextCursor = null;\nlet searchTerm = null;\n\nfor (const item of aggregatedPages) {\n  const pageData = item.json;\n  \n  console.log(`   Page: \"${pageData.page_name}\"`);\n  console.log(`      _pagination_hasMore: ${pageData._pagination_hasMore}`);\n  console.log(`      _pagination_nextCursor: ${pageData._pagination_nextCursor ? pageData._pagination_nextCursor.substring(0, 30) + '...' : 'NULL'}`);\n  console.log(`      _pagination_searchTerm: ${pageData._pagination_searchTerm}`);\n  \n  // If ANY page has pagination, we need to fetch more\n  if (pageData._pagination_hasMore && pageData._pagination_nextCursor) {\n    hasMore = true;\n    nextCursor = pageData._pagination_nextCursor;\n    searchTerm = pageData._pagination_searchTerm;\n    break; // Found pagination, stop checking\n  }\n}\n\nconsole.log(`========================================`);\n\nif (hasMore && nextCursor) {\n  console.log(`✅ PAGINATION DETECTED - MORE PAGES AVAILABLE`);\n  console.log(`   Search Term: \"${searchTerm}\"`);\n  console.log(`   Next Cursor: ${nextCursor.substring(0, 50)}...`);\n  console.log(`   Action: Will loop back to fetch page 2`);\n  console.log(`========================================`);\n  \n  return [{\n    json: {\n      shouldPaginate: true,\n      searchTerm: searchTerm,\n      afterCursor: nextCursor,\n      paginationDetected: true,\n      debug_aggregatedPages: aggregatedPages.length,\n      debug_source: 'Aggregate by Page node'\n    }\n  }];\n} else {\n  console.log(`✅ ALL PAGES FETCHED - NO MORE RESULTS`);\n  console.log(`   Search Term: \"${searchTerm || 'unknown'}\"`);\n  console.log(`   Action: Will continue to next keyword`);\n  console.log(`========================================`);\n  \n  return [{\n    json: {\n      shouldPaginate: false,\n      completed: true,\n      searchTerm: searchTerm,\n      debug_aggregatedPages: aggregatedPages.length,\n      debug_source: 'Aggregate by Page node'\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        16
+      ],
+      "id": "dc64ee52-512c-4dfd-8d68-62b14ecec142",
+      "name": "Check Pagination"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "47d39aca-ef9d-4e38-a231-9a657fa99294",
+              "leftValue": "={{ $json.shouldPaginate }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        16
+      ],
+      "id": "7033cfa9-a9f2-420a-8337-d947e3712043",
+      "name": "Should Continue Pagination?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -48,
+        -320
+      ],
+      "id": "f6773db0-1f6a-41e2-a085-5bb080a1248e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pass through all Aggregate data with empty HTML indicator\nreturn [{\n  json: {\n    ...$input.item.json,\n    html_data: '',\n    html_fetch_skipped: true\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        64
+      ],
+      "id": "63b9ddc0-f703-4daf-a1fe-f1d42a8e5580",
+      "name": "Set Empty HTML"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -704,
+        -112
+      ],
+      "id": "c32214f8-7390-440c-971d-da0f4a2fc423",
+      "name": "Merge1"
+    }
+  ],
+  "connections": {
+    "Daily 2AM IST": {
+      "main": [
+        []
+      ]
+    },
+    "Set Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Terms": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Build Facebook API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Results": {
+      "main": [
+        [
+          {
+            "node": "Has Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [
+          {
+            "node": "Error End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate by Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate by Page": {
+      "main": [
+        [
+          {
+            "node": "Should Fetch Website?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Landing Page": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score & Filter": {
+      "main": [
+        [
+          {
+            "node": "Is Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtered End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Check Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtered End": {
+      "main": [
+        [
+          {
+            "node": "Check Pagination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Facebook API Request": {
+      "main": [
+        [
+          {
+            "node": "Call Facebook Ad Library API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Facebook Ad Library API": {
+      "main": [
+        [
+          {
+            "node": "Parse Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Fetch Website?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Landing Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Empty HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search Terms2": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Pagination": {
+      "main": [
+        [
+          {
+            "node": "Should Continue Pagination?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Continue Pagination?": {
+      "main": [
+        [
+          {
+            "node": "Build Facebook API Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "Set Empty HTML": {
+      "main": [
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9d8efbc0-65c0-4f0e-831a-d7d4000cf536",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-11T12:24:12.508Z",
+      "createdAt": "2026-02-11T12:24:12.508Z",
+      "role": "workflow:owner",
+      "workflowId": "VVbPvwG8fMnoi7tf",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
