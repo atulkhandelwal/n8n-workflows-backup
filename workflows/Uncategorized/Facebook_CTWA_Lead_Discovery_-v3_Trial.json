@@ -1,0 +1,714 @@
+{
+  "updatedAt": "2026-02-11T11:16:12.650Z",
+  "createdAt": "2026-02-10T06:59:01.744Z",
+  "id": "RYz4tWhi5jNkZVfU",
+  "name": "Facebook CTWA Lead Discovery -v3 Trial",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "03cedf57-f16e-4000-bb3d-f0d12673e859",
+      "name": "Daily 2AM IST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "search-terms",
+              "name": "searchTerms",
+              "value": "=['saree', 'kurti']",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c25d6eed-bacc-4eca-b34a-731b9ef3203e",
+      "name": "Set Search Terms",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2752,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "cf709437-9fa4-46ea-9deb-d4b418d87f35",
+      "name": "Split Terms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2384,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// FACEBOOK AD LIBRARY API - PARSE & FILTER RESULTS\n// Updated: Feb 11, 2026\n// Purpose: Parse Facebook API response and filter for relevant businesses\n// ============================================================================\n\nconst response = $input.first().json;\nconst items = [];\n\ntry {\n  // ===== STEP 1: ERROR HANDLING =====\n  if (response.error) {\n    const errorMsg = response.error.error_user_msg || response.error.message || 'Unknown API error';\n    console.error('Facebook API Error:', errorMsg, 'Code:', response.error.code);\n    return [{ \n      json: { \n        error: true, \n        errorMessage: errorMsg,\n        errorCode: response.error.code,\n        errorType: response.error.type\n      } \n    }];\n  }\n  \n  // ===== STEP 2: GET ADS FROM FACEBOOK API RESPONSE =====\n  const ads = response.data || [];\n  \n  if (!Array.isArray(ads) || ads.length === 0) {\n    console.log('No ads found for this search term');\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Processing ${ads.length} ads from Facebook Ad Library API`);\n  \n  // ===== STEP 3: DEFINE FILTER KEYWORDS =====\n  \n  // ❌ EXCLUDE: Pages/content to filter OUT (irrelevant businesses)\n  const EXCLUDE_KEYWORDS = [\n    // Entertainment/Content\n    'novel', 'reading', 'drama', 'story', 'fiction', 'tale', 'book',\n    'read now', 'chapter', 'episode', 'series', 'flipreels',\n    \n    // Gaming/Apps\n    'game', 'gaming', 'play now', 'download', 'app',\n    \n    // News/Media\n    'news', 'media', 'channel', 'tv', 'video streaming',\n    \n    // Other\n    'astrology', 'horoscope', 'predictions', 'fortune'\n  ];\n  \n  // ✅ INCLUDE: Keywords that indicate REAL clothing/fashion businesses\n  const CLOTHING_INDICATORS = [\n    // Products\n    'saree', 'kurti', 'lehenga', 'salwar', 'dupatta', 'suit',\n    'dress', 'top', 'bottom', 'jeans', 'shirt', 'blouse',\n    \n    // Business Types\n    'boutique', 'fashion', 'ethnic', 'designer', 'wear', 'collection',\n    'store', 'shop', 'showroom', 'emporium',\n    \n    // Descriptors\n    'ladies', 'women', 'mens', 'kids', 'bridal', 'party',\n    'wedding', 'festive', 'casual', 'formal',\n    \n    // Shopping Terms\n    'price', 'off', 'sale', 'discount', 'offer', 'deal',\n    'cod', 'delivery', 'shipping', 'order'\n  ];\n  \n  // ===== STEP 4: PROCESS EACH AD WITH FILTERING =====\n  \n  for (const ad of ads) {\n    // Skip invalid entries\n    if (!ad || typeof ad !== 'object' || !ad.id) {\n      continue;\n    }\n    \n    // --- FILTERING LOGIC STARTS HERE ---\n    \n    // Combine page name and ad bodies for text analysis\n    const pageName = (ad.page_name || '').toLowerCase();\n    const adBodies = (ad.ad_creative_bodies || []).join(' ').toLowerCase();\n    const allText = pageName + ' ' + adBodies;\n    \n    // CHECK 1: Exclude irrelevant pages (novels, games, etc.)\n    let shouldExclude = false;\n    for (const keyword of EXCLUDE_KEYWORDS) {\n      if (pageName.includes(keyword.toLowerCase()) || \n          adBodies.includes(keyword.toLowerCase())) {\n        shouldExclude = true;\n        console.log(`❌ Excluded: \"${ad.page_name}\" - Contains \"${keyword}\"`);\n        break;\n      }\n    }\n    \n    if (shouldExclude) {\n      continue; // Skip this ad\n    }\n    \n    // CHECK 2: Must contain at least ONE clothing indicator\n    let hasClothingIndicator = false;\n    for (const keyword of CLOTHING_INDICATORS) {\n      if (allText.includes(keyword.toLowerCase())) {\n        hasClothingIndicator = true;\n        break;\n      }\n    }\n    \n    if (!hasClothingIndicator) {\n      console.log(`⚠️  Filtered: \"${ad.page_name}\" - No clothing indicators found`);\n      continue; // Skip this ad\n    }\n    \n    // --- FILTERING PASSED - PROCESS THIS AD ---\n    \n    console.log(`✅ Accepted: \"${ad.page_name}\"`);\n    \n    // Extract landing URL from captions (Facebook API structure)\n    let landingUrl = '';\n    if (Array.isArray(ad.ad_creative_link_captions) && ad.ad_creative_link_captions.length > 0) {\n      const urlRegex = /(https?:\\/\\/[^\\s]+)/gi;\n      for (const caption of ad.ad_creative_link_captions) {\n        const match = caption.match(urlRegex);\n        if (match && match[0]) {\n          landingUrl = match[0];\n          break;\n        }\n      }\n    }\n    \n    // Fallback to snapshot URL if no landing URL found\n    if (!landingUrl) {\n      landingUrl = ad.ad_snapshot_url || '';\n    }\n    \n    // Normalize Facebook API response to expected format\n    items.push({\n      json: {\n        // Core identifiers\n        page_id: ad.page_id || 'unknown',\n        page_name: ad.page_name || 'Unknown Business',\n        ad_id: ad.id || String(Date.now()),\n        \n        // Ad content\n        ad_snapshot_url: ad.ad_snapshot_url || '',\n        ad_creative_bodies: ad.ad_creative_bodies || [],\n        ad_creative_link_url: landingUrl,\n        \n        // Timing\n        ad_delivery_start_time: ad.ad_delivery_start_time || null,\n        ad_delivery_stop_time: ad.ad_delivery_stop_time || null,\n        \n        // Additional data\n        currency: ad.currency || 'INR',\n        spend: ad.spend || null,\n        scraped_at: new Date().toISOString(),\n        \n        // Filtering metadata (for debugging)\n        filter_passed: true,\n        search_term_used: $input.first().json.searchTerm || 'unknown'\n      }\n    });\n  }\n  \n  // ===== STEP 5: RETURN RESULTS =====\n  \n  if (items.length === 0) {\n    console.log('⚠️  All ads filtered out - no relevant businesses found');\n    return [{ json: { noResults: true, reason: 'All ads filtered as irrelevant' } }];\n  }\n  \n  console.log(`✅ Successfully processed ${items.length} relevant ads (filtered from ${ads.length} total)`);\n  return items;\n  \n} catch (error) {\n  console.error('Parse error:', error.message, error.stack);\n  return [{ \n    json: { \n      error: true, \n      errorMessage: `Parse error: ${error.message}`,\n      errorStack: error.stack\n    } \n  }];\n}"
+      },
+      "id": "565f1fa3-d152-4cc8-ac4f-10ec385836b6",
+      "name": "Parse Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8e6a93fe-e649-40f9-8fec-64817b4e20b2",
+      "name": "Has Error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1568,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ads = $input.all();\nconst pageMap = new Map();\n\nfor (const item of ads) {\n  const ad = item.json;\n  const pid = ad.page_id;\n  \n  if (!pid || pid === 'unknown') continue;\n  \n  if (!pageMap.has(pid)) {\n    pageMap.set(pid, {\n      page_id: pid,\n      page_name: ad.page_name,\n      ad_count: 0,\n      sample_ad: ad,\n      earliest_start: ad.ad_delivery_start_time,\n      all_bodies: [],\n      landing_url: ad.ad_creative_link_url || ad.ad_snapshot_url\n    });\n  }\n  \n  const page = pageMap.get(pid);\n  page.ad_count++;\n  \n  if (ad.ad_delivery_start_time) {\n    if (!page.earliest_start || ad.ad_delivery_start_time < page.earliest_start) {\n      page.earliest_start = ad.ad_delivery_start_time;\n    }\n  }\n  \n  if (Array.isArray(ad.ad_creative_bodies)) {\n    page.all_bodies.push(...ad.ad_creative_bodies);\n  }\n}\n\nconst output = [];\nfor (const [pid, page] of pageMap.entries()) {\n  output.push({ json: page });\n}\n\nreturn output.length > 0 ? output : [{ json: { noPages: true } }];"
+      },
+      "id": "f46c8122-af9e-40a8-a720-dad19328f386",
+      "name": "Aggregate by Page",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "511951b8-4912-47b9-8ae3-742606722b3b",
+      "name": "Split Pages",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.landing_url }}",
+        "options": {}
+      },
+      "id": "1f1de512-fd80-445b-849b-998be3b9b7d9",
+      "name": "Fetch Landing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -960,
+        112
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// SCORE & FILTER NODE - FIXED DATA ACCESS\n// Updated: Feb 11, 2026\n// CRITICAL FIX: Properly access Split Pages data using $('Node Name') syntax\n// ============================================================================\n\n// ===== STEP 1: GET DATA FROM SPLIT PAGES NODE (NOT DIRECTLY CONNECTED) =====\n// This is the CRITICAL fix - we must use $('Split Pages') to access upstream data\nconst splitPagesData = $('Split Pages').first().json;\n\n// Extract ad metadata from Split Pages node\nconst pd = {\n  page_id: splitPagesData.page_id,\n  page_name: splitPagesData.page_name,\n  ad_count: splitPagesData.ad_count || 1,\n  all_bodies: splitPagesData.all_bodies || [],\n  landing_url: splitPagesData.landing_url || '',\n  sample_ad: splitPagesData.sample_ad || {},\n  earliest_start: splitPagesData.earliest_start\n};\n\n// ===== STEP 2: GET HTML FROM FETCH LANDING PAGE NODE (DIRECTLY CONNECTED) =====\nconst fetchPageOutput = $input.first();\nlet html = '';\n\ntry {\n  // Try to extract HTML from binary data\n  if (fetchPageOutput.binary && fetchPageOutput.binary.data && fetchPageOutput.binary.data.data) {\n    html = Buffer.from(fetchPageOutput.binary.data.data, 'base64').toString('utf-8');\n  }\n  // Fallback: try json.data field\n  else if (fetchPageOutput.json && fetchPageOutput.json.data) {\n    html = fetchPageOutput.json.data;\n  }\n  \n  console.log(`✅ HTML extracted: ${html.length} characters`);\n} catch(e) {\n  console.error('❌ HTML extraction error:', e.message);\n}\n\n// ===== VERIFY DATA IS PRESENT =====\nif (!pd.page_name) {\n  console.error('❌ CRITICAL ERROR: Split Pages data not found!');\n  console.error('Available data:', Object.keys(splitPagesData));\n  return [{ \n    json: { \n      filtered: true, \n      reason: 'ERROR: Split Pages data not accessible - check node connections' \n    } \n  }];\n}\n\nconsole.log(`📊 Processing: \"${pd.page_name}\" | ${pd.ad_count} ads | HTML: ${html.length} chars`);\n\n// ===== REST OF YOUR FILTERING LOGIC CONTINUES HERE =====\n// (Keep all your existing regex patterns and filtering logic)\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\nconst pageName = pd.page_name || '';\nconst allBodies = join(pd.all_bodies);\nconst allText = [pageName, allBodies, html].join(' ');\nconst allTextLower = allText.toLowerCase();\n\n// ===== IMPROVED REGEX PATTERNS =====\nconst WA_NUMBER = /\\b[6-9]\\d{9}\\b/g;\nconst WA_KEYWORD = /whatsapp|wa\\.me|click\\.to\\.whatsapp/gi;\nconst PRICE_SPECIFIC = /(rs\\.?|₹)\\s*\\d+|price[:\\s]*\\d+/gi;\nconst PRICE_DM = /dm\\s*(for|to\\s*get)?\\s*price|comment\\s*(for|to\\s*get)?\\s*(price|detail|link)|whatsapp\\s*for\\s*price|message\\s*for\\s*price/gi;\nconst COMMERCIAL_WEBSITE = /\\b[a-z0-9-]+\\.(com|in|co\\.in)\\b/gi;\nconst SOCIAL_MEDIA = /instagram\\.com|facebook\\.com|twitter\\.com|youtube\\.com/gi;\nconst LOCATION = /\\b(jaipur|delhi|mumbai|surat|ahmedabad|bangalore|bengaluru|hyderabad|chennai|kolkata|pune|lucknow|kanpur|nagpur|indore|bhopal|chandigarh)\\b/gi;\nconst JAIPUR = /\\b(jaipur|pink city)\\b/gi;\nconst PIXEL = /(fbq\\(|fbevents)/gi;\nconst CLOTHING_KEYWORDS = /\\b(kurti|saree|sari|lehenga|salwar|dupatta|kameez|suit|dress|top|bottom|ethnic|wear|collection|fabric|cotton|silk|georgette|rayon|chanderi|chikankari|handloom|boutique|fashion)\\b/gi;\nconst IRRELEVANT = /\\b(watch|laikrodžiai|lithuania|tauras|electronics|gadget|mobile|phone(?!.*kurti)|laptop|computer|food|restaurant|hotel|travel|insurance|loan|père|kathy|drama|novel|story|fiction|book|game|gaming|astrology|horoscope)\\b/gi;\n\n// ===== DETECT ALL SIGNALS =====\nconst cnt = pd.ad_count;\n\nconst hasWANumber = WA_NUMBER.test(allText);\nconst hasWAKeyword = WA_KEYWORD.test(allText);\nconst hasWhatsApp = hasWANumber || hasWAKeyword;\n\nconst hasSpecificPrice = PRICE_SPECIFIC.test(allText);\nconst hasDMPrice = PRICE_DM.test(allText);\nconst hasPricing = hasSpecificPrice || hasDMPrice;\n\nconst websiteMatches = allText.match(COMMERCIAL_WEBSITE) || [];\nconst socialMatches = allText.match(SOCIAL_MEDIA) || [];\nconst commercialWebsites = websiteMatches.filter(w => !w.match(/instagram|facebook|twitter|youtube/i));\nconst hasCommercialWebsite = commercialWebsites.length > 0;\nconst hasOnlyInstagram = socialMatches.length > 0 && commercialWebsites.length === 0;\n\nconst hasLocation = LOCATION.test(allText);\nconst hasJaipur = JAIPUR.test(allText);\nconst hasPixel = PIXEL.test(html);\n\nconst hasClothingKeywords = CLOTHING_KEYWORDS.test(allText);\nconst isIrrelevant = IRRELEVANT.test(allText) || IRRELEVANT.test(pageName);\n\n// ===== FILTERING LOGIC (3-TIER SYSTEM) =====\n// ❌ TIER 3: AUTO-REJECT (Irrelevant content)\nif (isIrrelevant) {\n  console.log(`❌ REJECTED: \"${pd.page_name}\" - Irrelevant content (not clothing business)`);\n  return [{ \n    json: { \n      filtered: true, \n      reason: 'Irrelevant content (watches, drama, apps, etc.)' \n    } \n  }];\n}\n\n// ❌ TIER 3: AUTO-REJECT (No clothing keywords)\nif (!hasClothingKeywords) {\n  console.log(`❌ REJECTED: \"${pd.page_name}\" - No clothing business indicators`);\n  return [{ \n    json: { \n      filtered: true, \n      reason: 'No clothing keywords found (kurti, saree, fabric, etc.)' \n    } \n  }];\n}\n\n// ✅ DETERMINE TIER AND PRIORITY\nlet tier = '';\nlet priority = 'LOW';\nlet reason = '';\n\nif (hasWhatsApp && (hasCommercialWebsite || hasPricing || cnt >= 2)) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + professional signals';\n} else if (hasWhatsApp && hasLocation) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + physical location';\n} else if (hasWhatsApp) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'Has WhatsApp contact';\n} else if (hasCommercialWebsite && hasPricing) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'Commercial website + pricing';\n} else if (hasCommercialWebsite) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Has commercial website';\n} else if (hasDMPrice) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'DM for price (WhatsApp funnel)';\n} else if (hasSpecificPrice && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Shows pricing + multiple ads';\n} else if (hasLocation && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Physical location + multiple ads';\n} else if (cnt >= 3) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Running 3+ ads (serious marketer)';\n} else if (hasOnlyInstagram && (hasPricing || cnt >= 2)) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Instagram-only with signals';\n} else if (hasSpecificPrice) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Shows specific pricing';\n} else if (cnt >= 2) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Running 2+ ads';\n} else {\n  console.log(`❌ FILTERED: \"${pd.page_name}\" - Instagram-only, no pricing, single ad, no contact info`);\n  return [{ \n    json: { \n      filtered: true, \n      reason: 'Instagram-only with no pricing/contact signals (TIER 3)' \n    } \n  }];\n}\n\n// ===== SCORING =====\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 25) vol = 25;\nelse if (cnt >= 12) vol = 20;\nelse if (cnt >= 6) vol = 15;\nelse if (cnt >= 3) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = allBodies.length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nconst variationCount = (pd.all_bodies || []).length;\nif (variationCount >= 5) soph += 8;\nelse if (variationCount >= 3) soph += 5;\nelse if (variationCount >= 2) soph += 2;\n\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 22);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 10;\n    else if (d >= 14) long = 7;\n    else if (d >= 7) long = 5;\n    else if (d >= 3) long = 2;\n  } catch(e) {}\n}\n\nconst track = hasPixel ? 8 : 0;\nconst loc = hasJaipur ? 10 : 0;\nconst wa = hasWhatsApp ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa;\n\n// ===== REALISTIC INQUIRY ESTIMATION =====\nlet inquiryEstimate = 'N/A';\nif (hasWhatsApp) {\n  if (cnt >= 6 && (hasCommercialWebsite || hasPixel)) {\n    inquiryEstimate = '30-50+ inquiries/day';\n  } else if (cnt >= 3) {\n    inquiryEstimate = '15-30 inquiries/day';\n  } else {\n    inquiryEstimate = '5-15 inquiries/day';\n  }\n} else if (hasCommercialWebsite) {\n  inquiryEstimate = '3-10 inquiries/day';\n} else if (hasOnlyInstagram) {\n  if (hasPricing) {\n    inquiryEstimate = '2-5 inquiries/day';\n  } else {\n    inquiryEstimate = '<2 inquiries/day';\n  }\n} else {\n  inquiryEstimate = 'Unknown - needs WhatsApp setup';\n}\n\n// ===== OUTPUT =====\nconsole.log(`✅ ${tier} ACCEPTED: \"${pd.page_name}\" - ${reason} - Priority: ${priority}`);\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    \n    // Contact signals\n    whatsapp_detected: hasWhatsApp,\n    has_commercial_website: hasCommercialWebsite,\n    commercial_websites: commercialWebsites.join(', '),\n    has_pricing: hasPricing,\n    pricing_type: hasSpecificPrice ? 'Specific price shown' : (hasDMPrice ? 'DM for price' : 'None'),\n    has_location: hasLocation,\n    location_jaipur: hasJaipur,\n    \n    // Business quality\n    pixel_present: hasPixel,\n    tier: tier,\n    priority: priority,\n    accept_reason: reason,\n    score: tot,\n    estimated_inquiries: inquiryEstimate,\n    \n    // Debugging info\n    html_length: html.length,\n    data_source: 'Split Pages node via $() syntax',\n    \n    // Notes for manual review\n    notes: `${tier} | ${cnt} ads | ${hasWhatsApp ? 'WhatsApp✓' : ''} ${hasCommercialWebsite ? 'Website✓' : ''} ${hasPricing ? 'Price✓' : ''} ${hasLocation ? 'Location✓' : ''} | Score: ${tot}`,\n    \n    // Backward compatibility\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWhatsApp,\n    local_signal_jaipur: hasJaipur,\n    has_website: hasCommercialWebsite,\n    estimated_inquiries_bucket: inquiryEstimate\n  }\n}];"
+      },
+      "id": "47481fef-4523-4ac4-8838-805ed2a9b179",
+      "name": "Score & Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-qualified",
+              "leftValue": "={{ $json.filtered }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a142406a-2050-4598-b3de-ac50affbaec0",
+      "name": "Is Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -560,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DQRx_FHAkwAjg3-lS4qgNZK3B6p3q2dwWZZ6lEQzjEg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AD_Data",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_name",
+              "displayName": "page_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_id",
+              "displayName": "page_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_snapshot_url",
+              "displayName": "ad_snapshot_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "landing_url",
+              "displayName": "landing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_creative_count",
+              "displayName": "ad_creative_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "creative_types",
+              "displayName": "creative_types",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp_cta",
+              "displayName": "whatsapp_cta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "local_signal_jaipur",
+              "displayName": "local_signal_jaipur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pixel_present",
+              "displayName": "pixel_present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score ",
+              "displayName": "score ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estimated_inquiries_bucket ",
+              "displayName": "estimated_inquiries_bucket ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority ",
+              "displayName": "priority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes ",
+              "displayName": "notes ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "handlingExtraData": "insertInNewColumn"
+        }
+      },
+      "id": "3844411e-bdee-43ed-8085-c83cc020a75b",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -336,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {},
+      "id": "b48bd8d5-23ac-42d3-9043-fe56fbd522e3",
+      "name": "Error End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -208
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "b3be56e6-8291-4501-9556-2f37359e3765",
+      "name": "Filtered End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        256
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2944,
+        64
+      ],
+      "id": "abe79b05-ec96-45e8-9eb7-55dbeb9343d4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get current search term from Split Terms node\nconst searchTermsArray = $input.first().json.searchTerms;\nconst currentTerm = $input.first().json.searchTerm;  // Changed from searchTerms to searchTerm\n\n// ✅ VERIFIED METHOD: Store token in code (encrypted in n8n database)\nconst accessToken = 'EAATGHDjCPo0BQtmRpCVZAu2fv1V0MYZCJPWdqkoSa3C5I8ZCoJyAOF6sFUGmRqXpzXWcqZBsz91B8ZAjZAhU437wsMxJgD4dOnp2h3MBL0z93PmvLuJAvZAPUJqZBTZCPPlYLTDbdWp6dANHUYrZC7yXB86JwFDdZAqwVZBq61tX7yaXgCexnKYDEleAPb1Vit2vb6UJcvPXLOgCqD1xMZAuHcJgZD';\n\n// Build Facebook Ad Library API URL (Official v21.0 endpoint)\nconst apiBaseUrl = 'https://graph.facebook.com/v21.0/ads_archive';\n\n// ✅ BUILD QUERY STRING MANUALLY (URLSearchParams not available in n8n)\nconst params = {\n  access_token: accessToken,\n  search_terms: currentTerm,\n  ad_reached_countries: JSON.stringify(['IN']),\n  ad_active_status: 'ACTIVE',\n  limit: '100',\n  fields: 'id,page_id,page_name,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_titles,ad_snapshot_url,ad_delivery_start_time,ad_delivery_stop_time,currency,spend'\n};\n\n// Build query string manually using encodeURIComponent\nconst queryParts = [];\nfor (const key in params) {\n  if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== null) {\n    const encodedKey = encodeURIComponent(key);\n    const encodedValue = encodeURIComponent(params[key]);\n    queryParts.push(encodedKey + '=' + encodedValue);\n  }\n}\n\nconst queryString = queryParts.join('&');\nconst fullUrl = apiBaseUrl + '?' + queryString;\n\nreturn [{\n  json: {\n    url: fullUrl,\n    searchTerm: currentTerm,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        80
+      ],
+      "id": "99dd6439-92b4-42df-98e1-fb6c87dc835a",
+      "name": "Build Facebook API Request"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1952,
+        80
+      ],
+      "id": "b012657d-9ce6-4193-8a20-45fa19a85867",
+      "name": "Call Facebook Ad Library API",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Facebook Ad Library API response\nconst response = $input.first().json;\nconst items = [];\n\ntry {\n  // Check for API errors\n  if (response.error) {\n    const errorMsg = response.error.error_user_msg || response.error.message || 'Unknown API error';\n    console.error('Facebook API Error:', errorMsg, 'Code:', response.error.code);\n    return [{ \n      json: { \n        error: true, \n        errorMessage: errorMsg,\n        errorCode: response.error.code,\n        errorType: response.error.type\n      } \n    }];\n  }\n  \n  // Get ads array from Facebook API response\n  const ads = response.data || [];\n  \n  // Check if no results\n  if (!Array.isArray(ads) || ads.length === 0) {\n    console.log('No ads found for this search term');\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Processing ${ads.length} ads from Facebook Ad Library API`);\n  \n  // Process each ad from Facebook API\n  for (const ad of ads) {\n    // Skip invalid entries\n    if (!ad || typeof ad !== 'object' || !ad.id) {\n      continue;\n    }\n    \n    // Extract landing URL from captions (Facebook API stores URLs here)\n    let landingUrl = '';\n    if (Array.isArray(ad.ad_creative_link_captions) && ad.ad_creative_link_captions.length > 0) {\n      // Try to find URL in captions\n      const urlRegex = /(https?:\\/\\/[^\\s]+)/gi;\n      for (const caption of ad.ad_creative_link_captions) {\n        const match = caption.match(urlRegex);\n        if (match && match[0]) {\n          landingUrl = match[0];\n          break;\n        }\n      }\n    }\n    \n    // If no URL in captions, use snapshot URL as fallback\n    if (!landingUrl) {\n      landingUrl = ad.ad_snapshot_url || '';\n    }\n    \n    // Normalize Facebook API response to expected format\n    items.push({\n      json: {\n        // Core identifiers (Facebook API uses 'id', not 'ad_id')\n        page_id: ad.page_id || 'unknown',\n        page_name: ad.page_name || 'Unknown Business',\n        ad_id: ad.id || String(Date.now()), // Facebook API uses 'id'\n        \n        // Ad content\n        ad_snapshot_url: ad.ad_snapshot_url || '',\n        ad_creative_bodies: ad.ad_creative_bodies || [],\n        ad_creative_link_url: landingUrl, // Extracted from captions\n        \n        // Timing information\n        ad_delivery_start_time: ad.ad_delivery_start_time || null,\n        ad_delivery_stop_time: ad.ad_delivery_stop_time || null,\n        \n        // Spend information (if available)\n        currency: ad.currency || 'INR',\n        spend: ad.spend || null,\n        \n        // Metadata\n        scraped_at: new Date().toISOString()\n      }\n    });\n  }\n  \n  // Return processed items\n  if (items.length === 0) {\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Successfully processed ${items.length} ads`);\n  return items;\n  \n} catch (error) {\n  console.error('Parse error:', error.message, error.stack);\n  return [{ \n    json: { \n      error: true, \n      errorMessage: `Parse error: ${error.message}`,\n      errorStack: error.stack\n    } \n  }];\n}"
+      },
+      "id": "f08b5217-dabc-41cb-a500-776bae5281cc",
+      "name": "Parse Results old working",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst pd = item.json;\nlet html = '';\n\ntry {\n  if (item.binary && item.binary.data && item.binary.data.data) {\n    html = Buffer.from(item.binary.data.data, 'base64').toString('utf-8');\n  }\n} catch(e) {}\n\nconst WA = /(api\\.whatsapp\\.com\\/send|wa\\.me\\/|\\bwhatsapp\\b|click\\.to\\.whatsapp)/gi;\nconst JP = /\\b(jaipur|pink city)\\b/gi;\nconst PX = /(fbq\\(|fbevents)/gi;\nconst CTWA = /(click\\.to\\.whatsapp)/gi;\n\nfunction check(txt, rx) {\n  if (!txt) return false;\n  try { return rx.test(txt); } catch(e) { return false; }\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\nconst allText = [pd.page_name || '', join(pd.all_bodies), html].join(' ');\n\nconst hasWA = check(allText, WA);\nconst hasJP = check(allText, JP);\nconst hasPX = check(html, PX);\nconst hasCTWA = check(allText, CTWA);\n\nconst cnt = pd.ad_count || 1;\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 30) vol = 25;\nelse if (cnt >= 15) vol = 20;\nelse if (cnt >= 8) vol = 15;\nelse if (cnt >= 4) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = join(pd.all_bodies).length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nif ((pd.all_bodies || []).length > 5) soph += 6;\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 20);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 9;\n    else if (d >= 14) long = 6;\n    else if (d >= 7) long = 3;\n  } catch(e) {}\n}\n\nconst track = hasPX ? 15 : 0;\nconst loc = hasJP ? 10 : 0;\nconst wa = hasWA ? 10 : 0;\nconst ctwa = hasCTWA ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa + ctwa;\n\nlet inq = 'N/A';\nif (hasWA) {\n  if (tot >= 85 && vol >= 25) inq = '50+ inquiries/day';\n  else if (tot >= 75 && vol >= 20) inq = '20-50 inquiries/day';\n  else if (tot >= 65 && vol >= 15) inq = '10-20 inquiries/day';\n  else if (tot >= 50 && vol >= 10) inq = '5-10 inquiries/day';\n  else inq = '<5 inquiries/day';\n}\n\nlet pri = 'IGNORE';\nif (tot >= 80 && hasWA && hasJP) pri = 'HIGH';\nelse if (tot >= 70 && hasWA) pri = 'MEDIUM';\nelse if (tot >= 50) pri = 'LOW';\n\nif (tot < 70 && !hasWA) {\n  return [{ json: { filtered: true, reason: 'Below threshold' } }];\n}\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWA,\n    local_signal_jaipur: hasJP,\n    pixel_present: hasPX,\n    score: tot,\n    estimated_inquiries_bucket: inq,\n    priority: pri,\n    notes: cnt + ' ads. ' + (hasCTWA ? 'CTWA! ' : '') + (hasWA ? 'WA. ' : '') + (hasJP ? 'JP.' : '')\n  }\n}];"
+      },
+      "id": "0a2c666f-3c2d-4b21-a3b9-e3b9e51ce835",
+      "name": "Score & Filter old working",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -784,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert array of search terms into separate items\nconst searchTerms = ['saree', 'kurti', 'wedding'];\n\n// Return one item per search term\nreturn searchTerms.map(term => ({\n  json: {\n    searchTerm: term  // ← Note: singular \"searchTerm\", not \"searchTerms\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2576,
+        80
+      ],
+      "id": "5869cf6d-a42e-4186-8ded-ab279029180c",
+      "name": "Set Search Terms1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// SCORE & FILTER NODE - QUALITY-BASED FILTERING (AGGRESSIVE)\n// Updated: Feb 11, 2026 - Based on real market data analysis\n// Purpose: Capture ALL legitimate businesses, not just high-volume advertisers\n// ============================================================================\n\nconst item = $input.first();\nconst pd = item.json;\nlet html = '';\n\n// Extract HTML from landing page fetch\ntry {\n  if (item.binary && item.binary.data && item.binary.data.data) {\n    html = Buffer.from(item.binary.data.data, 'base64').toString('utf-8');\n  }\n} catch(e) {}\n\n// ===== REGEX PATTERNS =====\nconst WA = /(api\\.whatsapp\\.com\\/send|wa\\.me\\/|\\bwhatsapp\\b|click\\.to\\.whatsapp|\\+?\\d{10,13})/gi;\nconst JP = /\\b(jaipur|pink city)\\b/gi;\nconst PX = /(fbq\\(|fbevents)/gi;\nconst CTWA = /(click\\.to\\.whatsapp)/gi;\nconst WEBSITE = /(www\\.|https?:\\/\\/|\\.com|\\.in|\\.co\\.in)/gi;\nconst PRICE = /(rs\\.?|₹|price|cost)\\s*\\d+/gi;\n\nfunction check(txt, rx) {\n  if (!txt) return false;\n  try { return rx.test(txt); } catch(e) { return false; }\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\n// ===== COMBINE ALL TEXT =====\nconst allText = [pd.page_name || '', join(pd.all_bodies), html].join(' ');\n\n// ===== DETECT SIGNALS =====\nconst hasWA = check(allText, WA);\nconst hasJP = check(allText, JP);\nconst hasPX = check(html, PX);\nconst hasCTWA = check(allText, CTWA);\nconst hasWebsite = check(allText, WEBSITE);\nconst hasPrice = check(allText, PRICE);\n\nconst cnt = pd.ad_count || 1;\n\n// ===== QUALITY-BASED FILTERING =====\n// Accept if business shows ANY professional signal\n\nlet acceptReason = '';\nlet priority = 'LOW';\n\n// HIGH PRIORITY: WhatsApp + multiple indicators\nif (hasWA && (hasWebsite || hasPrice || cnt >= 2)) {\n  acceptReason = 'WhatsApp + Professional signals';\n  priority = 'HIGH';\n}\n// HIGH PRIORITY: WhatsApp + Jaipur local\nelse if (hasWA && hasJP) {\n  acceptReason = 'WhatsApp + Local Jaipur';\n  priority = 'HIGH';\n}\n// MEDIUM PRIORITY: WhatsApp alone\nelse if (hasWA) {\n  acceptReason = 'Has WhatsApp contact';\n  priority = 'MEDIUM';\n}\n// MEDIUM PRIORITY: Commercial website\nelse if (hasWebsite && cnt >= 1) {\n  acceptReason = 'Has commercial website';\n  priority = 'MEDIUM';\n}\n// LOW PRIORITY: Shows pricing (serious business)\nelse if (hasPrice && cnt >= 1) {\n  acceptReason = 'Shows pricing information';\n  priority = 'LOW';\n}\n// LOW PRIORITY: Running multiple ads\nelse if (cnt >= 2) {\n  acceptReason = 'Running multiple ads';\n  priority = 'LOW';\n}\n// REJECT: No professional signals\nelse {\n  console.log(`🚫 Filtered: \"${pd.page_name}\" - No professional signals detected`);\n  return [{ json: { filtered: true, reason: 'No WhatsApp, website, pricing, or multiple ads' } }];\n}\n\n// ===== SCORING (For reference, not for filtering) =====\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 25) vol = 25;\nelse if (cnt >= 12) vol = 20;\nelse if (cnt >= 6) vol = 15;\nelse if (cnt >= 3) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = join(pd.all_bodies).length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nconst variationCount = (pd.all_bodies || []).length;\nif (variationCount >= 5) soph += 8;\nelse if (variationCount >= 3) soph += 5;\nelse if (variationCount >= 2) soph += 2;\n\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 22);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 10;\n    else if (d >= 14) long = 7;\n    else if (d >= 7) long = 5;\n    else if (d >= 3) long = 2;\n  } catch(e) {}\n}\n\nconst track = hasPX ? 8 : 0;\nconst loc = hasJP ? 10 : 0;\nconst wa = hasWA ? 10 : 0;\nconst ctwa = hasCTWA ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa + ctwa;\n\n// ===== INQUIRY ESTIMATION =====\nlet inq = 'N/A';\nif (hasWA) {\n  if (tot >= 80 && vol >= 25) inq = '50+ inquiries/day';\n  else if (tot >= 70 && vol >= 20) inq = '30-50 inquiries/day';\n  else if (tot >= 60 && vol >= 15) inq = '20-30 inquiries/day';\n  else if (tot >= 50 && vol >= 15) inq = '15-25 inquiries/day';\n  else if (tot >= 45 && vol >= 10) inq = '10-15 inquiries/day';\n  else if (tot >= 40 && vol >= 10) inq = '5-10 inquiries/day';\n  else inq = '<5 inquiries/day';\n} else {\n  inq = 'No WhatsApp - Opportunity to set up';\n}\n\n// ===== OUTPUT =====\nconsole.log(`✅ Qualified: \"${pd.page_name}\" - ${acceptReason} - Priority: ${priority}`);\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWA,\n    local_signal_jaipur: hasJP,\n    pixel_present: hasPX,\n    has_website: hasWebsite,\n    has_pricing: hasPrice,\n    score: tot,\n    estimated_inquiries_bucket: inq,\n    priority: priority,\n    accept_reason: acceptReason,\n    notes: `${cnt} ads. ${hasCTWA ? 'CTWA! ' : ''}${hasWA ? 'WA. ' : ''}${hasWebsite ? 'Website. ' : ''}${hasPrice ? 'Price. ' : ''}${hasJP ? 'JP. ' : ''}Score: ${tot}`\n  }\n}];"
+      },
+      "id": "6a8b9136-7918-4e8f-a7d3-59fe4cf450e1",
+      "name": "Score & Filter old v2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        -272
+      ]
+    }
+  ],
+  "connections": {
+    "Daily 2AM IST": {
+      "main": [
+        []
+      ]
+    },
+    "Set Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Terms": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Build Facebook API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Results": {
+      "main": [
+        [
+          {
+            "node": "Has Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [
+          {
+            "node": "Error End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate by Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate by Page": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Pages": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Landing Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Landing Page": {
+      "main": [
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score & Filter": {
+      "main": [
+        [
+          {
+            "node": "Is Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtered End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtered End": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Facebook API Request": {
+      "main": [
+        [
+          {
+            "node": "Call Facebook Ad Library API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Facebook Ad Library API": {
+      "main": [
+        [
+          {
+            "node": "Parse Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search Terms1": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "55faa03b-ac48-40ae-8e48-28913448dd22",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-10T06:59:01.797Z",
+      "createdAt": "2026-02-10T06:59:01.797Z",
+      "role": "workflow:owner",
+      "workflowId": "RYz4tWhi5jNkZVfU",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
