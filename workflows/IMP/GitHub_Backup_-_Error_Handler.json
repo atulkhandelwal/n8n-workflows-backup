@@ -1,0 +1,246 @@
+{
+  "updatedAt": "2026-02-17T13:33:14.512Z",
+  "createdAt": "2026-02-17T12:33:29.215Z",
+  "id": "SjtJ7OpRhKfvfRCa",
+  "name": "GitHub Backup - Error Handler",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e1",
+      "name": "Catch Backup Errors",
+      "position": [
+        112,
+        304
+      ],
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\n\n// Extract error details\nconst errorMessage = error.error?.message || 'Unknown error';\nconst errorNode = error.error?.node?.name || 'Unknown node';\nconst workflowName = error.execution?.workflowData?.name || 'GitHub Workflow Backup';\nconst executionId = error.execution?.id || 'unknown';\nconst timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\n// Create detailed error report\nconst emailSubject = `🚨 n8n Backup Failed - ${timestamp}`;\n\nconst emailBody = `\n<h2>n8n GitHub Backup Error Report</h2>\n\n<p><strong>Timestamp:</strong> ${timestamp}</p>\n<p><strong>Workflow:</strong> ${workflowName}</p>\n<p><strong>Execution ID:</strong> ${executionId}</p>\n<p><strong>Failed Node:</strong> ${errorNode}</p>\n\n<h3>Error Details:</h3>\n<pre style=\"background: #f5f5f5; padding: 10px; border-radius: 5px;\">\n${errorMessage}\n</pre>\n\n<h3>Stack Trace:</h3>\n<pre style=\"background: #ffebee; padding: 10px; border-radius: 5px;\">\n${error.error?.stack || 'No stack trace available'}\n</pre>\n\n<hr>\n<p><small>View execution in n8n: <a href=\"https://n8n-vps.chatsocialai.in/workflow/${error.execution?.workflowId}/executions/${executionId}\">Open Execution</a></small></p>\n`;\n\nreturn [{\n  json: {\n    emailSubject: emailSubject,\n    emailBody: emailBody,\n    errorDetails: error\n  }\n}];"
+      },
+      "id": "e2",
+      "name": "Prepare Error Email",
+      "position": [
+        304,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "sendTo": "gupta.atulgupta13@gmail.com",
+        "subject": "={{ $json.emailSubject }}",
+        "message": "={{ $json.emailBody }}",
+        "options": {}
+      },
+      "id": "e3",
+      "name": "Send Error Email",
+      "position": [
+        512,
+        304
+      ],
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "webhookId": "fcdfc64e-7314-4f88-890e-12ada6cd43c5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "n2xBebW1mCNHsycB",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "e4",
+      "name": "Error Logged",
+      "position": [
+        704,
+        304
+      ],
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Catch Backup Errors": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Prepare Error Email",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Prepare Error Email": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Send Error Email",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Send Error Email": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Error Logged",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "saveDataErrorExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5eaf2e66-611c-4603-8bf5-7defd033bdcd",
+  "activeVersionId": "5eaf2e66-611c-4603-8bf5-7defd033bdcd",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-17T12:33:29.224Z",
+      "createdAt": "2026-02-17T12:33:29.224Z",
+      "role": "workflow:owner",
+      "workflowId": "SjtJ7OpRhKfvfRCa",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-02-17T13:33:30.000Z",
+    "createdAt": "2026-02-17T12:49:43.479Z",
+    "versionId": "5eaf2e66-611c-4603-8bf5-7defd033bdcd",
+    "workflowId": "SjtJ7OpRhKfvfRCa",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "e1",
+        "name": "Catch Backup Errors",
+        "position": [
+          112,
+          304
+        ],
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1
+      },
+      {
+        "parameters": {
+          "jsCode": "const error = $input.first().json;\n\n// Extract error details\nconst errorMessage = error.error?.message || 'Unknown error';\nconst errorNode = error.error?.node?.name || 'Unknown node';\nconst workflowName = error.execution?.workflowData?.name || 'GitHub Workflow Backup';\nconst executionId = error.execution?.id || 'unknown';\nconst timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\n// Create detailed error report\nconst emailSubject = `🚨 n8n Backup Failed - ${timestamp}`;\n\nconst emailBody = `\n<h2>n8n GitHub Backup Error Report</h2>\n\n<p><strong>Timestamp:</strong> ${timestamp}</p>\n<p><strong>Workflow:</strong> ${workflowName}</p>\n<p><strong>Execution ID:</strong> ${executionId}</p>\n<p><strong>Failed Node:</strong> ${errorNode}</p>\n\n<h3>Error Details:</h3>\n<pre style=\"background: #f5f5f5; padding: 10px; border-radius: 5px;\">\n${errorMessage}\n</pre>\n\n<h3>Stack Trace:</h3>\n<pre style=\"background: #ffebee; padding: 10px; border-radius: 5px;\">\n${error.error?.stack || 'No stack trace available'}\n</pre>\n\n<hr>\n<p><small>View execution in n8n: <a href=\"https://n8n-vps.chatsocialai.in/workflow/${error.execution?.workflowId}/executions/${executionId}\">Open Execution</a></small></p>\n`;\n\nreturn [{\n  json: {\n    emailSubject: emailSubject,\n    emailBody: emailBody,\n    errorDetails: error\n  }\n}];"
+        },
+        "id": "e2",
+        "name": "Prepare Error Email",
+        "position": [
+          304,
+          304
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "parameters": {
+          "sendTo": "gupta.atulgupta13@gmail.com",
+          "subject": "={{ $json.emailSubject }}",
+          "message": "={{ $json.emailBody }}",
+          "options": {}
+        },
+        "id": "e3",
+        "name": "Send Error Email",
+        "position": [
+          512,
+          304
+        ],
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "webhookId": "fcdfc64e-7314-4f88-890e-12ada6cd43c5",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "n2xBebW1mCNHsycB",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "id": "e4",
+        "name": "Error Logged",
+        "position": [
+          704,
+          304
+        ],
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1
+      }
+    ],
+    "connections": {
+      "Catch Backup Errors": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Prepare Error Email",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Prepare Error Email": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send Error Email",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Send Error Email": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Error Logged",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version 5eaf2e66 1702 0703PM",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-02-17T11:30:03.267Z",
+      "createdAt": "2026-02-17T11:30:03.267Z",
+      "id": "T4XYagk9YNQemO8L",
+      "name": "IMP"
+    },
+    {
+      "updatedAt": "2026-02-17T11:20:34.192Z",
+      "createdAt": "2026-02-17T11:20:34.192Z",
+      "id": "iW6ViPixahklMxHL",
+      "name": "Prod"
+    }
+  ]
+}
