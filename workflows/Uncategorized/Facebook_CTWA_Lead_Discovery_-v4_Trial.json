@@ -1,0 +1,889 @@
+{
+  "updatedAt": "2026-02-11T12:24:00.619Z",
+  "createdAt": "2026-02-11T11:16:01.784Z",
+  "id": "JNH5FrhSMKkwCA7E",
+  "name": "Facebook CTWA Lead Discovery -v4 Trial",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 2 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cd68df17-2264-4d79-ad7b-2fc34b075b57",
+      "name": "Daily 2AM IST",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "search-terms",
+              "name": "searchTerms",
+              "value": "=['saree', 'kurti']",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "35a1ad99-ea87-4118-bdf5-0bbeeb096650",
+      "name": "Set Search Terms",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2752,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "99795ebf-fc98-49fc-9321-5ed0a055921e",
+      "name": "Split Terms",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2384,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// PARSE RESULTS NODE - IMPROVED URL & WHATSAPP EXTRACTION\n// Updated: Feb 11, 2026\n// Purpose: Extract ACTUAL business URLs and WhatsApp numbers correctly\n// ============================================================================\n\nconst response = $input.first().json;\nconst items = [];\n\ntry {\n  if (response.error) {\n    const errorMsg = response.error.error_user_msg || response.error.message || 'Unknown API error';\n    console.error('Facebook API Error:', errorMsg, 'Code:', response.error.code);\n    return [{ \n      json: { \n        error: true, \n        errorMessage: errorMsg,\n        errorCode: response.error.code,\n        errorType: response.error.type\n      } \n    }];\n  }\n  \n  const ads = response.data || [];\n  \n  if (!Array.isArray(ads) || ads.length === 0) {\n    console.log('No ads found for this search term');\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Processing ${ads.length} ads from Facebook Ad Library API`);\n  \n  // ===== OBVIOUS IRRELEVANT CATEGORIES (MINIMAL FILTERING) =====\n  const OBVIOUS_IRRELEVANT = /\\b(watch|laikrodžiai|lithuania|tauras|mobile phone|smartphone|laptop|computer|electronics|gadget|food|restaurant|hotel|travel package|insurance|loan|père|kathy|novel|drama|story|fiction|book|game|gaming|astrology|horoscope|casino|betting)\\b/gi;\n  \n  // ===== IMPROVED URL & WHATSAPP EXTRACTION FUNCTION =====\n  function extractContactInfo(ad) {\n    const contact = {\n      business_website: null,\n      whatsapp_url: null,\n      whatsapp_number: null,\n      instagram_url: null,\n      facebook_url: null,\n      phone_number: null,\n      url_type: 'UNKNOWN'\n    };\n    \n    // Combine ALL text fields for extraction\n    const allText = [\n      ad.page_name || '',\n      ...(ad.ad_creative_bodies || []),\n      ...(ad.ad_creative_link_captions || []),\n      ...(ad.ad_creative_link_descriptions || []),\n      ...(ad.ad_creative_link_titles || [])\n    ].join(' ');\n    \n    // ===== EXTRACT WHATSAPP NUMBERS (PRIORITY 1) =====\n    \n    // Method 1: WhatsApp URLs (wa.me/919876543210)\n    const waUrlMatch = allText.match(/(?:wa\\.me\\/|api\\.whatsapp\\.com\\/send\\?phone=)(\\+?91)?([6-9]\\d{9})/i);\n    if (waUrlMatch) {\n      const number = waUrlMatch[2]; // Just the 10-digit number\n      contact.whatsapp_number = number;\n      contact.whatsapp_url = `https://wa.me/91${number}`;\n      console.log(`   ✅ WhatsApp URL found: ${contact.whatsapp_url}`);\n    }\n    \n    // Method 2: Indian phone numbers in text (with optional +91 or 0)\n    // Regex: Matches +919876543210, 919876543210, 09876543210, 9876543210\n    if (!contact.whatsapp_number) {\n      const phonePatterns = [\n        /(?:\\+91[-\\s]?|91[-\\s]?|0)?([6-9]\\d{9})\\b/g,  // Standard format\n        /([6-9]\\d{2})[-\\s]?(\\d{3})[-\\s]?(\\d{4})/g     // Formatted: 987-654-3210\n      ];\n      \n      for (const pattern of phonePatterns) {\n        const matches = allText.matchAll(pattern);\n        for (const match of matches) {\n          let number;\n          if (match.length === 2) {\n            // Standard match: group 1 is the 10-digit number\n            number = match[1];\n          } else if (match.length === 4) {\n            // Formatted match: combine groups 1,2,3\n            number = match[1] + match[2] + match[3];\n          }\n          \n          // Validate it's exactly 10 digits starting with 6-9\n          if (number && /^[6-9]\\d{9}$/.test(number)) {\n            contact.phone_number = number;\n            contact.whatsapp_number = number;\n            contact.whatsapp_url = `https://wa.me/91${number}`;\n            console.log(`   ✅ Phone number found in text: ${number}`);\n            break;\n          }\n        }\n        if (contact.whatsapp_number) break;\n      }\n    }\n    \n    // ===== EXTRACT URLS (PRIORITY 2) =====\n    \n    const urlRegex = /(https?:\\/\\/[^\\s<>\"{}|\\\\^`\\[\\]]+)/gi;\n    const foundUrls = allText.match(urlRegex) || [];\n    \n    for (const url of foundUrls) {\n      const lowerUrl = url.toLowerCase();\n      \n      // Skip Facebook Ad Library URLs\n      if (lowerUrl.includes('facebook.com/ads/archive')) {\n        continue;\n      }\n      \n      // ===== CATEGORIZE URLS CORRECTLY =====\n      \n      // Instagram (NOT a commercial website!)\n      if (lowerUrl.includes('instagram.com/')) {\n        // Extract Instagram handle from URL\n        const handleMatch = url.match(/instagram\\.com\\/([a-zA-Z0-9._]+)/);\n        if (handleMatch && handleMatch[1] && !handleMatch[1].includes('p/')) {\n          contact.instagram_url = url;\n          console.log(`   📸 Instagram: ${url}`);\n        }\n      }\n      // Facebook Pages\n      else if (lowerUrl.includes('facebook.com/')) {\n        contact.facebook_url = url;\n        console.log(`   📘 Facebook: ${url}`);\n      }\n      // WhatsApp URLs\n      else if (lowerUrl.includes('wa.me') || lowerUrl.includes('whatsapp')) {\n        contact.whatsapp_url = url;\n        // Extract number from wa.me URL if not already extracted\n        if (!contact.whatsapp_number) {\n          const waNum = url.match(/wa\\.me\\/(?:\\+?91)?([6-9]\\d{9})/i);\n          if (waNum) {\n            contact.whatsapp_number = waNum[1];\n          }\n        }\n        console.log(`   📱 WhatsApp URL: ${url}`);\n      }\n      // Commercial websites (ONLY non-social URLs)\n      else if (!contact.business_website) {\n        contact.business_website = url;\n        console.log(`   💼 Business Website: ${url}`);\n      }\n    }\n    \n    // ===== EXTRACT DOMAIN FROM TEXT (e.g., \"visit labelmonik.com\") =====\n    if (!contact.business_website) {\n      const domainMatch = allText.match(/\\b([a-z0-9-]+\\.(com|in|co\\.in|org|net))\\b/i);\n      if (domainMatch && domainMatch[1]) {\n        // Exclude social media domains\n        const domain = domainMatch[1].toLowerCase();\n        if (!domain.includes('instagram') && !domain.includes('facebook') && !domain.includes('youtube')) {\n          contact.business_website = `https://${domainMatch[1]}`;\n          console.log(`   💼 Domain from text: ${contact.business_website}`);\n        }\n      }\n    }\n    \n    // ===== FALLBACK: Facebook Page URL =====\n    if (!contact.business_website && !contact.whatsapp_url && !contact.instagram_url && ad.page_id) {\n      contact.facebook_url = `https://www.facebook.com/${ad.page_id}`;\n      console.log(`   📘 Facebook Page (fallback): ${contact.facebook_url}`);\n    }\n    \n    // ===== DETERMINE URL TYPE (PRIORITY ORDER) =====\n    if (contact.business_website) {\n      contact.url_type = 'WEBSITE';\n    } else if (contact.whatsapp_url) {\n      contact.url_type = 'WHATSAPP';\n    } else if (contact.instagram_url) {\n      contact.url_type = 'INSTAGRAM';\n    } else if (contact.facebook_url) {\n      contact.url_type = 'FACEBOOK_PAGE';\n    }\n    \n    return contact;\n  }\n  \n  // ===== PROCESS EACH AD =====\n  for (const ad of ads) {\n    if (!ad || typeof ad !== 'object' || !ad.id) {\n      continue;\n    }\n    \n    // MINIMAL FILTERING: Only reject OBVIOUS irrelevant\n    const pageName = (ad.page_name || '').toLowerCase();\n    \n    if (OBVIOUS_IRRELEVANT.test(pageName)) {\n      console.log(`❌ Excluded: \"${ad.page_name}\" - Obviously irrelevant category`);\n      continue;\n    }\n    \n    // Extract all contact info\n    const contact = extractContactInfo(ad);\n    \n    // Determine primary landing URL\n    let landingUrl = contact.business_website || \n                     contact.whatsapp_url || \n                     contact.instagram_url || \n                     contact.facebook_url || \n                     ad.ad_snapshot_url;\n    \n    console.log(`✅ Accepted: \"${ad.page_name}\"`);\n    console.log(`   Type: ${contact.url_type}`);\n    console.log(`   Website: ${contact.business_website || 'None'}`);\n    console.log(`   WhatsApp: ${contact.whatsapp_number || 'None'}`);\n    console.log(`   Instagram: ${contact.instagram_url || 'None'}`);\n    \n    items.push({\n      json: {\n        // Core identifiers\n        page_id: ad.page_id || 'unknown',\n        page_name: ad.page_name || 'Unknown Business',\n        ad_id: ad.id || String(Date.now()),\n        \n        // Ad content\n        ad_snapshot_url: ad.ad_snapshot_url || '',\n        ad_creative_bodies: ad.ad_creative_bodies || [],\n        \n        // ===== CONTACT INFO (CORRECTED) =====\n        ad_creative_link_url: landingUrl,\n        business_website: contact.business_website,\n        whatsapp_url: contact.whatsapp_url,\n        whatsapp_number: contact.whatsapp_number,\n        instagram_url: contact.instagram_url,\n        facebook_url: contact.facebook_url,\n        phone_number: contact.phone_number,\n        url_type: contact.url_type,\n        \n        // Timing\n        ad_delivery_start_time: ad.ad_delivery_start_time || null,\n        ad_delivery_stop_time: ad.ad_delivery_stop_time || null,\n        \n        // Additional data\n        currency: ad.currency || 'INR',\n        spend: ad.spend || null,\n        scraped_at: new Date().toISOString(),\n        \n        // Filtering metadata\n        filter_passed: true,\n        search_term_used: $input.first().json.searchTerm || 'unknown'\n      }\n    });\n  }\n  \n  if (items.length === 0) {\n    console.log('⚠️ All ads filtered out - no relevant businesses found');\n    return [{ json: { noResults: true, reason: 'All ads filtered as irrelevant' } }];\n  }\n  \n  console.log(`✅ Successfully processed ${items.length} relevant ads (filtered from ${ads.length} total)`);\n  return items;\n  \n} catch (error) {\n  console.error('Parse error:', error.message, error.stack);\n  return [{ \n    json: { \n      error: true, \n      errorMessage: `Parse error: ${error.message}`,\n      errorStack: error.stack\n    } \n  }];\n}"
+      },
+      "id": "61a9ac79-6cf7-428d-bee4-5db307a6bb1f",
+      "name": "Parse Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-error",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "38f4c839-9639-47bf-abb8-4a5c0b2de8fc",
+      "name": "Has Error?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1568,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ads = $input.all();\nconst pageMap = new Map();\n\nfor (const item of ads) {\n  const ad = item.json;\n  const pid = ad.page_id;\n  \n  if (!pid || pid === 'unknown') continue;\n  \n  if (!pageMap.has(pid)) {\n    pageMap.set(pid, {\n      page_id: pid,\n      page_name: ad.page_name,\n      ad_count: 0,\n      sample_ad: ad,\n      earliest_start: ad.ad_delivery_start_time,\n      all_bodies: [],\n      \n      // ===== IMPROVED: Collect all URLs =====\n      business_website: ad.business_website,\n      whatsapp_url: ad.whatsapp_url,\n      instagram_url: ad.instagram_url,\n      facebook_url: ad.facebook_url,\n      phone_number: ad.phone_number,\n      url_type: ad.url_type,\n      landing_url: ad.business_website || ad.whatsapp_url || ad.instagram_url || ad.facebook_url\n    });\n  }\n  \n  const page = pageMap.get(pid);\n  page.ad_count++;\n  \n  // Update URLs if better ones found\n  if (ad.business_website && !page.business_website) {\n    page.business_website = ad.business_website;\n    page.landing_url = ad.business_website;\n  }\n  if (ad.whatsapp_url && !page.whatsapp_url) {\n    page.whatsapp_url = ad.whatsapp_url;\n  }\n  \n  if (ad.ad_delivery_start_time) {\n    if (!page.earliest_start || ad.ad_delivery_start_time < page.earliest_start) {\n      page.earliest_start = ad.ad_delivery_start_time;\n    }\n  }\n  \n  if (Array.isArray(ad.ad_creative_bodies)) {\n    page.all_bodies.push(...ad.ad_creative_bodies);\n  }\n}\n\nconst output = [];\nfor (const [pid, page] of pageMap.entries()) {\n  output.push({ json: page });\n}\n\nreturn output.length > 0 ? output : [{ json: { noPages: true } }];"
+      },
+      "id": "4cfd5b67-eda0-4c3b-b9c6-aff88b24b714",
+      "name": "Aggregate by Page",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "660f6b7d-f721-4ebd-8067-a4cc9fa30a53",
+      "name": "Split Pages",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.landing_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "d8ce2d3a-5328-468f-9450-512d0172c38a",
+      "name": "Fetch Landing Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -736,
+        -16
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// SCORE & FILTER NODE - MINIMAL FILTERING (SAVE EVERYTHING VALID)\n// Updated: Feb 11, 2026\n// Goal: Only reject OBVIOUS irrelevant content, save 90%+ of businesses\n// ============================================================================\n\nconsole.log('='.repeat(80));\nconsole.log('🚀 SCORE & FILTER NODE STARTED');\nconsole.log('='.repeat(80));\n\n// ===== STEP 1: ACCESS SPLIT PAGES DATA (UPSTREAM NODE) =====\nlet splitPagesData = null;\n\ntry {\n  // Method 1: Try $('Split Pages') - recommended n8n method\n  const splitPagesItems = $('Split Pages').all();\n  \n  if (splitPagesItems && splitPagesItems.length > 0) {\n    splitPagesData = splitPagesItems[0].json;\n    console.log('✅ Accessed Split Pages data via $(\"Split Pages\").all()');\n  } else {\n    console.error('❌ $(\"Split Pages\").all() returned empty array');\n  }\n} catch(e) {\n  console.error('❌ Error accessing Split Pages:', e.message);\n}\n\n// Fallback: Try alternative method\nif (!splitPagesData) {\n  try {\n    splitPagesData = $node[\"Split Pages\"].json[0];\n    console.log('✅ Accessed Split Pages data via $node (fallback)');\n  } catch(e) {\n    console.error('❌ Fallback method also failed:', e.message);\n  }\n}\n\n// CRITICAL: Verify we have data\nif (!splitPagesData || !splitPagesData.page_name) {\n  console.error('❌❌❌ CRITICAL ERROR: Cannot access Split Pages data');\n  console.error('Available nodes:', Object.keys(this.getWorkflow().nodes));\n  return [{ \n    json: { \n      filtered: true, \n      reason: 'ERROR: Split Pages data not accessible',\n      debug_info: 'Check node connections and names'\n    } \n  }];\n}\n\n// Extract all fields from Split Pages\nconst pd = {\n  page_id: splitPagesData.page_id || 'unknown',\n  page_name: splitPagesData.page_name || 'Unknown',\n  ad_count: splitPagesData.ad_count || 1,\n  all_bodies: splitPagesData.all_bodies || [],\n  landing_url: splitPagesData.landing_url || '',\n  business_website: splitPagesData.business_website || null,\n  whatsapp_url: splitPagesData.whatsapp_url || null,\n  instagram_url: splitPagesData.instagram_url || null,\n  facebook_url: splitPagesData.facebook_url || null,\n  phone_number: splitPagesData.phone_number || null,\n  url_type: splitPagesData.url_type || 'UNKNOWN',\n  sample_ad: splitPagesData.sample_ad || {},\n  earliest_start: splitPagesData.earliest_start || null\n};\n\nconsole.log('📊 Split Pages Data Loaded:');\nconsole.log(`   Page Name: \"${pd.page_name}\"`);\nconsole.log(`   Page ID: ${pd.page_id}`);\nconsole.log(`   Ad Count: ${pd.ad_count}`);\nconsole.log(`   URL Type: ${pd.url_type}`);\nconsole.log(`   Business Website: ${pd.business_website || 'None'}`);\nconsole.log(`   WhatsApp URL: ${pd.whatsapp_url || 'None'}`);\nconsole.log(`   Instagram URL: ${pd.instagram_url || 'None'}`);\nconsole.log(`   Landing URL: ${pd.landing_url || 'None'}`);\n\n// ===== STEP 2: GET HTML FROM FETCH LANDING PAGE (DIRECTLY CONNECTED) =====\nlet html = '';\nlet htmlFetchError = false;\n\ntry {\n  const fetchPageItems = $input.all();\n  \n  if (fetchPageItems && fetchPageItems.length > 0) {\n    const fetchPageData = fetchPageItems[0];\n    \n    // Check if fetch failed (continueOnFail = true)\n    if (fetchPageData.json && fetchPageData.json.error) {\n      htmlFetchError = true;\n      console.warn(`⚠️  Fetch Landing Page failed: ${fetchPageData.json.error.message || 'Unknown error'}`);\n    } else {\n      // Try multiple methods to extract HTML\n      if (fetchPageData.binary && fetchPageData.binary.data && fetchPageData.binary.data.data) {\n        html = Buffer.from(fetchPageData.binary.data.data, 'base64').toString('utf-8');\n        console.log(`✅ HTML extracted from binary: ${html.length} chars`);\n      } else if (fetchPageData.json && fetchPageData.json.data) {\n        html = String(fetchPageData.json.data);\n        console.log(`✅ HTML extracted from json.data: ${html.length} chars`);\n      } else if (typeof fetchPageData.json === 'string') {\n        html = fetchPageData.json;\n        console.log(`✅ HTML extracted from json string: ${html.length} chars`);\n      } else {\n        console.warn(`⚠️  No HTML data found in Fetch Landing Page response`);\n      }\n    }\n  } else {\n    console.warn(`⚠️  No Fetch Landing Page data (likely skipped for ${pd.url_type})`);\n  }\n} catch(e) {\n  console.error(`❌ Error extracting HTML: ${e.message}`);\n}\n\n// ===== STEP 3: COMBINE ALL TEXT FOR ANALYSIS =====\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x && typeof x === 'string').join(' ') : '';\n}\n\nconst pageName = pd.page_name || '';\nconst allBodies = join(pd.all_bodies);\nconst allText = [pageName, allBodies, html].join(' ');\n\nconsole.log('📝 Text Analysis:');\nconsole.log(`   Page Name: ${pageName.length} chars`);\nconsole.log(`   Ad Bodies: ${allBodies.length} chars`);\nconsole.log(`   HTML: ${html.length} chars`);\nconsole.log(`   Total Text: ${allText.length} chars`);\n\n// ===== STEP 4: MINIMAL FILTERING - ONLY REJECT OBVIOUS NON-CLOTHING BUSINESSES =====\n\n// ❌ REJECT 1: Obvious irrelevant categories (watches, electronics, etc.)\nconst OBVIOUS_IRRELEVANT = /\\b(watch|laikrodžiai|lithuania|tauras|mobile phone|smartphone|laptop|computer|electronics|gadget|food|restaurant|hotel|travel package|insurance|loan|père|kathy|novel|drama|story|fiction|book|game|gaming|astrology|horoscope|casino|betting)\\b/gi;\n\nconst pageNameLower = pageName.toLowerCase();\nconst isObviouslyIrrelevant = OBVIOUS_IRRELEVANT.test(pageNameLower);\n\nif (isObviouslyIrrelevant) {\n  console.log(`❌ REJECTED: \"${pd.page_name}\" - Obviously irrelevant category (not fashion/clothing)`);\n  return [{ \n    json: { \n      filtered: true, \n      reason: `Irrelevant category detected in page name: ${pageNameLower}` \n    } \n  }];\n}\n\n// ✅ ACCEPT: Everything else (fashion, clothing, lifestyle brands, etc.)\nconsole.log(`✅ PASSED MINIMAL FILTER: \"${pd.page_name}\"`);\n\n// ===== STEP 5: DETECT QUALITY SIGNALS =====\n\n// WhatsApp detection\nconst WA_NUMBER = /\\b[6-9]\\d{9}\\b/g;\nconst WA_KEYWORD = /whatsapp|wa\\.me|click\\.to\\.whatsapp/gi;\nconst hasWANumber = WA_NUMBER.test(allText);\nconst hasWAKeyword = WA_KEYWORD.test(allText) || !!pd.whatsapp_url;\nconst hasWhatsApp = hasWANumber || hasWAKeyword || !!pd.phone_number;\n\n// Pricing signals\nconst PRICE_SPECIFIC = /(rs\\.?|₹)\\s*\\d+|price[:\\s]*\\d+/gi;\nconst PRICE_DM = /dm\\s*(for|to\\s*get)?\\s*price|comment\\s*(for|to\\s*get)?\\s*(price|detail|link)|whatsapp\\s*for\\s*price|message\\s*for\\s*price/gi;\nconst hasSpecificPrice = PRICE_SPECIFIC.test(allText);\nconst hasDMPrice = PRICE_DM.test(allText);\nconst hasPricing = hasSpecificPrice || hasDMPrice;\n\n// Website detection\nconst hasCommercialWebsite = !!pd.business_website;\n\n// Location detection\nconst LOCATION = /\\b(jaipur|delhi|mumbai|surat|ahmedabad|bangalore|bengaluru|hyderabad|chennai|kolkata|pune|lucknow|kanpur|nagpur|indore|bhopal|chandigarh)\\b/gi;\nconst JAIPUR = /\\b(jaipur|pink city)\\b/gi;\nconst hasLocation = LOCATION.test(allText);\nconst hasJaipur = JAIPUR.test(allText);\n\n// Pixel detection (only if HTML was fetched)\nconst PIXEL = /(fbq\\(|fbevents)/gi;\nconst hasPixel = html.length > 0 ? PIXEL.test(html) : false;\n\n// Social media\nconst hasInstagram = !!pd.instagram_url;\nconst hasFacebookPage = !!pd.facebook_url;\n\nconsole.log('🔍 Quality Signals Detected:');\nconsole.log(`   WhatsApp: ${hasWhatsApp}`);\nconsole.log(`   Commercial Website: ${hasCommercialWebsite}`);\nconsole.log(`   Pricing Info: ${hasPricing}`);\nconsole.log(`   Location Mentioned: ${hasLocation}`);\nconsole.log(`   Jaipur Local: ${hasJaipur}`);\nconsole.log(`   Facebook Pixel: ${hasPixel}`);\nconsole.log(`   Instagram: ${hasInstagram}`);\nconsole.log(`   Facebook Page: ${hasFacebookPage}`);\n\n// ===== STEP 6: TIERING & PRIORITIZATION =====\n\nconst cnt = pd.ad_count;\nlet tier = '';\nlet priority = 'LOW';\nlet reason = '';\n\n// TIER 1 - HIGH PRIORITY\nif (hasWhatsApp && hasCommercialWebsite) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Commercial Website';\n} else if (hasWhatsApp && hasPricing) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Pricing Info';\n} else if (hasWhatsApp && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'WhatsApp + Multiple Ads';\n} else if (hasCommercialWebsite && hasPricing) {\n  tier = 'TIER_1';\n  priority = 'HIGH';\n  reason = 'Website + Pricing Info';\n}\n// TIER 1 - MEDIUM PRIORITY\nelse if (hasCommercialWebsite) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Has Commercial Website';\n} else if (hasWhatsApp) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Has WhatsApp Contact';\n} else if (hasDMPrice) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'DM for Price (Potential WhatsApp)';\n} else if (hasLocation && cnt >= 2) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Physical Location + Multiple Ads';\n} else if (cnt >= 3) {\n  tier = 'TIER_1';\n  priority = 'MEDIUM';\n  reason = 'Running 3+ Ads (Active Marketer)';\n}\n// TIER 2 - LOW PRIORITY\nelse if (hasInstagram && hasPricing) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Instagram + Pricing';\n} else if (hasInstagram && cnt >= 2) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Instagram + Multiple Ads';\n} else if (hasPricing) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Shows Pricing Info';\n} else if (cnt >= 2) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Running 2+ Ads';\n} else if (hasFacebookPage) {\n  tier = 'TIER_2';\n  priority = 'LOW';\n  reason = 'Active Facebook Page';\n}\n// TIER 3 - ACCEPT BUT LOWEST PRIORITY\nelse {\n  tier = 'TIER_3';\n  priority = 'LOWEST';\n  reason = 'Single Ad, Minimal Signals (Review Manually)';\n}\n\n// ===== STEP 7: SCORING =====\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 25) vol = 25;\nelse if (cnt >= 12) vol = 20;\nelse if (cnt >= 6) vol = 15;\nelse if (cnt >= 3) vol = 10;\nelse if (cnt >= 2) vol = 5;\nelse vol = 2; // Even single ad gets some points\n\nconst len = allBodies.length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\nelse if (len > 50) soph += 1;\n\nconst variationCount = (pd.all_bodies || []).length;\nif (variationCount >= 5) soph += 8;\nelse if (variationCount >= 3) soph += 5;\nelse if (variationCount >= 2) soph += 2;\n\nif (html.length > 0 && html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 22);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 10;\n    else if (d >= 14) long = 7;\n    else if (d >= 7) long = 5;\n    else if (d >= 3) long = 2;\n  } catch(e) {}\n}\n\nconst track = hasPixel ? 8 : 0;\nconst loc = hasJaipur ? 10 : 0;\nconst wa = hasWhatsApp ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa;\n\n// ===== STEP 8: INQUIRY ESTIMATION =====\nlet inquiryEstimate = 'N/A';\n\nif (hasWhatsApp) {\n  if (cnt >= 6 && (hasCommercialWebsite || hasPixel)) {\n    inquiryEstimate = '30-50+ inquiries/day';\n  } else if (cnt >= 3) {\n    inquiryEstimate = '15-30 inquiries/day';\n  } else {\n    inquiryEstimate = '5-15 inquiries/day';\n  }\n} else if (hasCommercialWebsite) {\n  inquiryEstimate = '3-10 inquiries/day';\n} else if (hasInstagram) {\n  if (hasPricing) {\n    inquiryEstimate = '2-5 inquiries/day';\n  } else {\n    inquiryEstimate = '<2 inquiries/day';\n  }\n} else {\n  inquiryEstimate = 'Unknown - needs contact method';\n}\n\n// ===== STEP 9: OUTPUT =====\nconsole.log('='.repeat(80));\nconsole.log(`✅ ${tier} ACCEPTED: \"${pd.page_name}\"`);\nconsole.log(`   Priority: ${priority}`);\nconsole.log(`   Reason: ${reason}`);\nconsole.log(`   Score: ${tot}`);\nconsole.log(`   Estimated Inquiries: ${inquiryEstimate}`);\nconsole.log('='.repeat(80));\n\nreturn [{\n  json: {\n    // Timestamps\n    timestamp: new Date().toISOString(),\n    \n    // Business Identity\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id || 'unknown',\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url || '',\n    \n    // URLs & Contact Info\n    landing_url: pd.landing_url,\n    business_website: pd.business_website,\n    whatsapp_url: pd.whatsapp_url,\n    instagram_url: pd.instagram_url,\n    facebook_url: pd.facebook_url,\n    phone_number: pd.phone_number,\n    url_type: pd.url_type,\n    \n    // Ad Metrics\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    \n    // Quality Signals (Boolean)\n    whatsapp_detected: hasWhatsApp,\n    whatsapp_cta: hasWhatsApp,\n    has_commercial_website: hasCommercialWebsite,\n    has_website: hasCommercialWebsite,\n    has_pricing: hasPricing,\n    has_location: hasLocation,\n    location_jaipur: hasJaipur,\n    local_signal_jaipur: hasJaipur,\n    pixel_present: hasPixel,\n    \n    // Quality Signals (Details)\n    commercial_websites: pd.business_website || '',\n    pricing_type: hasSpecificPrice ? 'Specific price shown' : (hasDMPrice ? 'DM for price' : 'None'),\n    \n    // Scoring & Tier\n    tier: tier,\n    priority: priority,\n    accept_reason: reason,\n    score: tot,\n    estimated_inquiries: inquiryEstimate,\n    estimated_inquiries_bucket: inquiryEstimate,\n    \n    // Debug Info\n    html_length: html.length,\n    html_fetch_error: htmlFetchError,\n    data_source: 'Split Pages via $() + Fetch Landing Page via $input',\n    \n    // Notes\n    notes: `${tier} | ${cnt} ads | ${hasWhatsApp ? 'WhatsApp✓' : ''} ${hasCommercialWebsite ? 'Website✓' : ''} ${hasPricing ? 'Price✓' : ''} ${hasLocation ? 'Location✓' : ''} | Score: ${tot}`\n  }\n}];"
+      },
+      "id": "1168124f-5baa-4ffa-8306-dfbe4f7575f5",
+      "name": "Score & Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "check-qualified",
+              "leftValue": "={{ $json.filtered }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "903304cc-ec5b-45ce-a6c3-c1bfb900107d",
+      "name": "Is Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DQRx_FHAkwAjg3-lS4qgNZK3B6p3q2dwWZZ6lEQzjEg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "AD_Data",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_name",
+              "displayName": "page_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "page_id",
+              "displayName": "page_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_snapshot_url",
+              "displayName": "ad_snapshot_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "business_website",
+              "displayName": "business_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_url",
+              "displayName": "whatsapp_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_number",
+              "displayName": "whatsapp_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "instagram_url",
+              "displayName": "instagram_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "facebook_url",
+              "displayName": "facebook_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "landing_url",
+              "displayName": "landing_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url_type",
+              "displayName": "url_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ad_creative_count",
+              "displayName": "ad_creative_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tier",
+              "displayName": "tier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accept_reason",
+              "displayName": "accept_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estimated_inquiries",
+              "displayName": "estimated_inquiries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "inquiry_min",
+              "displayName": "inquiry_min",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "inquiry_max",
+              "displayName": "inquiry_max",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_detected",
+              "displayName": "whatsapp_detected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_commercial_website",
+              "displayName": "has_commercial_website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "has_pricing",
+              "displayName": "has_pricing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pricing_type",
+              "displayName": "pricing_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pixel_present",
+              "displayName": "pixel_present",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "id": "9caf7190-c20e-434d-9edf-c3212655b4b8",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        96
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {},
+      "id": "d3a5882e-d8b2-4c31-980f-473abf468496",
+      "name": "Error End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        -208
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "d39bc887-dee9-4f86-8a20-0c2438e82640",
+      "name": "Filtered End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        224
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2944,
+        64
+      ],
+      "id": "8b1b6570-1cac-4ea7-a2d6-51ccb33a7fc4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get current search term from Split Terms node\nconst searchTermsArray = $input.first().json.searchTerms;\nconst currentTerm = $input.first().json.searchTerm;  // Changed from searchTerms to searchTerm\n\n// ✅ VERIFIED METHOD: Store token in code (encrypted in n8n database)\nconst accessToken = 'EAATGHDjCPo0BQtmRpCVZAu2fv1V0MYZCJPWdqkoSa3C5I8ZCoJyAOF6sFUGmRqXpzXWcqZBsz91B8ZAjZAhU437wsMxJgD4dOnp2h3MBL0z93PmvLuJAvZAPUJqZBTZCPPlYLTDbdWp6dANHUYrZC7yXB86JwFDdZAqwVZBq61tX7yaXgCexnKYDEleAPb1Vit2vb6UJcvPXLOgCqD1xMZAuHcJgZD';\n\n// Build Facebook Ad Library API URL (Official v21.0 endpoint)\nconst apiBaseUrl = 'https://graph.facebook.com/v21.0/ads_archive';\n\n// ✅ BUILD QUERY STRING MANUALLY (URLSearchParams not available in n8n)\nconst params = {\n  access_token: accessToken,\n  search_terms: currentTerm,\n  ad_reached_countries: JSON.stringify(['IN']),\n  ad_active_status: 'ACTIVE',\n  limit: '100',\n  fields: 'id,page_id,page_name,ad_creative_bodies,ad_creative_link_captions,ad_creative_link_titles,ad_snapshot_url,ad_delivery_start_time,ad_delivery_stop_time,currency,spend'\n};\n\n// Build query string manually using encodeURIComponent\nconst queryParts = [];\nfor (const key in params) {\n  if (params.hasOwnProperty(key) && params[key] !== undefined && params[key] !== null) {\n    const encodedKey = encodeURIComponent(key);\n    const encodedValue = encodeURIComponent(params[key]);\n    queryParts.push(encodedKey + '=' + encodedValue);\n  }\n}\n\nconst queryString = queryParts.join('&');\nconst fullUrl = apiBaseUrl + '?' + queryString;\n\nreturn [{\n  json: {\n    url: fullUrl,\n    searchTerm: currentTerm,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2144,
+        80
+      ],
+      "id": "718a8a4a-5a17-429c-9476-515eed321602",
+      "name": "Build Facebook API Request"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1952,
+        80
+      ],
+      "id": "5570d950-71f8-4559-9233-a2f736cb4114",
+      "name": "Call Facebook Ad Library API",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Facebook Ad Library API response\nconst response = $input.first().json;\nconst items = [];\n\ntry {\n  // Check for API errors\n  if (response.error) {\n    const errorMsg = response.error.error_user_msg || response.error.message || 'Unknown API error';\n    console.error('Facebook API Error:', errorMsg, 'Code:', response.error.code);\n    return [{ \n      json: { \n        error: true, \n        errorMessage: errorMsg,\n        errorCode: response.error.code,\n        errorType: response.error.type\n      } \n    }];\n  }\n  \n  // Get ads array from Facebook API response\n  const ads = response.data || [];\n  \n  // Check if no results\n  if (!Array.isArray(ads) || ads.length === 0) {\n    console.log('No ads found for this search term');\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Processing ${ads.length} ads from Facebook Ad Library API`);\n  \n  // Process each ad from Facebook API\n  for (const ad of ads) {\n    // Skip invalid entries\n    if (!ad || typeof ad !== 'object' || !ad.id) {\n      continue;\n    }\n    \n    // Extract landing URL from captions (Facebook API stores URLs here)\n    let landingUrl = '';\n    if (Array.isArray(ad.ad_creative_link_captions) && ad.ad_creative_link_captions.length > 0) {\n      // Try to find URL in captions\n      const urlRegex = /(https?:\\/\\/[^\\s]+)/gi;\n      for (const caption of ad.ad_creative_link_captions) {\n        const match = caption.match(urlRegex);\n        if (match && match[0]) {\n          landingUrl = match[0];\n          break;\n        }\n      }\n    }\n    \n    // If no URL in captions, use snapshot URL as fallback\n    if (!landingUrl) {\n      landingUrl = ad.ad_snapshot_url || '';\n    }\n    \n    // Normalize Facebook API response to expected format\n    items.push({\n      json: {\n        // Core identifiers (Facebook API uses 'id', not 'ad_id')\n        page_id: ad.page_id || 'unknown',\n        page_name: ad.page_name || 'Unknown Business',\n        ad_id: ad.id || String(Date.now()), // Facebook API uses 'id'\n        \n        // Ad content\n        ad_snapshot_url: ad.ad_snapshot_url || '',\n        ad_creative_bodies: ad.ad_creative_bodies || [],\n        ad_creative_link_url: landingUrl, // Extracted from captions\n        \n        // Timing information\n        ad_delivery_start_time: ad.ad_delivery_start_time || null,\n        ad_delivery_stop_time: ad.ad_delivery_stop_time || null,\n        \n        // Spend information (if available)\n        currency: ad.currency || 'INR',\n        spend: ad.spend || null,\n        \n        // Metadata\n        scraped_at: new Date().toISOString()\n      }\n    });\n  }\n  \n  // Return processed items\n  if (items.length === 0) {\n    return [{ json: { noResults: true } }];\n  }\n  \n  console.log(`Successfully processed ${items.length} ads`);\n  return items;\n  \n} catch (error) {\n  console.error('Parse error:', error.message, error.stack);\n  return [{ \n    json: { \n      error: true, \n      errorMessage: `Parse error: ${error.message}`,\n      errorStack: error.stack\n    } \n  }];\n}"
+      },
+      "id": "9aadac72-80e5-4fdf-8a06-40f6a0b82808",
+      "name": "Parse Results old working",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst pd = item.json;\nlet html = '';\n\ntry {\n  if (item.binary && item.binary.data && item.binary.data.data) {\n    html = Buffer.from(item.binary.data.data, 'base64').toString('utf-8');\n  }\n} catch(e) {}\n\nconst WA = /(api\\.whatsapp\\.com\\/send|wa\\.me\\/|\\bwhatsapp\\b|click\\.to\\.whatsapp)/gi;\nconst JP = /\\b(jaipur|pink city)\\b/gi;\nconst PX = /(fbq\\(|fbevents)/gi;\nconst CTWA = /(click\\.to\\.whatsapp)/gi;\n\nfunction check(txt, rx) {\n  if (!txt) return false;\n  try { return rx.test(txt); } catch(e) { return false; }\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\nconst allText = [pd.page_name || '', join(pd.all_bodies), html].join(' ');\n\nconst hasWA = check(allText, WA);\nconst hasJP = check(allText, JP);\nconst hasPX = check(html, PX);\nconst hasCTWA = check(allText, CTWA);\n\nconst cnt = pd.ad_count || 1;\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 30) vol = 25;\nelse if (cnt >= 15) vol = 20;\nelse if (cnt >= 8) vol = 15;\nelse if (cnt >= 4) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = join(pd.all_bodies).length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nif ((pd.all_bodies || []).length > 5) soph += 6;\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 20);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 9;\n    else if (d >= 14) long = 6;\n    else if (d >= 7) long = 3;\n  } catch(e) {}\n}\n\nconst track = hasPX ? 15 : 0;\nconst loc = hasJP ? 10 : 0;\nconst wa = hasWA ? 10 : 0;\nconst ctwa = hasCTWA ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa + ctwa;\n\nlet inq = 'N/A';\nif (hasWA) {\n  if (tot >= 85 && vol >= 25) inq = '50+ inquiries/day';\n  else if (tot >= 75 && vol >= 20) inq = '20-50 inquiries/day';\n  else if (tot >= 65 && vol >= 15) inq = '10-20 inquiries/day';\n  else if (tot >= 50 && vol >= 10) inq = '5-10 inquiries/day';\n  else inq = '<5 inquiries/day';\n}\n\nlet pri = 'IGNORE';\nif (tot >= 80 && hasWA && hasJP) pri = 'HIGH';\nelse if (tot >= 70 && hasWA) pri = 'MEDIUM';\nelse if (tot >= 50) pri = 'LOW';\n\nif (tot < 70 && !hasWA) {\n  return [{ json: { filtered: true, reason: 'Below threshold' } }];\n}\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWA,\n    local_signal_jaipur: hasJP,\n    pixel_present: hasPX,\n    score: tot,\n    estimated_inquiries_bucket: inq,\n    priority: pri,\n    notes: cnt + ' ads. ' + (hasCTWA ? 'CTWA! ' : '') + (hasWA ? 'WA. ' : '') + (hasJP ? 'JP.' : '')\n  }\n}];"
+      },
+      "id": "f7d6187f-2f9c-4914-97c8-d1495b946398",
+      "name": "Score & Filter old working",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -784,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// SCORE & FILTER NODE - QUALITY-BASED FILTERING (AGGRESSIVE)\n// Updated: Feb 11, 2026 - Based on real market data analysis\n// Purpose: Capture ALL legitimate businesses, not just high-volume advertisers\n// ============================================================================\n\nconst item = $input.first();\nconst pd = item.json;\nlet html = '';\n\n// Extract HTML from landing page fetch\ntry {\n  if (item.binary && item.binary.data && item.binary.data.data) {\n    html = Buffer.from(item.binary.data.data, 'base64').toString('utf-8');\n  }\n} catch(e) {}\n\n// ===== REGEX PATTERNS =====\nconst WA = /(api\\.whatsapp\\.com\\/send|wa\\.me\\/|\\bwhatsapp\\b|click\\.to\\.whatsapp|\\+?\\d{10,13})/gi;\nconst JP = /\\b(jaipur|pink city)\\b/gi;\nconst PX = /(fbq\\(|fbevents)/gi;\nconst CTWA = /(click\\.to\\.whatsapp)/gi;\nconst WEBSITE = /(www\\.|https?:\\/\\/|\\.com|\\.in|\\.co\\.in)/gi;\nconst PRICE = /(rs\\.?|₹|price|cost)\\s*\\d+/gi;\n\nfunction check(txt, rx) {\n  if (!txt) return false;\n  try { return rx.test(txt); } catch(e) { return false; }\n}\n\nfunction join(arr) {\n  return Array.isArray(arr) ? arr.filter(x => x).join(' ') : '';\n}\n\n// ===== COMBINE ALL TEXT =====\nconst allText = [pd.page_name || '', join(pd.all_bodies), html].join(' ');\n\n// ===== DETECT SIGNALS =====\nconst hasWA = check(allText, WA);\nconst hasJP = check(allText, JP);\nconst hasPX = check(html, PX);\nconst hasCTWA = check(allText, CTWA);\nconst hasWebsite = check(allText, WEBSITE);\nconst hasPrice = check(allText, PRICE);\n\nconst cnt = pd.ad_count || 1;\n\n// ===== QUALITY-BASED FILTERING =====\n// Accept if business shows ANY professional signal\n\nlet acceptReason = '';\nlet priority = 'LOW';\n\n// HIGH PRIORITY: WhatsApp + multiple indicators\nif (hasWA && (hasWebsite || hasPrice || cnt >= 2)) {\n  acceptReason = 'WhatsApp + Professional signals';\n  priority = 'HIGH';\n}\n// HIGH PRIORITY: WhatsApp + Jaipur local\nelse if (hasWA && hasJP) {\n  acceptReason = 'WhatsApp + Local Jaipur';\n  priority = 'HIGH';\n}\n// MEDIUM PRIORITY: WhatsApp alone\nelse if (hasWA) {\n  acceptReason = 'Has WhatsApp contact';\n  priority = 'MEDIUM';\n}\n// MEDIUM PRIORITY: Commercial website\nelse if (hasWebsite && cnt >= 1) {\n  acceptReason = 'Has commercial website';\n  priority = 'MEDIUM';\n}\n// LOW PRIORITY: Shows pricing (serious business)\nelse if (hasPrice && cnt >= 1) {\n  acceptReason = 'Shows pricing information';\n  priority = 'LOW';\n}\n// LOW PRIORITY: Running multiple ads\nelse if (cnt >= 2) {\n  acceptReason = 'Running multiple ads';\n  priority = 'LOW';\n}\n// REJECT: No professional signals\nelse {\n  console.log(`🚫 Filtered: \"${pd.page_name}\" - No professional signals detected`);\n  return [{ json: { filtered: true, reason: 'No WhatsApp, website, pricing, or multiple ads' } }];\n}\n\n// ===== SCORING (For reference, not for filtering) =====\nlet vol = 0;\nif (cnt >= 50) vol = 30;\nelse if (cnt >= 25) vol = 25;\nelse if (cnt >= 12) vol = 20;\nelse if (cnt >= 6) vol = 15;\nelse if (cnt >= 3) vol = 10;\nelse if (cnt >= 2) vol = 5;\n\nconst len = join(pd.all_bodies).length;\nlet soph = 0;\nif (len > 500) soph += 8;\nelse if (len > 200) soph += 5;\nelse if (len > 100) soph += 3;\n\nconst variationCount = (pd.all_bodies || []).length;\nif (variationCount >= 5) soph += 8;\nelse if (variationCount >= 3) soph += 5;\nelse if (variationCount >= 2) soph += 2;\n\nif (html.includes('<img')) soph += 6;\nsoph = Math.min(soph, 22);\n\nlet long = 0;\nif (pd.earliest_start) {\n  try {\n    const d = Math.floor((new Date() - new Date(pd.earliest_start)) / 86400000);\n    if (d >= 90) long = 15;\n    else if (d >= 60) long = 12;\n    else if (d >= 30) long = 10;\n    else if (d >= 14) long = 7;\n    else if (d >= 7) long = 5;\n    else if (d >= 3) long = 2;\n  } catch(e) {}\n}\n\nconst track = hasPX ? 8 : 0;\nconst loc = hasJP ? 10 : 0;\nconst wa = hasWA ? 10 : 0;\nconst ctwa = hasCTWA ? 10 : 0;\nconst tot = vol + soph + long + track + loc + wa + ctwa;\n\n// ===== INQUIRY ESTIMATION =====\nlet inq = 'N/A';\nif (hasWA) {\n  if (tot >= 80 && vol >= 25) inq = '50+ inquiries/day';\n  else if (tot >= 70 && vol >= 20) inq = '30-50 inquiries/day';\n  else if (tot >= 60 && vol >= 15) inq = '20-30 inquiries/day';\n  else if (tot >= 50 && vol >= 15) inq = '15-25 inquiries/day';\n  else if (tot >= 45 && vol >= 10) inq = '10-15 inquiries/day';\n  else if (tot >= 40 && vol >= 10) inq = '5-10 inquiries/day';\n  else inq = '<5 inquiries/day';\n} else {\n  inq = 'No WhatsApp - Opportunity to set up';\n}\n\n// ===== OUTPUT =====\nconsole.log(`✅ Qualified: \"${pd.page_name}\" - ${acceptReason} - Priority: ${priority}`);\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    page_name: pd.page_name,\n    page_id: pd.page_id,\n    ad_id: pd.sample_ad.ad_id,\n    ad_snapshot_url: pd.sample_ad.ad_snapshot_url,\n    landing_url: pd.landing_url,\n    ad_creative_count: cnt,\n    creative_types: 'Text/Image',\n    whatsapp_cta: hasWA,\n    local_signal_jaipur: hasJP,\n    pixel_present: hasPX,\n    has_website: hasWebsite,\n    has_pricing: hasPrice,\n    score: tot,\n    estimated_inquiries_bucket: inq,\n    priority: priority,\n    accept_reason: acceptReason,\n    notes: `${cnt} ads. ${hasCTWA ? 'CTWA! ' : ''}${hasWA ? 'WA. ' : ''}${hasWebsite ? 'Website. ' : ''}${hasPrice ? 'Price. ' : ''}${hasJP ? 'JP. ' : ''}Score: ${tot}`\n  }\n}];"
+      },
+      "id": "4b0c52d1-d25c-4ae0-81bc-bb96efc97d82",
+      "name": "Score & Filter old v2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "699ba757-a1a2-4af4-afb3-ceeeca13a158",
+              "leftValue": "={{ $json.url_type }}",
+              "rightValue": "WEBSITE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -944,
+        80
+      ],
+      "id": "d4614b49-1c1c-405b-8dc2-9977188baeeb",
+      "name": "Should Fetch Website?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert array of search terms into separate items\nconst searchTerms = ['kurti'];\n\n// Return one item per search term\nreturn searchTerms.map(term => ({\n  json: {\n    searchTerm: term  // ← Note: singular \"searchTerm\", not \"searchTerms\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2576,
+        80
+      ],
+      "id": "812b2af2-41ed-4c42-b73a-39ca40875e0c",
+      "name": "Set Search Terms2"
+    }
+  ],
+  "connections": {
+    "Daily 2AM IST": {
+      "main": [
+        []
+      ]
+    },
+    "Set Search Terms": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Terms": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Build Facebook API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Results": {
+      "main": [
+        [
+          {
+            "node": "Has Error?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Error?": {
+      "main": [
+        [
+          {
+            "node": "Error End",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate by Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate by Page": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Pages": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Should Fetch Website?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Landing Page": {
+      "main": [
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score & Filter": {
+      "main": [
+        [
+          {
+            "node": "Is Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Filtered End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtered End": {
+      "main": [
+        [
+          {
+            "node": "Split Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Search Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Facebook API Request": {
+      "main": [
+        [
+          {
+            "node": "Call Facebook Ad Library API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Facebook Ad Library API": {
+      "main": [
+        [
+          {
+            "node": "Parse Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Fetch Website?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Landing Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Score & Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search Terms2": {
+      "main": [
+        [
+          {
+            "node": "Split Terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7e21c4db-557e-42a7-8861-aa07be5d2f0f",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-11T11:16:01.799Z",
+      "createdAt": "2026-02-11T11:16:01.799Z",
+      "role": "workflow:owner",
+      "workflowId": "JNH5FrhSMKkwCA7E",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
