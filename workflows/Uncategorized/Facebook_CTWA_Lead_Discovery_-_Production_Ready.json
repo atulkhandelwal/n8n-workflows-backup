@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-09T11:56:27.158Z",
+  "updatedAt": "2026-02-17T13:41:26.000Z",
   "createdAt": "2026-02-09T10:46:01.724Z",
   "id": "WzvAObnWJREhIyDx-Nn8o",
   "name": "Facebook CTWA Lead Discovery - Production Ready",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -690,7 +690,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "5bd6e5c1-a9d0-4b41-bb7a-f5720a4aefc1",
+  "versionId": "fef0f926-f621-4ab4-bef8-30c7625774fa",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
