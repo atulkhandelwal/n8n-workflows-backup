@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-02-09T10:29:49.551Z",
+  "updatedAt": "2026-02-17T13:40:04.000Z",
   "createdAt": "2026-02-09T10:29:49.551Z",
   "id": "f6z7Kait-qFwKvYTpxhT2",
   "name": "Temp_workflow",
   "active": false,
-  "isArchived": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
@@ -140,7 +140,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "0718d0cc-2afc-4304-a5e5-96912402e084",
+  "versionId": "51ffebf8-b001-4021-b66a-fc2d7a4a1808",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
