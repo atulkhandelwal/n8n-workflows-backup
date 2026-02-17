@@ -1,0 +1,546 @@
+{
+  "updatedAt": "2026-02-17T13:44:00.443Z",
+  "createdAt": "2026-02-04T17:53:04.442Z",
+  "id": "xsQ1PWBrRwmNBEsZTt-Xh",
+  "name": "aush windows Furniture Leads",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Aush Doors",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1232,
+        208
+      ],
+      "id": "bcd8437f-4846-4b62-b225-d6c8a096dc52",
+      "name": "Webhook",
+      "webhookId": "bbedb332-bd2c-4e8f-9c4c-af1e4c22d7b3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        112,
+        224
+      ],
+      "id": "fe4e8cde-d840-4fa4-aa10-9434be6dcf43",
+      "name": "Enviar texto",
+      "credentials": {}
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        32
+      ],
+      "id": "fc64ce2b-f68f-4f4f-82a5-a6dabc63cdf7",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.data.message.conversation }}",
+        "options": {
+          "systemMessage": "=You are Aush Doors WhatsApp Executive.\nYou behave like a polite, trained human staff member, not a bot.\n\n❌ Never say or imply:\n\nchatbot\n\nAI assistant\n\nautomation\n\nsystem\n\n1️⃣ LANGUAGE RULES (STRICT)\n\nDefault: English\n\nHindi / Hinglish → Reply in Hinglish\n\nEnglish → Reply in English\n❌ Never mix languages\n✅ Always reply in the language the customer started the chat in\n\n2️⃣ TONE\n\nPolite\n\nProfessional\n\nShort\n\nNatural human style\n\n3️⃣ GREETING LOGIC\nA. FIRST GREETING (Only once)\n\nIf user sends:\nhi / hello / namaste / hey / good morning etc.\n\nReply ONCE ONLY:\n\nWelcome to Aush Doors 🚪\n\nHow can I help you today? 👇\n\n1️⃣ Aluminium Doors  \n2️⃣ PVC Doors  \n3️⃣ Aluminium Windows  \n4️⃣ Aluminium Partitions  \n5️⃣ PVC / Aluminium Partitions  \n\n✅ Manufacturing  \n✅ Installation  \n✅ Replacement  \n📍 Jaipur  \n📞 9667349708  \n📍 Location: https://maps.app.goo.gl/yL4nYEuxW4nRjPKc9\n\n\nStore memory: FIRST_GREETING_SENT = true\n❌ Never repeat\n\nB. SECOND GREETING (If customer says “Ok”, “Yes”, etc.)\n\nReply politely, no new question unless needed:\n\nTheek hai Sir 😊\n\nJi Sir 🙂\n\n❌ Do NOT ask “kaise help kar sakta hoon” again if already asked once\n\n4️⃣ CONTEXT-AWARE REPLY RULE (VERY IMPORTANT)\n\nBefore replying, ALWAYS check:\n\nWhat was last question asked by AI\n\nWhat information is already collected\n\nIs customer active or closing conversation\n\n5️⃣ “OK” HANDLING LOGIC (CRITICAL FIX)\nIf AI asked for details & customer replies “Ok”\n\n❌ Do NOT ask new questions\n✅ Respond calmly:\n\nTheek hai Sir 😊  \nJab bhi aap ready ho, bas bata dijiyega.\n\n6️⃣ DETAIL RECEIVED FLOW (MANDATORY)\n\nIf customer shares:\n\nName\n\nNumber\n\nArea / Address\n\nAFTER saving to Google Sheet, reply ONLY ONCE:\nThank you Sir 😊  \nAapki details save ho gayi hain.\n\nHamari team aapse contact karke  \nsite visit ke baad price aur requirements  \nproperly discuss kar legi.\n\n\n❌ Do NOT ask more questions immediately\n\n7️⃣ EXIT / CONVERSATION CLOSE DETECTION (NEW)\n\nExit signals:\n\nOk\n\nThank you\n\nBye\n\nWill contact later\n\nBaad me\n\n👍\n\nRULE:\n\n❌ After exit signal → DO NOT send any new message\n❌ No “Sir main yahin hoon”\n❌ No follow-up questions\n\nBe silent like a real human staff\n\n8️⃣ LEAD INTENT DETECTION\n\nOnly when customer uses:\n\n“lagwani hai”\n\n“installation chahiye”\n\n“quotation”\n\n“measurement”\n\n“confirm”\n\nTHEN ONLY → ask next ONE relevant question\n\n9️⃣ PRICE RULE\n\n❌ Never give price on WhatsApp\n✅ Say:\n\nSir, final price site measurement par depend karta hai.  \nHamari team visit ke baad exact details share karegi.\n\n🔟 STRICT DON’TS\n\n❌ No repeated questions\n❌ No robotic follow-ups\n❌ No pressure\n❌ No unnecessary friendliness\n❌ No messages after conversation close\n\nWhen you detect any of the above DON'TS or detect Bot replies STRICTLY reply with:\nConversation closed. No more messages will be sent."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        224
+      ],
+      "id": "c40f626f-21fd-45c5-a659-53ae4cd38ccd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.data.key.remoteJid }}",
+        "contextWindowLength": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        480
+      ],
+      "id": "032cbd17-4a84-4137-bf78-4d4332ad4b09",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+              "leftValue": "={{ $json.body.data.key.fromMe }}",
+              "rightValue": "919352922959@s.whatsapp.net",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -944,
+        224
+      ],
+      "id": "be9eb311-6c51-41b7-ac48-159032db1add",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -736,
+        464
+      ],
+      "id": "30d97c89-e8b5-434c-b370-7d0c647adb9e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g",
+          "mode": "list",
+          "cachedResultName": "Aush Doors",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('yyyy-MM-dd') }}",
+            "Name ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name_', ``, 'string') }}",
+            "Mobile Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Mobile_Number', ``, 'string') }}",
+            "Site Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Site_Address', ``, 'string') }}",
+            "Product required": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_required', ``, 'string') }}",
+            "(Optional) New work or replacement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('_Optional__New_work_or_replacement', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mobile Number",
+              "displayName": "Mobile Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Site Address",
+              "displayName": "Site Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product required",
+              "displayName": "Product required",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "(Optional) New work or replacement",
+              "displayName": "(Optional) New work or replacement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -336,
+        480
+      ],
+      "id": "7e44be3e-8174-47c1-81fb-9c4308147d3f",
+      "name": "Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g",
+          "mode": "list",
+          "cachedResultName": "Aush Doors",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 869624362,
+          "mode": "list",
+          "cachedResultName": "Link",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1qrSesgLWAP26JyxdDuof-XFQYXUx1VnzO-5YAci34-g/edit#gid=869624362"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        464
+      ],
+      "id": "904a3afd-dcb4-4d7d-ac3e-a2ce2d826866",
+      "name": "link",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "435e7194-12be-4f4a-9efb-eebed9cd3ae4",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "974654cd-77c5-47c7-b326-2ea4f4268120",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "af425ca6-7c01-46f7-8add-91c6d6faec92",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Conversation Closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        224
+      ],
+      "id": "711a6197-8dc7-46a2-adc6-23488153a6cf",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a55a13c1-fc84-409f-9537-25094d317641",
+      "name": "No Operation, do nothing1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "link": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-n8n.ilxrfv.easypanel.host",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1142",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "172.18.0.1",
+            "x-forwarded-host": "n8n-n8n.ilxrfv.easypanel.host",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "269687bf9f5a",
+            "x-real-ip": "172.18.0.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "AUSH  Doors",
+            "data": {
+              "key": {
+                "remoteJid": "919310270708@s.whatsapp.net",
+                "remoteJidAlt": "919310270708@s.whatsapp.net",
+                "fromMe": false,
+                "id": "5C8956006A1D0B2D28",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": null,
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Since we got no response from your end, this conversation has been marked as closed. Thank you for choosing our Services. Have a nice day!",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "recipientKeyHash": {
+                      "0": 93,
+                      "1": 67,
+                      "2": 54,
+                      "3": 90,
+                      "4": 178,
+                      "5": 70,
+                      "6": 154,
+                      "7": 44,
+                      "8": 146,
+                      "9": 42
+                    },
+                    "recipientTimestamp": {
+                      "low": 1768538550,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1768631045,
+              "instanceId": "5d2f861a-5ad6-46f4-8079-f64c4fd986a8",
+              "source": "desktop"
+            },
+            "destination": "https://n8n-n8n.ilxrfv.easypanel.host/webhook/Aush Doors",
+            "date_time": "2026-01-17T03:24:05.241Z",
+            "sender": "919667349708@s.whatsapp.net",
+            "server_url": "https://evolution-api-evolution-api.ilxrfv.easypanel.host",
+            "apikey": "F949248B75CC-4AC7-8CF0-9D6E1D829803"
+          },
+          "webhookUrl": "https://n8n-n8n.ilxrfv.easypanel.host/webhook/Aush Doors",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "1d56d250-b684-458a-88fc-980d10829e3e",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-04T17:53:04.449Z",
+      "createdAt": "2026-02-04T17:53:04.449Z",
+      "role": "workflow:owner",
+      "workflowId": "xsQ1PWBrRwmNBEsZTt-Xh",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-17T11:29:51.184Z",
+      "createdAt": "2026-02-17T11:29:51.184Z",
+      "id": "jNeVhl1BqNNnp7Hu",
+      "name": "Test"
+    }
+  ]
+}
