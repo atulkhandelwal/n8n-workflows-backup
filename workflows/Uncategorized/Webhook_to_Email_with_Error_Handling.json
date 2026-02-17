@@ -1,0 +1,212 @@
+{
+  "updatedAt": "2026-02-16T11:33:01.344Z",
+  "createdAt": "2026-02-16T07:38:21.812Z",
+  "id": "hTWcPYnZwc7CwkHZ",
+  "name": "Webhook to Email with Error Handling",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-form",
+        "options": {}
+      },
+      "id": "webhook-1",
+      "name": "Webhook",
+      "position": [
+        256,
+        304
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "4a9573db-b735-4ba3-8a10-2024716ff2e9"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c7b3d8e9-5f2a-4c1b-9d3e-8f7a6b5c4d2e",
+              "leftValue": "={{ $json.body.email }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              }
+            },
+            {
+              "id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+              "leftValue": "={{ $json.body.message }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-1",
+      "name": "Validate Data",
+      "position": [
+        464,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "sendTo": "thegiftsmartofficial@gmail.com",
+        "subject": "New Contact Form Submission",
+        "emailType": "text",
+        "message": "=You have received a new contact form submission:\n\nFrom: {{ $json.body.email }}\nName: {{ $json.body.name || 'Not provided' }}\n\nMessage:\n{{ $json.body.message }}\n\nSubmitted at: {{ $now.format('YYYY-MM-DD HH:mm:ss') }}",
+        "options": {}
+      },
+      "id": "email-1",
+      "name": "Send Gmail (Success)",
+      "position": [
+        656,
+        208
+      ],
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "webhookId": "9e925828-e999-403c-9eef-9f158c2aabf9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "n2xBebW1mCNHsycB",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "thegiftsmartofficial@gmail.com",
+        "subject": "Webhook Error - Invalid Data",
+        "emailType": "text",
+        "message": "=A webhook was received but contained invalid data:\n\nReceived data: {{ JSON.stringify($json) }}\n\nError: Missing required fields (email or message)\n\nTime: {{ $now.format('YYYY-MM-DD HH:mm:ss') }}",
+        "options": {}
+      },
+      "id": "email-2",
+      "name": "Send Gmail (Error)",
+      "position": [
+        656,
+        400
+      ],
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "webhookId": "dc06ccff-1690-48c2-a1b1-18c9f22a8561",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "n2xBebW1mCNHsycB",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Validate Data": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Send Gmail (Success)",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Send Gmail (Error)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate Data",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "curl/8.14.1",
+            "content-length": "133",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "2405:201:5c11:d004:484b:d807:91a6:9d8d",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9cec820e3ef28cec-EWR",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "2405:201:5c11:d004:484b:d807:91a6:9d8d, 172.70.114.211",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "172.70.114.211"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "test@example.com",
+            "name": "Test User",
+            "message": "This is a test message from the webhook sent by Atul"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/contact-form",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "5490c233-f7ea-4ab5-ab2e-2246f4a049c2",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T07:38:21.817Z",
+      "createdAt": "2026-02-16T07:38:21.817Z",
+      "role": "workflow:owner",
+      "workflowId": "hTWcPYnZwc7CwkHZ",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
