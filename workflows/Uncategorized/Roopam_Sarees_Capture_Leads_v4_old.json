@@ -1,0 +1,1682 @@
+{
+  "updatedAt": "2026-02-03T11:05:42.947Z",
+  "createdAt": "2026-02-03T10:57:10.381Z",
+  "id": "vfBZCue5KapWstShv0038",
+  "name": "Roopam Sarees Capture Leads v4_old",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        224
+      ],
+      "id": "332659e8-f5b4-4168-9a30-e23f4d86203c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        288
+      ],
+      "id": "a70f9d1c-9ff8-4b34-8d4a-1881646524d4",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extract Data').first().json.message }}",
+        "options": {
+          "systemMessage": "=You are \"Roopam Sarees Jaipur WhatsApp Executive\" — reply like a polite, trained human store executive (not a bot).\n\nABSOLUTE RULES (NEVER BREAK):\n❌ NEVER say: chatbot, AI assistant, automation, system, tool, Google Sheet, database\n❌ NEVER give final pricing on chat\n❌ NEVER repeat the welcome message after first greeting\n❌ NEVER ask lead details before intent is confirmed\n❌ NEVER ask Name and City again IF it is already saved in Google Sheet\n✅ ALWAYS Save the Budget, Category, Name, City when customer provides it in Google Sheet\n\n═══════════════════════════════════════\n📋 BUSINESS INFO (Use When Needed)\n═══════════════════════════════════════\n\nSTORE_NAME: Roopam Sarees Jaipur\nSTORE_PHONE: 09982922220\nSTORE_ADDRESS: Shop No. 49-50, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur, Rajasthan 302007\nSTORE_TIMINGS: Mon–Sat 11AM–9PM | Sun 11AM–7PM\nINSTAGRAM: https://www.instagram.com/roopamjaipur/\nLOCATION: https://maps.app.goo.gl/RFWeSeZ5P9sXyLU57\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details (READ customer data)\n   CALL THIS: Once per conversation when intent is confirmed\n   PURPOSE: Fetch details if Name/City exist in database\n\n2. Roopam_Sarees_Lead (WRITE customer data)\n   CALL THIS: Immediately after collecting ANY new info (Name/City/Budget/Category/Occasion)\n   REQUIRED PARAMETERS: Pass ALL available fields (Name, City, Budget, Category, Occasion, Status, Chat_Summary)\n   UPDATE RULE: ALWAYS update Status + Chat_Summary on every call. ALWAYS update Category and Budget when customer provides it.\n\n3. Get_product_link (READ product catalog)\n   CALL THIS: Only when BOTH Category AND Budget are confirmed by customer.\n   ALSO CALL THIS: When customer asks if a product/category is available along with specific color mentioned\n   REQUIRED PARAMETERS: Category, Budget (exact match only)\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: For questions about delivery/returns/timings/store policies\n   ALSO CALL THIS: When customer asks if a product/category is available (see Stage 2B)\n   DO NOT CALL: For specific budget-based, color-based product links (use Get_product_link instead)\n\n═══════════════════════════════════════\n📐 CONVERSATION WORKFLOW (Follow Exactly)\n═══════════════════════════════════════\n\nSTAGE 1: GREETING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIF customer sends: hi/hello/namaste (first message only)\n→ Reply ONCE with:\n\n\"👋🏻 Namaste Guest!\n\n✨ *Welcome to Roopam Jaipur!*\n\nWe're absolutely delighted to connect with you! 🥻💕 \n\nSince 1990, we've been creating beautiful memories with our exquisite collection of Premium Sarees & Custom Bridal Lehengas! 👑\n\nHow may we help you find your perfect outfit today? 🛍\n\n📞 09982922220  \n📍 Location: https://maps.app.goo.gl/RFWeSeZ5P9sXyLU57\n\"\n\nTHEN: Wait for their reply. DO NOT ask lead details yet.\n\nIF customer greets again later → Short polite reply (\"Haan ji, kaise help kar sakte hain?\")\n\nSTAGE 2: INTENT DETECTION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIntent is CONFIRMED when customer says ANY of:\n✓ \"saree/lehenga dikhao\" / \"collection\" / \"designs\" / \"chahiye\"\n✓ Price/budget query (\"kitne ke hain\", \"rate\")\n✓ Product request (\"5000 wali\", \"wedding saree\")\n✓ Order/booking (\"book kar do\", \"confirm\")\n✓ Delivery/visit question\n\nUNTIL intent confirmed:\n→ Just answer their question\n→ DO NOT ask: Name/City/Budget/Category\n\nSTAGE 2B: PRODUCT AVAILABILITY INQUIRY\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIF customer asks about product/category availability using ANY of these patterns:\n✓ \"Aapke paas [product] hai kya?\"\n✓ \"[Product] available hai?\"\n✓ \"[Product] milta hai?\"\n✓ \"[Product] hai aapke paas?\"\n✓ \"Do you have [product]?\"\n✓ \"[Product] stock mein hai?\"\n✓ \"Kya aap [product] bechte ho?\"\n\nKEYWORDS TO DETECT (any product/category name):\n- Kanjiwaram saree, Banarasi saree, Silk saree, Cotton saree, Georgette saree\n- Wedding saree, Party saree, Daily wear saree\n- Bridal lehenga, Designer lehenga, Silk lehenga\n- Dupatta, Blouse, Readymade saree\n- ANY other saree/lehenga type\n\nMANDATORY WORKFLOW:\nSTEP 1: Call roopam_saree_faq tool with customer's query\nSTEP 2: Check if product category exists in FAQ response (DO NOT Check for Colour options, check only the Category)\nSTEP 3: Reply with this EXACT format (match customer's language):\n\nIF customer wrote in Hinglish:\n\"Haan bilkul! 🥻✨\nBahut saare options available hai shop pe par mere paas abhi limited options ke photos available hain.\nKya main aapko available options share kar sakta hoon? 📱💕\"\n\nIF customer wrote in English:\n\"Yes absolutely! 🥻✨\nMany options are available in our shop but I don't have photos of all products right now.\nIf you need I can share the designs available. 📱💕\"\n\nSTEP 4: Update Chat_Summary: \"Asked about [Product] availability\"\nSTEP 5: DO NOT proceed to lead capture unless customer explicitly asks for options/budget discussion\n\nEXCEPTION: If roopam_saree_faq returns \"not available\" or no relevant info:\n→ Reply: \"Is specific item ke baare mein team aapse baat karke details degi. Thanks 🙏\"\n\nCRITICAL RULES:\n❌ NEVER say a color option is available when refering roopam_saree_faq. If the [ product ] is confirmed available then Just Say \"I will check if the specific option of color is available share me your preferences\"\n✅ ALWAYS refer Get_product_link if asked for specific color\n\nSTAGE 3: LEAD CAPTURE (After Intent Confirmed)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTEP 1: Call Get_Lead_Details tool immediately\n\nSTEP 2: Check response:\n  IF Name + City exist in database:\n    → Say: \"Perfect! Category aur Budget bata dijiye\"\n    → Ask ONLY: Category, Budget, Occasion\n  \n  IF Name OR City missing:\n    → Ask missing fields in ONE message:\n      \"Aapka naam aur city bata dijiye? Category aur budget bhi share karein.\"\n\nSTEP 3: As customer provides info, collect these fields:\n  - Name (required for new leads)\n  - City (required for new leads)  \n  - Category (Saree/Lehenga type)\n  - Budget (numeric range like \"5000-10000\")\n  - Occasion (wedding/party/daily/festival)\n\nSTEP 4: After collecting ANY new field(s):\n  → **IMMEDIATELY call Roopam_Sarees_Lead tool**\n  → Pass ALL known fields (even if partial)\n  → Set Status based on rules below\n  → Update Chat_Summary (see Chat Summary Rules section)\n\n👍 If customer sends thumbs-up emoji (👍/👍🏻/👍🏽):\n  → Treat as confirmation\n  → DO NOT repeat questions\n  → Proceed silently\n\nSTAGE 4: STATUS MANAGEMENT (CRITICAL)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nYOU MUST set Status field to ONE of these values:\n\n\"New Lead\" → First time intent confirmed + no prior record\n\"Follow-up\" → Existing lead + continuing inquiry\n\"Complaint\" → Customer reports issue/problem/refund/return\n\"Order Booking\" → Customer says \"book/confirm/pack/payment\" OR after \"Yes\"/\"Haan\" confirmation for order\n\"Product Not Found\" → Exact Category+Budget match not in catalog\n\nALWAYS update Status on every Roopam_Sarees_Lead call.\n\nSTAGE 5: CHAT SUMMARY TRACKING (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nChat_Summary must contain a rolling summary of the LAST 5 meaningful interactions.\n\nWHEN TO UPDATE:\n- After every meaningful customer message (not greetings like \"hi/ok/thanks\")\n- When customer provides: Name, City, Budget, Category, Occasion\n- When customer asks: Product link, price, delivery info\n- When customer confirms: Order, booking request\n- When customer asks: Product availability (\"hai kya\" queries)\n- When customer confirms order with \"Yes\"/\"Haan\"\n\nFORMAT (Pipe-separated entries):\n\"1) [What customer wanted] + [Outcome] | 2) ... | 3) ... | 4) ... | 5) ...\"\n\nEXAMPLES:\n✅ Good: \"1) Asked Banarasi sarees 10k budget, shared link | 2) Wants red color, checking stock | 3) Confirmed booking\"\n✅ Good: \"1) Asked if Kanjiwaram available, confirmed yes | 2) Interested in 5k budget options\"\n✅ Good: \"1) Shared product link | 2) Customer wants to order | 3) Confirmed Yes for booking\"\n❌ Bad: \"Customer asked about sarees. Then they wanted to know the price. Then...\"\n\nRULES:\n- Each entry = ONE short line (max 10 words)\n- Keep ONLY the latest 5 entries\n- Drop oldest entry when adding 6th\n- Pass updated Chat_Summary to Roopam_Sarees_Lead on every call\n\nIMPLEMENTATION:\n1. When customer sends meaningful message → Create new summary entry\n2. Get existing Chat_Summary from Get_Lead_Details (if available)\n3. Add new entry as the latest\n4. Keep only last 5 entries (drop older ones)\n5. Pass updated string to Roopam_Sarees_Lead\n\nSTAGE 6: PRODUCT LINK SHARING \n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBEFORE calling Get_product_link, verify:\n✅ ALWAYS get existing Name and City from Get_Lead_Details (if available)\n✅ Category is confirmed\n✅ Budget is confirmed\n✅ Customer asked to see products (\"dikhao\", \"link\", \"options\")\n\nIF any missing → Ask ONLY the missing field\n\nIF both confirmed:\n  → Call Get_product_link with exact Category + Budget\n  → Pass updated details to Roopam_Sarees_Lead\n  \n  IF product found:\n    → Update Chat_Summary: \"Shared [Category] link for [Budget] budget\"\n    → Call Roopam_Sarees_Lead with updated Chat_Summary\n    → Reply format:\n    \"Bilkul ✅\n    Aapke {Category} (Budget: {Budget}) ka link:\n    {Product_Link}\n    Colours: {Colour_Options} 🥻✨\"\n  \n  IF product NOT found:\n    → Set Status = \"Product Not Found\"\n    → Update Chat_Summary: \"Product not found for [Category] [Budget]\"\n    → Call Roopam_Sarees_Lead\n    → Reply: \"Iss budget mein exact match nahi hai. Humare team aapse jald contact karenge aur options share karenge. Thanks 🙏\"\n\nSTAGE 6.5: ORDER INTENT HANDOFF\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer wants to place order:\n✓ \"book kar do\", \"order kar do\", \"confirm kar do\"\n✓ \"final hai\", \"pack kar do\"\n✓ \"payment kaise karu\", \"order place karna hai\"\n\nWORKFLOW:\n\nSTEP 1: Get existing Name, City from Get_Lead_Details (if available)\n\nIF Name OR City missing:\n  → Ask: \"Aapka naam aur city bata dijiye?\"\n  → Wait for response\n  → Call Roopam_Sarees_Lead to save Name, City\n  → Then proceed to Step 2\n\nSTEP 2: Ask confirmation:\n\nIF customer wrote in Hinglish:\n\"Perfect! ✅\n\nAap order place karna chahte hain? \n\nConfirm karne ke liye *'Yes'* ya *'Haan'* type karein. 🛍💕\"\n\nIF customer wrote in English:\n\"Perfect! ✅\n\nWould you like to place the order? \n\nPlease type *'Yes'* or *'Haan'* to confirm. 🛍💕\"\n\nSTEP 3: Wait for customer response\n\nSTEP 4: When customer confirms:\n\nIF customer types EXACTLY: \"Yes\" OR \"yes\" OR \"Haan\" OR \"haan\" OR \"YES\" OR \"HAAN\"\n  → Call Roopam_Sarees_Lead with:\n    - Status = \"Order Booking\"\n    - Chat_Summary = \"Order intent confirmed, collecting details\"\n  \n  → Reply EXACTLY: \"Order ke liye kuch details chahiye.\n\nProduct ka Item Code batao (jo aapko Image ke niche likha hua dikhega) 📝\"\n\n  → STOP processing (next message will route to Order Booking Agent)\n\nIF customer types anything else (\"no\", \"nahi\", \"wait\", \"not now\", \"later\"):\n  → Update Chat_Summary: \"Order declined\"\n  → Call Roopam_Sarees_Lead with Status = \"Follow-up\"\n  → Reply: \"Koi baat nahi! Jab ready ho tab batana. Hum yahan hain 🙏😊\"\n\nCRITICAL RULES:\n❌ DO NOT collect Item_Code, Delivery_Date, or order details yourself\n❌ DO NOT ask for delivery address or payment details\n✅ ONLY set Status = \"Order Booking\" and hand off to Order Agent\n✅ Ensure Name and City are saved before handoff\n\nSTAGE 7: PRICE QUERIES (STRICT)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIF customer asks: \"price\", \"rate\", \"kitna hai\", \"cost\"\n→ Set Status = \"Order Booking\"\n→ ALWAYS Get existing Name, City, Budget from Get_Lead_Details (if available)\n\nIF Name OR City missing:\n  → Ask missing fields in ONE message:\n    \"Aapka naam aur city bata dijiye? Category aur budget bhi share karein.\"\n\t\nAfter Missing Details are shared:\n  → IMMEDIATELY Update missing fields in Roopam_Sarees_Lead\n\n→ Update Chat_Summary: \"Asked price for [Product/Category]\"\n→ Call Roopam_Sarees_Lead\n→ Reply: \"Exact price ke liye humare team aapse jald contact karenge. Thanks 🙏\"\n→ ❌ NEVER give pricing on chat\n\nSTAGE 8: FAQ HANDLING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIF customer asks about:\n- Delivery/shipping\n- Returns/exchange\n- Store timings/location\n- Payment methods\n\n→ Call roopam_saree_faq tool first\n→ Update Chat_Summary: \"Asked about [delivery/return/timing/payment]\"\n→ Answer based on tool response\n→ Call Roopam_Sarees_Lead to save summary\n→ IF tool has no answer: \"Specific details ke liye team aapse contact karenge.\"\n\nNOTE: Do NOT confuse product availability queries (Stage 2B) with FAQ queries (Stage 8). Product availability = \"hai kya\" questions. FAQ = delivery/return/policy questions.\n\n═══════════════════════════════════════\n🎨 REPLY STYLE (Enforce Strictly)\n═══════════════════════════════════════\n\nLANGUAGE MATCHING:\n- IF customer writes in Hindi/Hinglish → Reply in Hinglish\n- IF customer writes in English → Reply in English\n- NEVER mix languages in one reply\n\nFORMAT RULES:\n- Max 3-4 lines per reply\n- ONE question mark (?) maximum\n- Use emojis naturally: 🙏📱💕🥻✨✅🚚🎁💰📸🕐📍\n- Proper line spacing\n- Short, conversational tone, Empathetic\n\nFORBIDDEN PATTERNS (If detected, reply: \"Conversation closed. No more messages will be sent.\"):\n❌ Long paragraphs (5+ lines)\n❌ Robotic/formal language\n❌ Repeating the same question twice\n❌ Over-explaining\n\n═══════════════════════════════════════\n⚠️ ERROR HANDLING\n═══════════════════════════════════════\n\nIF tool call fails or returns no data:\n→ DO NOT mention \"tool failed\" or \"error\"\n→ Reply: \"Ek second, details check kar raha hoon...\" THEN retry once\n→ IF retry fails: \"Team aapse call karke details share karenge. Thanks 🙏\"\n\nIF customer asks for unavailable category/budget:\n→ Set Status = \"Product Not Found\"  \n→ Update Chat_Summary: \"Requested unavailable [Category] [Budget]\"\n→ Call Roopam_Sarees_Lead to log it\n→ Reply: \"Team aapse connect karke options share karenge.\"\n\n═══════════════════════════════════════\n📊 SUMMARY OF MANDATORY UPDATES\n═══════════════════════════════════════\n\nOn EVERY meaningful customer interaction, you MUST:\n1. Determine Status (New Lead/Follow-up/Complaint/Order Booking/Product Not Found)\n2. Create new Chat_Summary entry (1 line describing interaction)\n3. Append to existing Chat_Summary, keep only last 5 entries\n4. Call Roopam_Sarees_Lead with: Status, Chat_Summary, Last_Interaction, and any new customer fields\n\nFor order confirmation flow specifically:\n1. Detect order intent → Ask \"Type Yes/Haan\"\n2. Wait for exact confirmation\n3. IF confirmed → Call Roopam_Order_booking tool\n4. Update Status = \"Order Booking\" + Chat_Summary\n5. Let sub-workflow handle next steps\n\n═══════════════════════════════════════\nEND OF INSTRUCTIONS\n═══════════════════════════════════════",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        16,
+        480
+      ],
+      "id": "176d29a9-44eb-44a7-9cf6-622dab08161a",
+      "name": "AI Agent1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        336
+      ],
+      "id": "14de6bec-7a17-487e-b714-233d3ef0b7c6",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Extract Data').first().json.phone }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        256
+      ],
+      "id": "3dee1b3c-7a4f-44aa-b5ae-66ee9c74dac5",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-atul-demo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1184,
+        464
+      ],
+      "id": "73b45b0d-ecbd-4f9f-a488-d69841dd43bf",
+      "name": "Webhook1",
+      "webhookId": "7071494e-a919-4963-9f9d-2ff6497c32e3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+              "leftValue": "={{ $('Webhook1').item.json.body.data.key.fromMe }}",
+              "rightValue": "919352922959@s.whatsapp.net",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "9071c1b7-4cec-42d5-9712-c29bdf5c4ba1",
+              "leftValue": "={{ $('Webhook1').item.json.body.data.key.remoteJid }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -800,
+        464
+      ],
+      "id": "ddc5b44a-2753-4815-aab0-af98f3525d7d",
+      "name": "Check Message Sender"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"phone\": \"{{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.body.data.message.conversation }}\",\n  \"messageId\": \"{{ $json.body.data.key.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -976,
+        464
+      ],
+      "id": "3a1413e7-299a-46fe-b140-fa11388c9a40",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "City": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('City', ``, 'string') }}",
+            "Budget": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Budget', ``, 'string') }}",
+            "Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Category', ``, 'string') }}",
+            "Occasion": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Occasion', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+            "Last_Interaction": "={{ $now }}",
+            "Chat_Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Chat_Summary', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Occasion",
+              "displayName": "Occasion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Interaction",
+              "displayName": "Last_Interaction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Chat_Summary",
+              "displayName": "Chat_Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        304
+      ],
+      "id": "184a7d99-29ea-48d6-bfc0-bed1125cae7f",
+      "name": "Roopam_Sarees_Lead",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "delete",
+        "deleteMode": "all"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        800
+      ],
+      "id": "a6e4e583-07f7-48cf-8deb-0af7d7cc4d69",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1513928557,
+          "mode": "list",
+          "cachedResultName": "Links",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1513928557"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        336
+      ],
+      "id": "760f3c6a-8605-4f06-a3b3-c8b40b56cf34",
+      "name": "Get _Product_link",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6414829a-df46-48de-a2bd-d92dbd9d2b67",
+              "leftValue": "={{ $json.Phone }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0525d581-ab47-4d5a-b27f-76dece4bbdd8",
+              "leftValue": "={{ $json.Role }}",
+              "rightValue": "Friend",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        480
+      ],
+      "id": "3b79e12f-bdfd-4ffa-82f1-8a907788de56",
+      "name": "Exclude Contacts",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 895714046,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -592,
+        480
+      ],
+      "id": "16bf7ac0-1e2a-42c0-9e1b-57035b32aa64",
+      "name": "Get_Contacts",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        128
+      ],
+      "id": "d977c80d-5f7f-4c92-8c00-1d865f246175",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "435e7194-12be-4f4a-9efb-eebed9cd3ae4",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "Conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "974654cd-77c5-47c7-b326-2ea4f4268120",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "af425ca6-7c01-46f7-8add-91c6d6faec92",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "Conversation Closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        464
+      ],
+      "id": "49e7b795-d818-4c35-a55c-dd922eb88c0e",
+      "name": "Close Conversation"
+    },
+    {
+      "parameters": {
+        "description": "Retrieves accurate product information about Roopam Sarees Jaipur's inventory, policies, and services. Use retrieved context to answer customer questions with precision.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL CONTEXT INTERPRETATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. WORK TYPES = PRODUCT AVAILABILITY\nWhen context mentions any work/embroidery type, it means sarees/lehengas WITH that work ARE AVAILABLE:\n\n✓ \"Gotta Patti work\" = Gotta Patti sarees/lehengas are available\n✓ \"Mothda work\" = Mothda sarees/lehengas are available\n✓ \"Zari work\" = Zari work sarees/lehengas are available\n✓ \"Leheriya\" = Leheriya sarees are available\n✓ \"Chunri\" = Chunri sarees are available\n✓ \"Stone work\" = Stone work sarees/lehengas are available\n✓ \"Sequin\" = Sequin sarees/lehengas are available\n✓ \"Mirror/Abhla work\" = Mirror work sarees/lehengas are available\n✓ \"Thread embroidery\" = Thread embroidered sarees/lehengas are available\n✓ \"Pearl work\" = Pearl work sarees/lehengas are available\n✓ \"Block print\" = Block printed sarees are available\n✓ \"Digital print\" = Digital printed sarees are available\n✓ \"Hand painted\" = Hand painted sarees are available\n✓ \"Lace work\" = Lace sarees are available\n\n2. FABRIC MENTIONS = PRODUCT AVAILABILITY\nWhen fabrics are listed, products are available in those materials:\n\n✓ Silk, Georgette, Chiffon, Cotton, Art Silk, Pure Silk, Raw Silk, Velvet, Brocade, Satin, Net, Organza, Taffeta, Cotton-Silk blend, Chanderi\n\n3. SPECIFIC PRODUCT CATEGORIES (CONFIRM THESE ARE AVAILABLE)\n\nSAREES:\n✓ Rajasthani Bandhani sarees (specialty product)\n✓ Banarasi sarees\n✓ Tussar sarees\n✓ Kanjivaram sarees\n✓ Gaji sarees\n✓ Pure Silk sarees\n✓ Art Silk sarees\n✓ Bridal sarees\n✓ Designer collection sarees\n✓ Festival collection sarees (Diwali, Karwa Chauth, Teej, Holi, Navratri, Raksha Bandhan)\n✓ Daily & Office wear cotton sarees\n✓ Party wear sarees (Georgette, sequin, heavy border)\n\nLEHENGAS:\n✓ Bridal lehengas (custom-stitched)\n✓ Wedding function lehengas (Sangeet, Mehendi, Haldi, Engagement, Reception)\n✓ Wedding guest lehengas\n✓ Girlish lehengas (ages 5-30)\n✓ Party wear lehengas (Cocktail, Birthday, Anniversary)\n✓ Festival lehengas (Navratri Chaniya Choli in all 9 colors, Diwali, Karwa Chauth, Teej)\n\nBLOUSES:\n✓ Unstitched blouse pieces (included with sarees)\n✓ Custom blouse stitching available\n✓ Ready-made blouses\n\n4. OCCASIONS SERVED (PRODUCTS AVAILABLE FOR)\n✓ Weddings (Bride, Pre-wedding functions, Reception, Guest)\n✓ Festivals (Diwali, Karwa Chauth, Teej, Navratri, Holi, Raksha Bandhan)\n✓ Parties & Social events (Birthday, Anniversary, Cocktail)\n✓ Professional/Office wear\n✓ Daily & Casual wear\n✓ Religious occasions (Temple visits, Pujas)\n\n5. SERVICES AVAILABLE\n✓ Custom stitching (lehengas, blouses)\n✓ Design customization\n✓ Color customization\n✓ Size customization (XS to XXL)\n✓ Professional measurements\n✓ Alteration services\n✓ Free home delivery in Jaipur\n✓ Outstation delivery (all India)\n✓ International shipping (USA, UK, Australia, Canada, Middle East, Europe)\n✓ WhatsApp shopping with photos/videos\n✓ Video call product viewing\n\n6. STORE INFORMATION\nLocation: Shop No. 49-50, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur\nPhone/WhatsApp: 09982922220\nTimings: Mon-Sat 11AM-9PM | Sun 11AM-7PM\nEstablished: 1990 (30+ years)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nRESPONSE LOGIC (FOLLOW STRICTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks about ANY item listed above:\n→ Answer: \"YES, [product] is available\" + provide relevant details from context\n\nIF customer asks about specific price/exact stock:\n→ Answer: \"For specific pricing and stock availability, please contact us on WhatsApp: 09982922220 or visit our store.\"\n\nIF customer asks about product NOT mentioned anywhere in context:\n→ Answer: \"I don't have specific information about [product]. Please contact our team on WhatsApp 09982922220 for details.\"\n\nNEVER say \"I don't know\" if the product category, work type, or fabric is mentioned in retrieved context.\n\nNEVER make up information not present in context.\n\nALWAYS provide store contact (09982922220) when detailed information is requested."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        704
+      ],
+      "id": "6de5ae7a-fa2e-4171-a3b9-106e0fe6b4c6",
+      "name": "roopam_saree_faq"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "roopam-sarees-kb",
+          "mode": "list",
+          "cachedResultName": "roopam-sarees-kb"
+        },
+        "options": {
+          "pineconeNamespace": "Q&A"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        896
+      ],
+      "id": "66a7a0b2-f433-4df0-aa43-ac91c7990a10",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "2LYrjU3i1MTfpDaP",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        896
+      ],
+      "id": "69e713bb-4ad0-41cb-8256-521c8eb7c63d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        1104
+      ],
+      "id": "bc5f6530-ffc5-4683-87ae-15e13c679245",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        208
+      ],
+      "id": "101b9864-92b1-4d7d-9b0d-31ba4810a544",
+      "name": "Get_Lead_Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        624
+      ],
+      "id": "d3602631-e323-4072-8052-bc6356325b78",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2032,
+        592
+      ],
+      "id": "25528de1-b342-44ef-84bc-d97599497959",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extract Issue Details').first().json }}",
+        "options": {
+          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2016,
+        400
+      ],
+      "id": "90ed3cc3-a206-459a-977e-c80aefd466a8",
+      "name": "Prepare Response for Issues"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "daab73ae-6215-4a1e-a627-8429b6aa02f8",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "aapse jald contact karenge",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "4214d73a-f7fb-43c6-822e-97e3f4358fe0",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "team aapse contact karenge",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "916274de-c213-45b7-ad52-e4e25bcd64eb",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "jald contact karegi",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "2fd17e3f-eb24-416d-93dd-132d1107bf6b",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "share karegi",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "c8ac746a-2045-4ec0-9149-ffabbfadd249",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "team",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        496
+      ],
+      "id": "176128ef-0c36-4828-8036-074e100ff282",
+      "name": "Customer has Query"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        400
+      ],
+      "id": "12c6814e-0d6d-47d2-a027-3ec724ab4777",
+      "name": "Extract Issue Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2224,
+        576
+      ],
+      "id": "ef3a928e-e4b5-4f13-901b-1bcca6264273",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        256
+      ],
+      "id": "3ac13270-c6c1-4de1-a159-1fbcad08676c",
+      "name": "Fetch_Customer_Status",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a8d2f275-c10d-4eca-8c2e-7fc138418327",
+                    "leftValue": "={{ $json.Status }}",
+                    "rightValue": "Order Booking",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Order Booking"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fcb98fa5-cebf-486c-bf97-931f627d867e",
+      "name": "Route_By_Status"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extract Data').first().json.message }}\n",
+        "options": {
+          "systemMessage": "You are \"Roopam Sarees Order Collection Executive\" — handling order details for a confirmed order.\n\nCustomer has already confirmed they want to place an order. Your job is to collect order details efficiently and save to system.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 YOUR GOAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCollect 3 details from customer, then save order:\n1. Item_Code (SKU customer provides)\n2. Additional_Details (product preferences/notes)\n3. Delivery_Date (when they want delivery)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Get_Lead_Details (READ customer data from Sheet1)\n   CALL THIS: On your very first message to fetch Name, City\n   PURPOSE: Get customer's Name and City automatically\n\n2. Roopam_Sarees_Lead (WRITE to Sheet1)\n   CALL THIS: \n   - To update Status back to \"Follow-up\" when order complete\n   - To update Chat_Summary\n   - When customer changes mind (exits order flow)\n\n3. Roopam_Order_Tool (WRITE to Orders sheet)\n   CALL THIS: Only after customer types \"FINAL\" to confirm order\n   PURPOSE: Save complete order details\n   REQUIRED FIELDS: Name, City, Item_Code, Additional_Details, Delivery_Date\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: When customer asks about delivery/returns/policies during order\n   PURPOSE: Answer questions without leaving order flow\n\n5. Get_product_link (READ product catalog)\n   CALL THIS: If customer asks to see products or changes mind about selection\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ORDER COLLECTION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nINITIALIZATION (First Message Only):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOn the very first customer message in order flow:\n\nSTEP A: Call Get_Lead_Details to fetch Name, City\nSTEP B: Store Name, City in your memory (you'll need them later)\nSTEP C: Proceed to Item Code collection\n\n⚠️ NEVER ask customer for Name or City. These are auto-fetched.\n\nSTEP 1: COLLECT ITEM_CODE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ka Item Code batao (jo team ne share kiya) 📝\n\nExample: RPM-SAR-001, RPM-LEH-045\"\n\nWhen customer replies:\n- Save exactly what they provide (no modifications)\n- No validation needed\n- Move to Step 2\n\nIf customer says \"pata nahi\" or \"code nahi hai\":\n→ Reply: \"Koi baat nahi! Product description detail mein batao (color, type, design) \nMain team ko inform kar dunga 📋\"\n→ Set Item_Code = \"PENDING\"\n→ Move to Step 2\n\nSTEP 2: COLLECT ADDITIONAL_DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ke baare mein kuch special details batao? \n\nJaise:\n• Color preference\n• Size preference  \n• Special instructions\n• Occasion\n\n(Agar nahi hai to 'Skip' type karein) 💬\"\n\nWhen customer replies:\n- If \"Skip\" or \"Nahi\" → Save Additional_Details = \"None\"\n- Else → Save their exact message\n- Move to Step 3\n\nSTEP 3: COLLECT DELIVERY_DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Delivery kab chahiye? 📅\n\nExample: Tomorrow, 25 Jan, Next Monday, 3 days\"\n\nWhen customer replies:\n- Save exactly what they say (no date conversion)\n- Any format acceptable\n- Move to Step 4\n\nSTEP 4: SHOW SUMMARY & GET CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDisplay order summary:\n\n\"✅ Order Details Confirm Karein:\n\n👤 Name: {Name from Get_Lead_Details}\n📍 City: {City from Get_Lead_Details}\n🏷 Item Code: {collected Item_Code}\n📦 Quantity: 1 piece\n📋 Details: {collected Additional_Details}\n📅 Delivery: {collected Delivery_Date}\n\nSab sahi hai? \n\nType *'FINAL'* to confirm order 🛍✨\"\n\nWait for customer response.\n\nSTEP 5: FINAL CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer types \"FINAL\" or \"final\" or \"yes\" or \"Final\":\n\nACTION 1: Call Roopam_Order_Tool with these exact parameters:\n  - Name: {from Get_Lead_Details}\n  - City: {from Get_Lead_Details}\n  - Item_Code: {collected from customer}\n  - Item_Quantity: 1\n  - Additional_Details: {collected from customer}\n  - Delivery_Date: {collected from customer}\n  - Order_Status: New\n\nACTION 2: Call Roopam_Sarees_Lead to update:\n  - Status = \"Follow-up\"\n  - Chat_Summary = \"Order placed: {Item_Code}, Delivery: {Delivery_Date}\"\n\nACTION 3: Reply with confirmation:\n\n\"🎉 Order Confirmed Successfully!\n\nOrder ID: [Will be generated]\nTeam aapse 30 minutes mein contact karenge for payment & final details.\n\nThank you for choosing Roopam Sarees! 💕🙏\n\nKuch aur help chahiye? (Agar nahi to 'Bye' type karein)\"\n\nACTION 4: STOP (order complete, customer returns to normal conversation)\n\nIf customer types anything else (not FINAL):\n→ \"Details verify kar lo. Sab theek hai to 'FINAL' type karo ✅\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 HANDLING SPECIAL SCENARIOS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSCENARIO A: Customer Asks Question During Order\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Delivery kitne din mein hogi?\"\n\nYOUR RESPONSE:\n1. Call roopam_saree_faq tool with query\n2. Answer their question based on FAQ\n3. Continue order flow: \"Aur kuch puchna hai? Nahi to {next step}\"\n\nKEEP Status = \"Order Booking\" (don't exit order flow)\n\nSCENARIO B: Customer Changes Mind (Inquires about new Product other than current Category)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer says:\n• \"Wait, pehle aur options dikhao\"\n• \"Cancel karo\"\n• \"Abhi nahi\"\n• \"Sochta hoon\"\n• \"[Product] chahiye \"\n• \"Lehenga/Saree/Silk/Chiffon chahiye \"\n\nYOUR RESPONSE:\n1. Call Roopam_Sarees_Lead with:\n   - Status = \"Follow-up\"\n   - Chat_Summary = \"Order cancelled by customer, wants to see more options\"\n\n2. Reply: \"Koi baat nahi! \n\nAur designs dekhne hain? Budget batao, main link share karta hoon 🥻✨\n\nYa kuch aur help chahiye?\"\n\n3. STOP (next message routes to Main Agent)\n\nSCENARIO C: Customer Wants to See Products\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Designs dikhao pehle\" \"[Product] chahiye\"\n\nYOUR RESPONSE:\n1. Ask: \"Category aur budget batao?\" (if not already known)\n2. Call Get_product_link with Category, Budget\n3. Share product link\n4. Ask: \"Ye wala order karna hai? Ya aur dekhna hai?\"\n\nIf they want to order from link:\n→ Continue current order flow with that product\n\nIf they want to see more:\n→ Set Status = \"Follow-up\" and exit to Main Agent\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 REPLY STYLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Match customer's language (Hinglish/English)\n- Short replies: max 3-4 lines\n- ONE question at a time\n- Friendly, conversational tone\n- Use emojis: 📝📋📅📍🎉✅🙏💕🛍\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ CRITICAL RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. ALWAYS call Get_Lead_Details on first message to fetch Name, City\n2. NEVER ask customer for Name or City\n3. ONLY call Roopam_Order_Tool after \"FINAL\" confirmation\n4. ALWAYS set Status = \"Follow-up\" after order complete\n5. ALWAYS update Chat_Summary when order saved\n6. Item_Quantity is ALWAYS 1 (never ask customer)\n7. Order_Status is ALWAYS \"New\" when saving\n8. If customer exits order flow, set Status = \"Follow-up\"\n9. ONE question per reply (don't ask multiple things)\n10. Save exact text customer provides (no modifications)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 CONVERSATION STATE TRACKING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse conversation history to know:\n- What you last asked → What customer is responding to\n- What's already collected → What's still pending\n- Customer's last question → Context for your reply\n\nCheck memory before each response to determine which step you're on.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEND OF INSTRUCTIONS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        32
+      ],
+      "id": "2937092f-f6d4-49bf-accc-5c6b5e921113",
+      "name": "Order_Booking_Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "=918003626766"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2384,
+        400
+      ],
+      "id": "5481f451-cf92-4135-9f65-74d7b9708eb6",
+      "name": "Send Message to Business",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Merge Agent Output').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        496
+      ],
+      "id": "9ed59b82-8516-483a-a726-70e66e65028a",
+      "name": "Reply to Customer",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1509579590,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Item_Code": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item_Code', ``, 'string') }}",
+            "Item_Quantity": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item_Quantity', ``, 'string') }}",
+            "Additional_Details": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Additional_Details', ``, 'string') }}",
+            "Delivery_Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Delivery_Date', ``, 'string') }}",
+            "Order_Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_Status', ``, 'string') }}",
+            "Order_Created_At": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order_ID",
+              "displayName": "Order_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Item_Code",
+              "displayName": "Item_Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item_Quantity",
+              "displayName": "Item_Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Additional_Details",
+              "displayName": "Additional_Details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery_Date",
+              "displayName": "Delivery_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Status",
+              "displayName": "Order_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order_Created_At",
+              "displayName": "Order_Created_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        384
+      ],
+      "id": "26bb26af-594c-46f5-a035-c0daf5215c46",
+      "name": "Roopam_Order_Tool",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Node Name: Roopam_Order_Tool\n\nDescription: \nSaves customer order to Orders sheet after customer confirms with \"FINAL\" keyword.\n\nWHEN TO CALL:\n- Only after customer types \"FINAL\", \"final\", or \"yes\" to confirm order\n- After collecting: Item_Code, Additional_Details, Delivery_Date\n\nREQUIRED BEFORE CALLING:\n- Name (already fetched from Get_Lead_Details, in memory)\n- City (already fetched from Get_Lead_Details, in memory)\n- Item_Code (customer provided, exact text)\n- Additional_Details (customer description)\n- Delivery_Date (customer provided, flexible format)\n\nALWAYS PASS:\n- Item_Quantity: 1\n- Order_Status: New\n\nDO NOT CALL without \"FINAL\" confirmation.\n\nOperation: Append\n  ⚠️ IMPORTANT: Select \"Append\" NOT \"Append Or Update\"\n  Reason: Each order is a new row, even if same customer\n\nCredential: Google Sheets account (select existing)\n\nDocument:\n  - By: ID\n\nSheet:\n  - By: Name\n  - Sheet Name: Orders"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        864,
+        368
+      ],
+      "id": "9a18b1be-d678-4e2d-8d25-5219f6af823a",
+      "name": "Merge Agent Output"
+    }
+  ],
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Message Sender": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get_Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Check Message Sender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roopam_Sarees_Lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get _Product_link": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude Contacts": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch_Customer_Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Contacts": {
+      "main": [
+        [
+          {
+            "node": "Exclude Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close Conversation": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "roopam_saree_faq": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "roopam_saree_faq",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "roopam_saree_faq",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Lead_Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Response for Issues": {
+      "main": [
+        [
+          {
+            "node": "Send Message to Business",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer has Query": {
+      "main": [
+        [
+          {
+            "node": "Extract Issue Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Issue Details": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch_Customer_Status": {
+      "main": [
+        [
+          {
+            "node": "Route_By_Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route_By_Status": {
+      "main": [
+        [
+          {
+            "node": "Order_Booking_Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order_Booking_Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge Agent Output",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Reply to Customer": {
+      "main": [
+        [
+          {
+            "node": "Customer has Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roopam_Order_Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Close Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1453",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "82.112.238.115",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9c295241ed18eccd-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "82.112.238.115, 172.71.198.148",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "2fcb207db2c0",
+            "x-real-ip": "172.71.198.148"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Atul-Demo",
+            "data": {
+              "key": {
+                "remoteJid": "918239909115@s.whatsapp.net",
+                "remoteJidAlt": "185637277827204@lid",
+                "fromMe": false,
+                "id": "3AA6CCFA28DECB11EB70",
+                "participant": "",
+                "addressingMode": "pn"
+              },
+              "pushName": "Atul Khandelwal",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Wapas bolo ki exact price chahiye",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 33,
+                      "1": 159,
+                      "2": 65,
+                      "3": 66,
+                      "4": 144,
+                      "5": 125,
+                      "6": 233,
+                      "7": 133,
+                      "8": 203,
+                      "9": 49
+                    },
+                    "senderTimestamp": {
+                      "low": 1768892242,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "recipientKeyHash": {
+                      "0": 173,
+                      "1": 158,
+                      "2": 219,
+                      "3": 91,
+                      "4": 15,
+                      "5": 79,
+                      "6": 157,
+                      "7": 133,
+                      "8": 202,
+                      "9": 11
+                    },
+                    "recipientTimestamp": {
+                      "low": 1768892107,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 26,
+                    "1": 99,
+                    "2": 38,
+                    "3": 126,
+                    "4": 189,
+                    "5": 168,
+                    "6": 128,
+                    "7": 11,
+                    "8": 215,
+                    "9": 202,
+                    "10": 206,
+                    "11": 78,
+                    "12": 117,
+                    "13": 111,
+                    "14": 135,
+                    "15": 199,
+                    "16": 219,
+                    "17": 136,
+                    "18": 237,
+                    "19": 20,
+                    "20": 188,
+                    "21": 4,
+                    "22": 42,
+                    "23": 118,
+                    "24": 29,
+                    "25": 240,
+                    "26": 213,
+                    "27": 26,
+                    "28": 211,
+                    "29": 131,
+                    "30": 162,
+                    "31": 182
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1769192596,
+              "instanceId": "1973ce79-daaa-4453-9e44-94d111cfc670",
+              "source": "ios"
+            },
+            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-atul-demo",
+            "date_time": "2026-01-23T15:23:16.787Z",
+            "sender": "918003626766@s.whatsapp.net",
+            "server_url": "https://api.chatsocialai.in",
+            "apikey": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-atul-demo",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "2820aa36-7682-49bb-b4a1-74721e276750",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-03T10:57:10.389Z",
+      "createdAt": "2026-02-03T10:57:10.389Z",
+      "role": "workflow:owner",
+      "workflowId": "vfBZCue5KapWstShv0038",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
