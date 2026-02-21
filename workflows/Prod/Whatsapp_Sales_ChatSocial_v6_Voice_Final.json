@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-17T19:03:28.136Z",
+  "updatedAt": "2026-02-21T08:11:55.683Z",
   "createdAt": "2026-02-17T13:50:21.407Z",
   "id": "Ze4RauWLVaHvdekp",
   "name": "Whatsapp Sales ChatSocial v6 Voice Final",
@@ -11,7 +11,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        624,
+        832,
         272
       ],
       "id": "ad6fd4ee-3f11-4b1c-9e1c-8aa627fe2350",
@@ -30,7 +30,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        1024,
+        1232,
         80
       ],
       "id": "d389eb67-49a0-4dc4-aa39-9c5d96880bd6",
@@ -64,7 +64,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        400,
+        608,
         176
       ],
       "id": "9aaae514-b0ce-4d70-9278-0abdc03d1e2c",
@@ -84,7 +84,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        848,
+        1056,
         512
       ],
       "id": "9e889c3e-c505-47ef-b771-0a4e929c517f",
@@ -107,7 +107,7 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        2176,
+        2384,
         176
       ],
       "id": "fc696ea0-a77d-484a-919a-7aa052d5e167",
@@ -159,7 +159,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -1520,
+        -1312,
         -112
       ],
       "notes": "Routes based on: incoming message OR delivery status"
@@ -178,7 +178,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        944,
+        1152,
         304
       ],
       "id": "be1ee1a9-fb55-4336-b47b-4e12765e2bd6",
@@ -321,7 +321,7 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1328,
+        1536,
         304
       ],
       "id": "9b0c3b63-2d66-4041-9e4d-19ffb49d6f30",
@@ -369,7 +369,7 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1456,
+        1664,
         304
       ],
       "id": "b774e00b-c805-4fcc-8b53-8b4ced3a7cb8",
@@ -389,7 +389,7 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1072,
+        1280,
         304
       ],
       "id": "ccba3f56-2e5c-491a-b501-d14a6b484b25",
@@ -424,7 +424,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        624,
+        832,
         80
       ],
       "id": "07636140-3f09-4e7e-adba-6442e95c66f0",
@@ -478,7 +478,7 @@
       "type": "n8n-nodes-base.googleCalendarTool",
       "typeVersion": 1.3,
       "position": [
-        1200,
+        1408,
         304
       ],
       "id": "7ca33f19-7538-47ea-8a13-dac7d1bb2205",
@@ -543,7 +543,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1952,
+        2160,
         80
       ],
       "id": "7ddc741a-442e-447c-8114-4b3aa5f33772",
@@ -554,7 +554,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2176,
+        2384,
         -16
       ],
       "id": "a4d14e88-b261-4627-941e-c094d4746031",
@@ -589,7 +589,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
       "position": [
-        1584,
+        1792,
         512
       ],
       "id": "ae6b912f-0997-4cf2-968e-ca683d7b28cc",
@@ -610,7 +610,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1664,
+        1872,
         720
       ],
       "id": "99b6c843-4698-4557-8427-0789df05a51e",
@@ -629,7 +629,7 @@
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1.1,
       "position": [
-        1584,
+        1792,
         304
       ],
       "id": "05a7cc6e-9a9f-4872-9507-7256d4fad211",
@@ -647,7 +647,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -1232,
+        -1024,
         -304
       ],
       "credentials": {
@@ -675,7 +675,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -944,
+        -832,
         -304
       ],
       "credentials": {
@@ -696,7 +696,7 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        -720,
+        -640,
         -304
       ],
       "credentials": {
@@ -749,7 +749,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -496,
+        -448,
         -304
       ]
     },
@@ -796,8 +796,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -496,
-        -112
+        -752,
+        -128
       ]
     },
     {
@@ -863,7 +863,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -272,
+        -64,
         -224
       ]
     },
@@ -921,7 +921,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -48,
+        160,
         -400
       ],
       "credentials": {
@@ -985,7 +985,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -48,
+        160,
         -208
       ],
       "credentials": {
@@ -1014,7 +1014,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        176,
+        384,
         -400
       ]
     },
@@ -1037,7 +1037,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        176,
+        384,
         -208
       ]
     },
@@ -1054,7 +1054,7 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        400,
+        608,
         -400
       ],
       "webhookId": "8c423c0b-c1d1-4326-9f7c-ed8520df0aa5",
@@ -1078,7 +1078,7 @@
       "type": "n8n-nodes-base.whatsApp",
       "typeVersion": 1.1,
       "position": [
-        400,
+        608,
         -208
       ],
       "webhookId": "3ed82c2b-5f17-4f3c-8d93-52b27bdfd0df",
@@ -1118,7 +1118,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        -48,
+        160,
         16
       ],
       "alwaysOutputData": true,
@@ -1158,7 +1158,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        176,
+        384,
         16
       ]
     },
@@ -1169,7 +1169,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        400,
+        608,
         -16
       ]
     },
@@ -1201,11 +1201,110 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2384,
+        2592,
         -16
       ],
       "id": "2cc44422-a3cb-494c-b6c5-e61b8a9de406",
       "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "919352922959@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+              "leftValue": "={{ $json.messages[0].from }}",
+              "rightValue": "919462861226",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -144
+      ],
+      "id": "9b25fa27-786a-4c1a-b6d8-5bb1b4da40b0",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        48
+      ],
+      "id": "f3e50c9f-a804-4bd8-b3f0-0e8d3b20ac2f",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "67252c2c-d0f4-4988-95b4-b37e2b9bc8d3",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1536,
+        -112
+      ],
+      "id": "4affec18-5e51-4a31-ab5f-f90901ece5a9",
+      "name": "If3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        112
+      ],
+      "id": "253b0467-e2ff-4307-90a5-1aa8369a8286",
+      "name": "No Operation, do nothing3"
     }
   ],
   "connections": {
@@ -1310,7 +1409,7 @@
       "main": [
         [
           {
-            "node": "Switch: Event Type",
+            "node": "If3",
             "type": "main",
             "index": 0
           }
@@ -1438,7 +1537,7 @@
       "main": [
         [
           {
-            "node": "Check START STOP",
+            "node": "If2",
             "type": "main",
             "index": 0
           }
@@ -1449,7 +1548,7 @@
       "main": [
         [
           {
-            "node": "Check START STOP",
+            "node": "If2",
             "type": "main",
             "index": 0
           }
@@ -1564,6 +1663,42 @@
           }
         ]
       ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Check START STOP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Switch: Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1615,8 +1750,8 @@
       }
     ]
   },
-  "versionId": "a30831cf-1471-4379-b180-aefa0460ec53",
-  "activeVersionId": "a30831cf-1471-4379-b180-aefa0460ec53",
+  "versionId": "b9ddcd2e-86e0-4cf1-ab1e-7526124255a8",
+  "activeVersionId": "b9ddcd2e-86e0-4cf1-ab1e-7526124255a8",
   "triggerCount": 1,
   "shared": [
     {
@@ -1628,9 +1763,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-17T19:02:49.000Z",
-    "createdAt": "2026-02-17T19:02:34.100Z",
-    "versionId": "a30831cf-1471-4379-b180-aefa0460ec53",
+    "updatedAt": "2026-02-21T08:12:19.000Z",
+    "createdAt": "2026-02-21T08:11:55.687Z",
+    "versionId": "b9ddcd2e-86e0-4cf1-ab1e-7526124255a8",
     "workflowId": "Ze4RauWLVaHvdekp",
     "nodes": [
       {
@@ -1638,7 +1773,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          624,
+          832,
           272
         ],
         "id": "ad6fd4ee-3f11-4b1c-9e1c-8aa627fe2350",
@@ -1657,7 +1792,7 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3,
         "position": [
-          1024,
+          1232,
           80
         ],
         "id": "d389eb67-49a0-4dc4-aa39-9c5d96880bd6",
@@ -1691,7 +1826,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          400,
+          608,
           176
         ],
         "id": "9aaae514-b0ce-4d70-9278-0abdc03d1e2c",
@@ -1711,7 +1846,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          848,
+          1056,
           512
         ],
         "id": "9e889c3e-c505-47ef-b771-0a4e929c517f",
@@ -1734,7 +1869,7 @@
         "type": "n8n-nodes-base.whatsApp",
         "typeVersion": 1.1,
         "position": [
-          2176,
+          2384,
           176
         ],
         "id": "fc696ea0-a77d-484a-919a-7aa052d5e167",
@@ -1786,7 +1921,7 @@
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3,
         "position": [
-          -1520,
+          -1312,
           -112
         ],
         "notes": "Routes based on: incoming message OR delivery status"
@@ -1805,7 +1940,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          944,
+          1152,
           304
         ],
         "id": "be1ee1a9-fb55-4336-b47b-4e12765e2bd6",
@@ -1948,7 +2083,7 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1328,
+          1536,
           304
         ],
         "id": "9b0c3b63-2d66-4041-9e4d-19ffb49d6f30",
@@ -1996,7 +2131,7 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1456,
+          1664,
           304
         ],
         "id": "b774e00b-c805-4fcc-8b53-8b4ced3a7cb8",
@@ -2016,7 +2151,7 @@
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
         "position": [
-          1072,
+          1280,
           304
         ],
         "id": "ccba3f56-2e5c-491a-b501-d14a6b484b25",
@@ -2051,7 +2186,7 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          624,
+          832,
           80
         ],
         "id": "07636140-3f09-4e7e-adba-6442e95c66f0",
@@ -2105,7 +2240,7 @@
         "type": "n8n-nodes-base.googleCalendarTool",
         "typeVersion": 1.3,
         "position": [
-          1200,
+          1408,
           304
         ],
         "id": "7ca33f19-7538-47ea-8a13-dac7d1bb2205",
@@ -2170,7 +2305,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          1952,
+          2160,
           80
         ],
         "id": "7ddc741a-442e-447c-8114-4b3aa5f33772",
@@ -2181,7 +2316,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          2176,
+          2384,
           -16
         ],
         "id": "a4d14e88-b261-4627-941e-c094d4746031",
@@ -2216,7 +2351,7 @@
         "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
         "typeVersion": 1.3,
         "position": [
-          1584,
+          1792,
           512
         ],
         "id": "ae6b912f-0997-4cf2-968e-ca683d7b28cc",
@@ -2237,7 +2372,7 @@
         "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
         "typeVersion": 1.2,
         "position": [
-          1664,
+          1872,
           720
         ],
         "id": "99b6c843-4698-4557-8427-0789df05a51e",
@@ -2256,7 +2391,7 @@
         "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
         "typeVersion": 1.1,
         "position": [
-          1584,
+          1792,
           304
         ],
         "id": "05a7cc6e-9a9f-4872-9507-7256d4fad211",
@@ -2274,7 +2409,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          -1232,
+          -1024,
           -304
         ],
         "credentials": {
@@ -2302,7 +2437,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          -944,
+          -832,
           -304
         ],
         "credentials": {
@@ -2323,7 +2458,7 @@
         "type": "@n8n/n8n-nodes-langchain.openAi",
         "typeVersion": 2.1,
         "position": [
-          -720,
+          -640,
           -304
         ],
         "credentials": {
@@ -2376,7 +2511,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          -496,
+          -448,
           -304
         ]
       },
@@ -2423,8 +2558,8 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          -496,
-          -112
+          -752,
+          -128
         ]
       },
       {
@@ -2490,7 +2625,7 @@
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3,
         "position": [
-          -272,
+          -64,
           -224
         ]
       },
@@ -2548,7 +2683,7 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          -48,
+          160,
           -400
         ],
         "credentials": {
@@ -2612,7 +2747,7 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          -48,
+          160,
           -208
         ],
         "credentials": {
@@ -2641,7 +2776,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          176,
+          384,
           -400
         ]
       },
@@ -2664,7 +2799,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          176,
+          384,
           -208
         ]
       },
@@ -2681,7 +2816,7 @@
         "type": "n8n-nodes-base.whatsApp",
         "typeVersion": 1.1,
         "position": [
-          400,
+          608,
           -400
         ],
         "webhookId": "8c423c0b-c1d1-4326-9f7c-ed8520df0aa5",
@@ -2705,7 +2840,7 @@
         "type": "n8n-nodes-base.whatsApp",
         "typeVersion": 1.1,
         "position": [
-          400,
+          608,
           -208
         ],
         "webhookId": "3ed82c2b-5f17-4f3c-8d93-52b27bdfd0df",
@@ -2745,7 +2880,7 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          -48,
+          160,
           16
         ],
         "alwaysOutputData": true,
@@ -2785,7 +2920,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          176,
+          384,
           16
         ]
       },
@@ -2796,7 +2931,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          400,
+          608,
           -16
         ]
       },
@@ -2828,11 +2963,110 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2384,
+          2592,
           -16
         ],
         "id": "2cc44422-a3cb-494c-b6c5-e61b8a9de406",
         "name": "If1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+                "leftValue": "={{ $json.message }}",
+                "rightValue": "919352922959@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+                "leftValue": "={{ $json.messages[0].from }}",
+                "rightValue": "919462861226",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -272,
+          -144
+        ],
+        "id": "9b25fa27-786a-4c1a-b6d8-5bb1b4da40b0",
+        "name": "If2"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -96,
+          48
+        ],
+        "id": "f3e50c9f-a804-4bd8-b3f0-0e8d3b20ac2f",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "67252c2c-d0f4-4988-95b4-b37e2b9bc8d3",
+                "leftValue": "={{ $json.messages[0].type }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -1536,
+          -112
+        ],
+        "id": "4affec18-5e51-4a31-ab5f-f90901ece5a9",
+        "name": "If3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -1312,
+          112
+        ],
+        "id": "253b0467-e2ff-4307-90a5-1aa8369a8286",
+        "name": "No Operation, do nothing3"
       }
     ],
     "connections": {
@@ -2937,7 +3171,7 @@
         "main": [
           [
             {
-              "node": "Switch: Event Type",
+              "node": "If3",
               "type": "main",
               "index": 0
             }
@@ -3065,7 +3299,7 @@
         "main": [
           [
             {
-              "node": "Check START STOP",
+              "node": "If2",
               "type": "main",
               "index": 0
             }
@@ -3076,7 +3310,7 @@
         "main": [
           [
             {
-              "node": "Check START STOP",
+              "node": "If2",
               "type": "main",
               "index": 0
             }
@@ -3191,10 +3425,46 @@
             }
           ]
         ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Check START STOP",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "Switch: Event Type",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version a30831cf 1802 1232AM",
+    "name": "Version b9ddcd2e 2102 0142PM",
     "description": "",
     "autosaved": false
   },
