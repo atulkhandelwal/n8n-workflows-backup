@@ -1,0 +1,607 @@
+{
+  "updatedAt": "2026-02-23T08:30:44.975Z",
+  "createdAt": "2026-02-23T08:30:44.975Z",
+  "id": "8HUtdcsTal9bMijB",
+  "name": "Main Router Workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "main-whatsapp-router"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1
+    },
+    {
+      "id": "extract-data",
+      "name": "Extract Data",
+      "parameters": {
+        "jsonOutput": "={\n  \"phone\": \"{{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}\",\n  \"messageId\": \"{{ $json.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.body.data.messageType }}\"\n}",
+        "mode": "raw",
+        "options": {}
+      },
+      "position": [
+        200,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "lookup-user",
+      "name": "Lookup User",
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "Placeholder Sheet",
+          "mode": "list",
+          "value": "1234567890abcdefghijklmnopqrstuvwxyz"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $json.phone }}"
+            }
+          ]
+        },
+        "options": {},
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "Users",
+          "mode": "list",
+          "value": "Users"
+        }
+      },
+      "position": [
+        400,
+        0
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7
+    },
+    {
+      "id": "check-registration",
+      "name": "Check Registration",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "domain-exists-check",
+              "leftValue": "={{ $json.Business_Domain }}",
+              "operator": {
+                "operation": "notEmpty",
+                "type": "string"
+              }
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        }
+      },
+      "position": [
+        600,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "router-switch",
+      "name": "Domain Router",
+      "parameters": {
+        "options": {
+          "fallbackOutput": "none"
+        },
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "clothing-rule",
+                    "leftValue": "={{ $json.Business_Domain }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "Clothing"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "outputKey": "Clothing",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "furniture-rule",
+                    "leftValue": "={{ $json.Business_Domain }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "Furniture"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "outputKey": "Furniture",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "upvc-rule",
+                    "leftValue": "={{ $json.Business_Domain }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "UPVC"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "outputKey": "UPVC",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "realestate-rule",
+                    "leftValue": "={{ $json.Business_Domain }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "Real-Estate"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                }
+              },
+              "outputKey": "Real-Estate",
+              "renameOutput": true
+            }
+          ]
+        }
+      },
+      "position": [
+        800,
+        -200
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "exec-clothing-wf",
+      "name": "Execute Clothing Workflow",
+      "parameters": {
+        "mode": "each",
+        "waitForSubWorkflow": false,
+        "workflowId": "RnyedYNqdRpde8sb"
+      },
+      "position": [
+        1000,
+        -300
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1
+    },
+    {
+      "id": "ai-agent",
+      "name": "Domain Capture AI",
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a friendly routing assistant.\n\nYour goal is to identify the user's intent, ask for their optional Name, and their Business Domain.\n\nCRITICAL DOMAIN MAPPING RULES:\n1. The system ONLY supports exactly these 4 keywords: `Clothing`, `Furniture`, `UPVC`, `Real-Estate`.\n2. If the user gives a synonym (e.g., \"boutique\", \"garments\", \"apparel\", \"shop\"), map it to the closest supported keyword (e.g., `Clothing`).\n3. If the user's business type cannot be mapped to any of the 4 supported options, you MUST reply: \"Currently we only support chat demos for Clothing, Furniture, UPVC, and Real-Estate. Please choose one of these options.\"\n4. If the user provides a valid domain, your final response MUST end with exactly: `[DOMAIN_CAPTURED: Clothing]` (replace Clothing with the actual matched keyword). \n5. Be very brief and polite."
+        },
+        "promptType": "define",
+        "text": "={{ $('Extract Data').item.json.message }}"
+      },
+      "position": [
+        800,
+        200
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "id": "llm-model",
+      "name": "OpenAI Chat Model",
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "position": [
+        800,
+        400
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "memory",
+      "name": "Window Buffer Memory",
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Extract Data').item.json.phone }}"
+      },
+      "position": [
+        950,
+        400
+      ],
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "check-ai-extracted",
+      "name": "Check Extraction",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "check-extracted-keyword",
+              "leftValue": "={{ $json.output }}",
+              "operator": {
+                "operation": "contains",
+                "type": "string"
+              },
+              "rightValue": "[DOMAIN_CAPTURED:"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        }
+      },
+      "position": [
+        1000,
+        200
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "extract-domain-set",
+      "name": "Extract Keyword",
+      "parameters": {
+        "jsonOutput": "={\n  \"Business_Domain\": \"{{ $json.output.match(/\\\\[DOMAIN_CAPTURED:\\\\s*(.*?)\\\\]/)[1] }}\",\n  \"Phone\": \"{{ $('Extract Data').item.json.phone }}\"\n}",
+        "mode": "raw",
+        "options": {}
+      },
+      "position": [
+        1200,
+        100
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "whatsapp-reply",
+      "name": "WhatsApp Reply",
+      "parameters": {
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Domain Capture AI').item.json.output }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo"
+      },
+      "position": [
+        1200,
+        300
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    },
+    {
+      "id": "save-new-user",
+      "name": "Save New User",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Phone"
+          ],
+          "value": {
+            "Business_Domain": "={{ $json.Business_Domain }}",
+            "Created_At": "={{ $now }}",
+            "Phone": "={{ $json.Phone }}"
+          }
+        },
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "Placeholder Sheet",
+          "mode": "list",
+          "value": "placeholder-sheet-id"
+        },
+        "operation": "appendOrUpdate",
+        "options": {},
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "Users",
+          "mode": "list",
+          "value": "Users"
+        }
+      },
+      "position": [
+        1400,
+        100
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7
+    },
+    {
+      "id": "whatsapp-confirmation",
+      "name": "WhatsApp Confirmation",
+      "parameters": {
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.Phone }}"
+            },
+            {
+              "name": "text",
+              "value": "We have enabled your business domain ({{ $json.Business_Domain }}) for chat using our WhatsApp integration. You can now continue your conversation!"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo"
+      },
+      "position": [
+        1600,
+        100
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3
+    }
+  ],
+  "connections": {
+    "Check Extraction": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Keyword",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "WhatsApp Reply",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Check Registration": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Domain Router",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Domain Capture AI",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Domain Capture AI": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check Extraction",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Domain Router": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Execute Clothing Workflow",
+            "type": "main"
+          }
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Lookup User",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Extract Keyword": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Save New User",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Lookup User": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Check Registration",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "Domain Capture AI",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "Save New User": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "WhatsApp Confirmation",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract Data",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "index": 0,
+            "node": "Domain Capture AI",
+            "type": "ai_memory"
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "0fe34a56-016c-43f3-bc9c-54b94e5ba272",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-23T08:30:44.980Z",
+      "createdAt": "2026-02-23T08:30:44.980Z",
+      "role": "workflow:owner",
+      "workflowId": "8HUtdcsTal9bMijB",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
