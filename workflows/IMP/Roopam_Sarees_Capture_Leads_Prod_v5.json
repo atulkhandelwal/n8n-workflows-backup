@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-25T05:51:35.935Z",
+  "updatedAt": "2026-02-25T09:24:27.463Z",
   "createdAt": "2026-02-25T05:49:51.196Z",
   "id": "VBz1QO9cWvv53IgY",
   "name": "Roopam Sarees Capture Leads Prod v5",
@@ -91,6 +91,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "whatsapp-roopam",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -2129,8 +2130,8 @@
       }
     ]
   },
-  "versionId": "c45b8e10-28e0-421e-bc33-bef7738179e4",
-  "activeVersionId": "c45b8e10-28e0-421e-bc33-bef7738179e4",
+  "versionId": "9a6a6dce-0f5f-4323-8da4-77e77f93d6da",
+  "activeVersionId": "9a6a6dce-0f5f-4323-8da4-77e77f93d6da",
   "triggerCount": 1,
   "shared": [
     {
@@ -2142,9 +2143,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-25T05:51:07.000Z",
-    "createdAt": "2026-02-25T05:50:43.267Z",
-    "versionId": "c45b8e10-28e0-421e-bc33-bef7738179e4",
+    "updatedAt": "2026-02-25T09:24:33.000Z",
+    "createdAt": "2026-02-25T09:24:27.465Z",
+    "versionId": "9a6a6dce-0f5f-4323-8da4-77e77f93d6da",
     "workflowId": "VBz1QO9cWvv53IgY",
     "nodes": [
       {
@@ -2232,6 +2233,7 @@
         "parameters": {
           "httpMethod": "POST",
           "path": "whatsapp-roopam",
+          "responseMode": "responseNode",
           "options": {}
         },
         "type": "n8n-nodes-base.webhook",
@@ -4125,7 +4127,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version c45b8e10 2502 1121AM",
+    "name": "Version 9a6a6dce",
     "description": "",
     "autosaved": false
   },
