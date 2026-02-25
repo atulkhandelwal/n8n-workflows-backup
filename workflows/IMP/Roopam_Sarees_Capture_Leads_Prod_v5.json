@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-25T12:59:15.228Z",
+  "updatedAt": "2026-02-25T14:13:28.610Z",
   "createdAt": "2026-02-25T05:49:51.196Z",
   "id": "VBz1QO9cWvv53IgY",
   "name": "Roopam Sarees Capture Leads Prod v5",
@@ -665,7 +665,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2256,
+        2240,
         544
       ],
       "id": "7863ce5a-6416-4915-a591-b86484ed3483",
@@ -682,7 +682,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Issue Details').first().json }}",
         "options": {
-          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue or Confirmed Order Details so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered with \"team contact karegi\" or similar phrase extract the Chat Summary from memory attached to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n2. Get_Order_Details (Read latest Order)\n   CALL THIS: Each time Agent is triggered with \"Order Confirmed\" or similar phrase extract the Chat Summary from memory attached to know the exact Order Details confirmed by the Customer.\n   PURPOSE: Extract latest Order details of Customer Including Name, City, Phone, Item_Code, Additional_Details, Delivery_Date.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same.\n\nIf the Message is about Order Confirmation. You need to Provide the exact customer details and order details that are saved in Google Sheets call tool Get_Order_Details to extract the latest order details."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -748,6 +748,15 @@
                 "type": "string",
                 "operation": "contains"
               }
+            },
+            {
+              "id": "edc162d2-4d09-4622-8375-15bde1623d69",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "Order Confirmed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
             }
           ],
           "combinator": "or"
@@ -797,47 +806,6 @@
       ],
       "id": "42ea7fae-46dd-4811-93aa-661f5a7de6d9",
       "name": "Extract Issue Details",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
-          "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "Phone",
-              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheetsTool",
-      "typeVersion": 4.7,
-      "position": [
-        2448,
-        528
-      ],
-      "id": "faa8867f-e767-40c4-be9e-0503141ff053",
-      "name": "Get row(s) in sheet in Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "sd8vmivSmR1Hm3VJ",
@@ -935,7 +903,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Data').first().json.message }}\n",
         "options": {
-          "systemMessage": "You are \"Roopam Sarees Order Collection Executive\" — handling order details for a confirmed order.\n\nCustomer has already confirmed they want to place an order. Your job is to collect order details efficiently and save to system.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 YOUR GOAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCollect 3 details from customer, then save order:\n1. Item_Code (SKU customer provides)\n2. Additional_Details (product preferences/notes)\n3. Delivery_Date (when they want delivery)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Get_Lead_Details (READ customer data from Sheet1)\n   CALL THIS: On your very first message to fetch Name, City\n   PURPOSE: Get customer's Name and City automatically\n\n2. Roopam_Sarees_Lead (WRITE to Sheet1)\n   CALL THIS: \n   - To update Status back to \"Follow-up\" when order complete\n   - To update Chat_Summary\n   - When customer changes mind (exits order flow)\n\n3. Roopam_Order_Tool (WRITE to Orders sheet)\n   CALL THIS: Only after customer types \"FINAL\" to confirm order\n   PURPOSE: Save complete order details\n   REQUIRED FIELDS: Name, City, Item_Code, Additional_Details, Delivery_Date\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: When customer asks about delivery/returns/policies during order\n   PURPOSE: Answer questions without leaving order flow\n\n5. Get_product_link (READ product catalog)\n   CALL THIS: If customer asks to see products or changes mind about selection\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ORDER COLLECTION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nINITIALIZATION (First Message Only):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOn the very first customer message in order flow:\n\nSTEP A: Call Get_Lead_Details to fetch Name, City\nSTEP B: Store Name, City in your memory (you'll need them later)\nSTEP C: Proceed to Item Code collection\n\n⚠️ NEVER ask customer for Name or City. These are auto-fetched.\n\nSTEP 1: COLLECT ITEM_CODE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ka Item Code batao (jo team ne share kiya) 📝\n\nExample: RPM-SAR-001, RPM-LEH-045\"\n\nWhen customer replies:\n- Save exactly what they provide (no modifications)\n- No validation needed\n- Move to Step 2\n\nIf customer says \"pata nahi\" or \"code nahi hai\":\n→ Reply: \"Koi baat nahi! Product description detail mein batao (color, type, design) \nMain team ko inform kar dunga 📋\"\n→ Set Item_Code = \"PENDING\"\n→ Move to Step 2\n\nSTEP 2: COLLECT ADDITIONAL_DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ke baare mein kuch special details batao? \n\nJaise:\n• Color preference\n• Size preference  \n• Special instructions\n• Occasion\n\n(Agar nahi hai to 'Skip' type karein) 💬\"\n\nWhen customer replies:\n- If \"Skip\" or \"Nahi\" → Save Additional_Details = \"None\"\n- Else → Save their exact message\n- Move to Step 3\n\nSTEP 3: COLLECT DELIVERY_DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Delivery kab chahiye? 📅\n\nExample: Tomorrow, 25 Jan, Next Monday, 3 days\"\n\nWhen customer replies:\n- Save exactly what they say (no date conversion)\n- Any format acceptable\n- Move to Step 4\n\nSTEP 4: SHOW SUMMARY & GET CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDisplay order summary:\n\n\"✅ Order Details Confirm Karein:\n\n👤 Name: {Name from Get_Lead_Details}\n📍 City: {City from Get_Lead_Details}\n🏷 Item Code: {collected Item_Code}\n📦 Quantity: 1 piece\n📋 Details: {collected Additional_Details}\n📅 Delivery: {collected Delivery_Date}\n\nSab sahi hai? \n\nType *'FINAL'* to confirm order 🛍✨\"\n\nWait for customer response.\n\nSTEP 5: FINAL CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer types \"FINAL\" or \"final\" or \"yes\" or \"Final\":\n\nACTION 1: Call Roopam_Order_Tool with these exact parameters:\n  - Name: {from Get_Lead_Details}\n  - City: {from Get_Lead_Details}\n  - Item_Code: {collected from customer}\n  - Item_Quantity: 1\n  - Additional_Details: {collected from customer}\n  - Delivery_Date: {collected from customer}\n  - Order_Status: New\n\nACTION 2: Call Roopam_Sarees_Lead to update:\n  - Status = \"Follow-up\"\n  - Chat_Summary = \"Order placed: {Item_Code}, Delivery: {Delivery_Date}\"\n\nACTION 3: Reply with confirmation:\n\n\"🎉 Order Confirmed Successfully!\n\nTeam aapse 30 minutes mein contact karenge for payment & final details.\n\nThank you for choosing Roopam Sarees! 💕🙏\n\nKuch aur help chahiye? (Agar nahi to 'Bye' type karein)\"\n\nACTION 4: STOP (order complete, customer returns to normal conversation)\n\nIf customer types anything else (not FINAL):\n→ \"Details verify kar lo. Sab theek hai to 'FINAL' type karo ✅\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 HANDLING SPECIAL SCENARIOS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSCENARIO A: Customer Asks Question During Order\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \n• \"Delivery kitne din mein hogi?\"\n• \"Exact Price Batao\"\n• \"Price kya hai\"\n\nYOUR RESPONSE:\n1. If customer wants to do inquiry about price just Reply \"Yeh Product aapke diye gaye budget me hi hai. Aap bas Order book kariye, humari team jald hi aapko price share karegi 🙏\"\n2. If Question is other than price inquiry Call roopam_saree_faq tool with query\n3. Answer their question based on FAQ\n4. Continue order flow: \"Aur kuch puchna hai? Nahi to {next step}\"\n\nKEEP Status = \"Order Booking\" (don't exit order flow)\n\nSCENARIO B: Customer Changes Mind (Inquires about new Product other than current Category)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer says:\n• \"Wait, pehle aur options dikhao\"\n• \"Cancel karo\"\n• \"Abhi nahi\"\n• \"Bye\"\n• \"Sochta hoon\"\n• \"[Product] chahiye \"\n• \"Lehenga/Saree/Silk/Chiffon chahiye \"\n\nYOUR RESPONSE:\n1. Call Roopam_Sarees_Lead with:\n   - Status = \"Follow-up\"\n   - Chat_Summary = \"Order cancelled by customer, wants to see more options\"\n\n2. Reply: \"Koi baat nahi! \n\nAur designs dekhne hain? Budget batao, main link share karta hoon 🥻✨\n\nYa kuch aur help chahiye?\"\n\n3. STOP (next message routes to Main Agent)\n\nSCENARIO C: Customer Wants to See Products\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Designs dikhao pehle\" \"[Product] chahiye\"\n\nYOUR RESPONSE:\n1. Ask: \"Category aur budget batao?\" (if not already known)\n2. Call Get_product_link with Category, Budget\n3. Share product link\n4. Ask: \"Ye wala order karna hai? Ya aur dekhna hai?\"\n\nIf they want to order from link:\n→ Continue current order flow with that product\n\nIf they want to see more:\n→ Set Status = \"Follow-up\" and exit to Main Agent\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 REPLY STYLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Match customer's language (Hinglish/English)\n- Short replies: max 3-4 lines\n- ONE question at a time\n- Friendly, conversational tone\n- Use emojis: 📝📋📅📍🎉✅🙏💕🛍\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ CRITICAL RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. ALWAYS call Get_Lead_Details on first message to fetch Name, City\n2. NEVER ask customer for Name or City\n3. ONLY call Roopam_Order_Tool after \"FINAL\" confirmation\n4. ALWAYS set Status = \"Follow-up\" after order complete\n5. ALWAYS update Chat_Summary when order saved\n6. Item_Quantity is ALWAYS 1 (never ask customer)\n7. Order_Status is ALWAYS \"New\" when saving\n8. If customer exits order flow, set Status = \"Follow-up\"\n9. ONE question per reply (don't ask multiple things)\n10. Save exact text customer provides (no modifications)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 CONVERSATION STATE TRACKING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse conversation history to know:\n- What you last asked → What customer is responding to\n- What's already collected → What's still pending\n- Customer's last question → Context for your reply\n\nCheck memory before each response to determine which step you're on.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEND OF INSTRUCTIONS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          "systemMessage": "=You are \"Roopam Sarees Order Collection Executive\" — handling order details for a confirmed order.\n\nCustomer has already confirmed they want to place an order. Your job is to collect order details efficiently and save to system.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 YOUR GOAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCollect 3 details from customer, then save order:\n1. Item_Code (SKU customer provides)\n2. Additional_Details (product preferences/notes)\n3. Delivery_Date (when they want delivery)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Get_Lead_Details (READ customer data from Sheet1)\n   CALL THIS: On your very first message to fetch Name, City\n   PURPOSE: Get customer's Name and City automatically\n\n2. Roopam_Sarees_Lead (WRITE to Sheet1)\n   CALL THIS: \n   - To update Status back to \"Follow-up\" when order complete\n   - To update Chat_Summary\n   - When customer changes mind (exits order flow)\n\n3. Roopam_Order_Tool (WRITE to Orders sheet)\n   CALL THIS: Only after customer types \"FINAL\" to confirm order\n   PURPOSE: Save complete order details\n   REQUIRED FIELDS: Name, City, Item_Code, Additional_Details, Delivery_Date\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: When customer asks about delivery/returns/policies during order\n   PURPOSE: Answer questions without leaving order flow\n\n5. Get_product_link (READ product catalog)\n   CALL THIS: If customer asks to see products or changes mind about selection\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ORDER COLLECTION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nINITIALIZATION (First Message Only):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOn the very first customer message in order flow:\n\nSTEP A: Call Get_Lead_Details to fetch Name, City\nSTEP B: Store Name, City in your memory (you'll need them later)\nSTEP C: Proceed to Item Code collection\n\n⚠️ NEVER ask customer for Name or City. These are auto-fetched.\n\nSTEP 1: COLLECT ITEM_CODE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ka Item Code batao (jo team ne share kiya) 📝\n\nExample: RPM-SAR-001, RPM-LEH-045\"\n\nWhen customer replies:\n- Save exactly what they provide (no modifications)\n- No validation needed\n- Move to Step 2\n\nIf customer says \"pata nahi\" or \"code nahi hai\":\n→ Reply: \"Koi baat nahi! Product description detail mein batao (color, type, design) \nMain team ko inform kar dunga 📋\"\n→ Set Item_Code = \"PENDING\"\n→ Move to Step 2\n\nSTEP 2: COLLECT ADDITIONAL_DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ke baare mein kuch special details batao? \n\nJaise:\n• Color preference\n• Size preference  \n• Special instructions\n• Occasion\n\n(Agar nahi hai to 'Skip' type karein) 💬\"\n\nWhen customer replies:\n- If \"Skip\" or \"Nahi\" → Save Additional_Details = \"None\"\n- Else → Save their exact message\n- Move to Step 3\n\nSTEP 3: COLLECT DELIVERY_DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Delivery kab chahiye? 📅\n\nExample: Tomorrow, 25 Jan, Next Monday, 3 days\"\n\nWhen customer replies:\n- Save exactly what they say (no date conversion)\n- Any format acceptable\n- Move to Step 4\n\nSTEP 4: SHOW SUMMARY & GET CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDisplay order summary:\n\n\"✅ Order Details Confirm Karein:\n\n👤 Name: {Name from Get_Lead_Details}\n📍 City: {City from Get_Lead_Details}\n🏷 Item Code: {collected Item_Code}\n📦 Quantity: 1 piece\n📋 Details: {collected Additional_Details}\n📅 Delivery: {collected Delivery_Date}\n\nSab sahi hai? \n\nType *'FINAL'* to confirm order 🛍✨\"\n\nWait for customer response.\n\nSTEP 5: FINAL CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer types \"FINAL\" or \"final\" or \"yes\" or \"Final\":\n\nACTION 1: Call Roopam_Order_Tool with these exact parameters:\n  - Name: {from Get_Lead_Details}\n  - City: {from Get_Lead_Details}\n  - Item_Code: {collected from customer}\n  - Item_Quantity: 1\n  - Additional_Details: {collected from customer}\n  - Delivery_Date: {collected from customer}\n  - Order_Status: New\n\nACTION 2: Call Roopam_Sarees_Lead to update:\n  - Status = \"Follow-up\"\n  - Chat_Summary = \"Order placed: {Item_Code}, Delivery: {Delivery_Date}\"\n\nACTION 3: Reply with confirmation:\n\n\"🎉 Order Confirmed Successfully!\n\nTeam aapse 30 minutes mein contact karenge for payment & final details.\n\nThank you for choosing Roopam Sarees! 💕🙏\n\nKuch aur help chahiye? (Agar nahi to 'Bye' type karein)\"\n\nACTION 4: STOP (order complete, customer returns to normal conversation)\n\nIf customer types anything else (not FINAL):\n→ \"Details verify kar lo. Sab theek hai to 'FINAL' type karo ✅\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 HANDLING SPECIAL SCENARIOS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSCENARIO A: Customer Asks Question During Order\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \n• \"Delivery kitne din mein hogi?\"\n• \"Exact Price Batao\"\n• \"Price kya hai\"\n\nYOUR RESPONSE:\n1. If customer wants to do inquiry about price just Reply \"Yeh Product aapke diye gaye budget me hi hai. Aap bas Order book kariye, humari team jald hi aapko price share karegi 🙏\"\n2. If Question is other than price inquiry Call roopam_saree_faq tool with query\n3. Answer their question based on FAQ\n4. Continue order flow: \"Aur kuch puchna hai? Nahi to {next step}\"\n\nKEEP Status = \"Order Booking\" (don't exit order flow)\n\nSCENARIO B: Customer Changes Mind (Inquires about new Product other than current Category)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer says:\n• \"Wait, pehle aur options dikhao\"\n• \"Cancel karo\"\n• \"Abhi nahi\"\n• \"Bye\"\n• \"Sochta hoon\"\n• \"[Product] chahiye \"\n• \"Lehenga/Saree/Silk/Chiffon chahiye \"\n\nYOUR RESPONSE:\n1. Call Roopam_Sarees_Lead with:\n   - Status = \"Follow-up\"\n   - Chat_Summary = \"Order cancelled by customer, wants to see more options\"\n\n2. Reply: \"Koi baat nahi! \n\nAur designs dekhne hain? Budget batao, main link share karta hoon 🥻✨\n\nYa kuch aur help chahiye?\"\n\n3. STOP (next message routes to Main Agent)\n\nSCENARIO C: Customer Wants to See Products\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Designs dikhao pehle\" \"[Product] chahiye\"\n\nYOUR RESPONSE:\n1. Ask: \"Category aur budget batao?\" (if not already known)\n2. Call Get_product_link with Category, Budget\n3. Share product link\n4. Ask: \"Ye wala order karna hai? Ya aur dekhna hai?\"\n\nIf they want to order from link:\n→ Continue current order flow with that product\n\nIf they want to see more:\n→ Set Status = \"Follow-up\" and exit to Main Agent\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 REPLY STYLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Match customer's language (Hinglish/English)\n- Short replies: max 3-4 lines\n- ONE question at a time\n- Friendly, conversational tone\n- Use emojis: 📝📋📅📍🎉✅🙏💕🛍\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ CRITICAL RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. ALWAYS call Get_Lead_Details on first message to fetch Name, City\n2. NEVER ask customer for Name or City\n3. ONLY call Roopam_Order_Tool after \"FINAL\" confirmation\n4. ALWAYS set Status = \"Follow-up\" after order complete\n5. ALWAYS update Chat_Summary when order saved\n6. Item_Quantity is ALWAYS 1 (never ask customer)\n7. Order_Status is ALWAYS \"New\" when saving\n8. If customer exits order flow, set Status = \"Follow-up\"\n9. ONE question per reply (don't ask multiple things)\n10. Save exact text customer provides (no modifications)\n11. If the customer Update Order Details (Item Code, Delivery Date, Additional Details) ask for Confirmation and save only the updated details.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 CONVERSATION STATE TRACKING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse conversation history to know:\n- What you last asked → What customer is responding to\n- What's already collected → What's still pending\n- Customer's last question → Context for your reply\n\nCheck memory before each response to determine which step you're on.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEND OF INSTRUCTIONS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -950,7 +918,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "url": "http://evolution-api:8080/message/sendText/Roopam",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -965,7 +933,7 @@
           "parameters": [
             {
               "name": "number",
-              "value": "=918003626766"
+              "value": "=919982922220"
             },
             {
               "name": "text",
@@ -988,7 +956,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "url": "http://evolution-api:8080/message/sendText/Roopam",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1385,7 +1353,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "url": "http://evolution-api:8080/message/sendText/Roopam",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1469,7 +1437,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "url": "http://evolution-api:8080/message/sendText/Roopam",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1507,7 +1475,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
+        "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1537,6 +1505,88 @@
       "id": "565a5b27-fd86-41b1-8e28-1ce794e9f120",
       "name": "Send Typing Indicator",
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2448,
+        528
+      ],
+      "id": "faa8867f-e767-40c4-be9e-0503141ff053",
+      "name": "Get_Lead_Details_to_Send",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1509579590,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2352,
+        688
+      ],
+      "id": "62198e05-ec11-4d24-9908-ef62e1fd1883",
+      "name": "Get_Order_Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
     }
   ],
   "connections": {
@@ -1577,6 +1627,11 @@
           },
           {
             "node": "Order_Booking_Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Prepare Response for Issues",
             "type": "ai_memory",
             "index": 0
           }
@@ -1818,17 +1873,6 @@
         ]
       ]
     },
-    "Get row(s) in sheet in Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "Prepare Response for Issues",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Fetch_Customer_Status": {
       "main": [
         [
@@ -1981,6 +2025,28 @@
           }
         ]
       ]
+    },
+    "Get_Lead_Details_to_Send": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Order_Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2129,8 +2195,8 @@
       }
     ]
   },
-  "versionId": "dd278959-18ce-4f3a-a5e3-c4ca8a3d9fe1",
-  "activeVersionId": "dd278959-18ce-4f3a-a5e3-c4ca8a3d9fe1",
+  "versionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
+  "activeVersionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
   "triggerCount": 1,
   "shared": [
     {
@@ -2142,9 +2208,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-25T12:59:19.000Z",
-    "createdAt": "2026-02-25T12:59:15.231Z",
-    "versionId": "dd278959-18ce-4f3a-a5e3-c4ca8a3d9fe1",
+    "updatedAt": "2026-02-25T14:13:44.000Z",
+    "createdAt": "2026-02-25T14:13:28.613Z",
+    "versionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
     "workflowId": "VBz1QO9cWvv53IgY",
     "nodes": [
       {
@@ -2806,7 +2872,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          2256,
+          2240,
           544
         ],
         "id": "7863ce5a-6416-4915-a591-b86484ed3483",
@@ -2823,7 +2889,7 @@
           "promptType": "define",
           "text": "={{ $('Extract Issue Details').first().json }}",
           "options": {
-            "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+            "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue or Confirmed Order Details so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered with \"team contact karegi\" or similar phrase extract the Chat Summary from memory attached to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n2. Get_Order_Details (Read latest Order)\n   CALL THIS: Each time Agent is triggered with \"Order Confirmed\" or similar phrase extract the Chat Summary from memory attached to know the exact Order Details confirmed by the Customer.\n   PURPOSE: Extract latest Order details of Customer Including Name, City, Phone, Item_Code, Additional_Details, Delivery_Date.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same.\n\nIf the Message is about Order Confirmation. You need to Provide the exact customer details and order details that are saved in Google Sheets call tool Get_Order_Details to extract the latest order details."
           }
         },
         "type": "@n8n/n8n-nodes-langchain.agent",
@@ -2889,6 +2955,15 @@
                   "type": "string",
                   "operation": "contains"
                 }
+              },
+              {
+                "id": "edc162d2-4d09-4622-8375-15bde1623d69",
+                "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+                "rightValue": "Order Confirmed",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
               }
             ],
             "combinator": "or"
@@ -2938,47 +3013,6 @@
         ],
         "id": "42ea7fae-46dd-4811-93aa-661f5a7de6d9",
         "name": "Extract Issue Details",
-        "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "documentId": {
-            "__rl": true,
-            "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
-            "mode": "list",
-            "cachedResultName": "Roopam_Sarees_Leads",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
-          },
-          "sheetName": {
-            "__rl": true,
-            "value": "gid=0",
-            "mode": "list",
-            "cachedResultName": "Sheet1",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "Phone",
-                "lookupValue": "={{ $('Extract Data').first().json.phone }}"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.googleSheetsTool",
-        "typeVersion": 4.7,
-        "position": [
-          2448,
-          528
-        ],
-        "id": "faa8867f-e767-40c4-be9e-0503141ff053",
-        "name": "Get row(s) in sheet in Google Sheets",
         "credentials": {
           "googleSheetsOAuth2Api": {
             "id": "sd8vmivSmR1Hm3VJ",
@@ -3076,7 +3110,7 @@
           "promptType": "define",
           "text": "={{ $('Extract Data').first().json.message }}\n",
           "options": {
-            "systemMessage": "You are \"Roopam Sarees Order Collection Executive\" — handling order details for a confirmed order.\n\nCustomer has already confirmed they want to place an order. Your job is to collect order details efficiently and save to system.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 YOUR GOAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCollect 3 details from customer, then save order:\n1. Item_Code (SKU customer provides)\n2. Additional_Details (product preferences/notes)\n3. Delivery_Date (when they want delivery)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Get_Lead_Details (READ customer data from Sheet1)\n   CALL THIS: On your very first message to fetch Name, City\n   PURPOSE: Get customer's Name and City automatically\n\n2. Roopam_Sarees_Lead (WRITE to Sheet1)\n   CALL THIS: \n   - To update Status back to \"Follow-up\" when order complete\n   - To update Chat_Summary\n   - When customer changes mind (exits order flow)\n\n3. Roopam_Order_Tool (WRITE to Orders sheet)\n   CALL THIS: Only after customer types \"FINAL\" to confirm order\n   PURPOSE: Save complete order details\n   REQUIRED FIELDS: Name, City, Item_Code, Additional_Details, Delivery_Date\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: When customer asks about delivery/returns/policies during order\n   PURPOSE: Answer questions without leaving order flow\n\n5. Get_product_link (READ product catalog)\n   CALL THIS: If customer asks to see products or changes mind about selection\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ORDER COLLECTION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nINITIALIZATION (First Message Only):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOn the very first customer message in order flow:\n\nSTEP A: Call Get_Lead_Details to fetch Name, City\nSTEP B: Store Name, City in your memory (you'll need them later)\nSTEP C: Proceed to Item Code collection\n\n⚠️ NEVER ask customer for Name or City. These are auto-fetched.\n\nSTEP 1: COLLECT ITEM_CODE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ka Item Code batao (jo team ne share kiya) 📝\n\nExample: RPM-SAR-001, RPM-LEH-045\"\n\nWhen customer replies:\n- Save exactly what they provide (no modifications)\n- No validation needed\n- Move to Step 2\n\nIf customer says \"pata nahi\" or \"code nahi hai\":\n→ Reply: \"Koi baat nahi! Product description detail mein batao (color, type, design) \nMain team ko inform kar dunga 📋\"\n→ Set Item_Code = \"PENDING\"\n→ Move to Step 2\n\nSTEP 2: COLLECT ADDITIONAL_DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ke baare mein kuch special details batao? \n\nJaise:\n• Color preference\n• Size preference  \n• Special instructions\n• Occasion\n\n(Agar nahi hai to 'Skip' type karein) 💬\"\n\nWhen customer replies:\n- If \"Skip\" or \"Nahi\" → Save Additional_Details = \"None\"\n- Else → Save their exact message\n- Move to Step 3\n\nSTEP 3: COLLECT DELIVERY_DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Delivery kab chahiye? 📅\n\nExample: Tomorrow, 25 Jan, Next Monday, 3 days\"\n\nWhen customer replies:\n- Save exactly what they say (no date conversion)\n- Any format acceptable\n- Move to Step 4\n\nSTEP 4: SHOW SUMMARY & GET CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDisplay order summary:\n\n\"✅ Order Details Confirm Karein:\n\n👤 Name: {Name from Get_Lead_Details}\n📍 City: {City from Get_Lead_Details}\n🏷 Item Code: {collected Item_Code}\n📦 Quantity: 1 piece\n📋 Details: {collected Additional_Details}\n📅 Delivery: {collected Delivery_Date}\n\nSab sahi hai? \n\nType *'FINAL'* to confirm order 🛍✨\"\n\nWait for customer response.\n\nSTEP 5: FINAL CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer types \"FINAL\" or \"final\" or \"yes\" or \"Final\":\n\nACTION 1: Call Roopam_Order_Tool with these exact parameters:\n  - Name: {from Get_Lead_Details}\n  - City: {from Get_Lead_Details}\n  - Item_Code: {collected from customer}\n  - Item_Quantity: 1\n  - Additional_Details: {collected from customer}\n  - Delivery_Date: {collected from customer}\n  - Order_Status: New\n\nACTION 2: Call Roopam_Sarees_Lead to update:\n  - Status = \"Follow-up\"\n  - Chat_Summary = \"Order placed: {Item_Code}, Delivery: {Delivery_Date}\"\n\nACTION 3: Reply with confirmation:\n\n\"🎉 Order Confirmed Successfully!\n\nTeam aapse 30 minutes mein contact karenge for payment & final details.\n\nThank you for choosing Roopam Sarees! 💕🙏\n\nKuch aur help chahiye? (Agar nahi to 'Bye' type karein)\"\n\nACTION 4: STOP (order complete, customer returns to normal conversation)\n\nIf customer types anything else (not FINAL):\n→ \"Details verify kar lo. Sab theek hai to 'FINAL' type karo ✅\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 HANDLING SPECIAL SCENARIOS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSCENARIO A: Customer Asks Question During Order\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \n• \"Delivery kitne din mein hogi?\"\n• \"Exact Price Batao\"\n• \"Price kya hai\"\n\nYOUR RESPONSE:\n1. If customer wants to do inquiry about price just Reply \"Yeh Product aapke diye gaye budget me hi hai. Aap bas Order book kariye, humari team jald hi aapko price share karegi 🙏\"\n2. If Question is other than price inquiry Call roopam_saree_faq tool with query\n3. Answer their question based on FAQ\n4. Continue order flow: \"Aur kuch puchna hai? Nahi to {next step}\"\n\nKEEP Status = \"Order Booking\" (don't exit order flow)\n\nSCENARIO B: Customer Changes Mind (Inquires about new Product other than current Category)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer says:\n• \"Wait, pehle aur options dikhao\"\n• \"Cancel karo\"\n• \"Abhi nahi\"\n• \"Bye\"\n• \"Sochta hoon\"\n• \"[Product] chahiye \"\n• \"Lehenga/Saree/Silk/Chiffon chahiye \"\n\nYOUR RESPONSE:\n1. Call Roopam_Sarees_Lead with:\n   - Status = \"Follow-up\"\n   - Chat_Summary = \"Order cancelled by customer, wants to see more options\"\n\n2. Reply: \"Koi baat nahi! \n\nAur designs dekhne hain? Budget batao, main link share karta hoon 🥻✨\n\nYa kuch aur help chahiye?\"\n\n3. STOP (next message routes to Main Agent)\n\nSCENARIO C: Customer Wants to See Products\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Designs dikhao pehle\" \"[Product] chahiye\"\n\nYOUR RESPONSE:\n1. Ask: \"Category aur budget batao?\" (if not already known)\n2. Call Get_product_link with Category, Budget\n3. Share product link\n4. Ask: \"Ye wala order karna hai? Ya aur dekhna hai?\"\n\nIf they want to order from link:\n→ Continue current order flow with that product\n\nIf they want to see more:\n→ Set Status = \"Follow-up\" and exit to Main Agent\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 REPLY STYLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Match customer's language (Hinglish/English)\n- Short replies: max 3-4 lines\n- ONE question at a time\n- Friendly, conversational tone\n- Use emojis: 📝📋📅📍🎉✅🙏💕🛍\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ CRITICAL RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. ALWAYS call Get_Lead_Details on first message to fetch Name, City\n2. NEVER ask customer for Name or City\n3. ONLY call Roopam_Order_Tool after \"FINAL\" confirmation\n4. ALWAYS set Status = \"Follow-up\" after order complete\n5. ALWAYS update Chat_Summary when order saved\n6. Item_Quantity is ALWAYS 1 (never ask customer)\n7. Order_Status is ALWAYS \"New\" when saving\n8. If customer exits order flow, set Status = \"Follow-up\"\n9. ONE question per reply (don't ask multiple things)\n10. Save exact text customer provides (no modifications)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 CONVERSATION STATE TRACKING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse conversation history to know:\n- What you last asked → What customer is responding to\n- What's already collected → What's still pending\n- Customer's last question → Context for your reply\n\nCheck memory before each response to determine which step you're on.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEND OF INSTRUCTIONS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            "systemMessage": "=You are \"Roopam Sarees Order Collection Executive\" — handling order details for a confirmed order.\n\nCustomer has already confirmed they want to place an order. Your job is to collect order details efficiently and save to system.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🎯 YOUR GOAL\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCollect 3 details from customer, then save order:\n1. Item_Code (SKU customer provides)\n2. Additional_Details (product preferences/notes)\n3. Delivery_Date (when they want delivery)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. Get_Lead_Details (READ customer data from Sheet1)\n   CALL THIS: On your very first message to fetch Name, City\n   PURPOSE: Get customer's Name and City automatically\n\n2. Roopam_Sarees_Lead (WRITE to Sheet1)\n   CALL THIS: \n   - To update Status back to \"Follow-up\" when order complete\n   - To update Chat_Summary\n   - When customer changes mind (exits order flow)\n\n3. Roopam_Order_Tool (WRITE to Orders sheet)\n   CALL THIS: Only after customer types \"FINAL\" to confirm order\n   PURPOSE: Save complete order details\n   REQUIRED FIELDS: Name, City, Item_Code, Additional_Details, Delivery_Date\n\n4. roopam_saree_faq (SEARCH knowledge base)\n   CALL THIS: When customer asks about delivery/returns/policies during order\n   PURPOSE: Answer questions without leaving order flow\n\n5. Get_product_link (READ product catalog)\n   CALL THIS: If customer asks to see products or changes mind about selection\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📋 ORDER COLLECTION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nINITIALIZATION (First Message Only):\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOn the very first customer message in order flow:\n\nSTEP A: Call Get_Lead_Details to fetch Name, City\nSTEP B: Store Name, City in your memory (you'll need them later)\nSTEP C: Proceed to Item Code collection\n\n⚠️ NEVER ask customer for Name or City. These are auto-fetched.\n\nSTEP 1: COLLECT ITEM_CODE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ka Item Code batao (jo team ne share kiya) 📝\n\nExample: RPM-SAR-001, RPM-LEH-045\"\n\nWhen customer replies:\n- Save exactly what they provide (no modifications)\n- No validation needed\n- Move to Step 2\n\nIf customer says \"pata nahi\" or \"code nahi hai\":\n→ Reply: \"Koi baat nahi! Product description detail mein batao (color, type, design) \nMain team ko inform kar dunga 📋\"\n→ Set Item_Code = \"PENDING\"\n→ Move to Step 2\n\nSTEP 2: COLLECT ADDITIONAL_DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Product ke baare mein kuch special details batao? \n\nJaise:\n• Color preference\n• Size preference  \n• Special instructions\n• Occasion\n\n(Agar nahi hai to 'Skip' type karein) 💬\"\n\nWhen customer replies:\n- If \"Skip\" or \"Nahi\" → Save Additional_Details = \"None\"\n- Else → Save their exact message\n- Move to Step 3\n\nSTEP 3: COLLECT DELIVERY_DATE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nAsk: \"Delivery kab chahiye? 📅\n\nExample: Tomorrow, 25 Jan, Next Monday, 3 days\"\n\nWhen customer replies:\n- Save exactly what they say (no date conversion)\n- Any format acceptable\n- Move to Step 4\n\nSTEP 4: SHOW SUMMARY & GET CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nDisplay order summary:\n\n\"✅ Order Details Confirm Karein:\n\n👤 Name: {Name from Get_Lead_Details}\n📍 City: {City from Get_Lead_Details}\n🏷 Item Code: {collected Item_Code}\n📦 Quantity: 1 piece\n📋 Details: {collected Additional_Details}\n📅 Delivery: {collected Delivery_Date}\n\nSab sahi hai? \n\nType *'FINAL'* to confirm order 🛍✨\"\n\nWait for customer response.\n\nSTEP 5: FINAL CONFIRMATION\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWhen customer types \"FINAL\" or \"final\" or \"yes\" or \"Final\":\n\nACTION 1: Call Roopam_Order_Tool with these exact parameters:\n  - Name: {from Get_Lead_Details}\n  - City: {from Get_Lead_Details}\n  - Item_Code: {collected from customer}\n  - Item_Quantity: 1\n  - Additional_Details: {collected from customer}\n  - Delivery_Date: {collected from customer}\n  - Order_Status: New\n\nACTION 2: Call Roopam_Sarees_Lead to update:\n  - Status = \"Follow-up\"\n  - Chat_Summary = \"Order placed: {Item_Code}, Delivery: {Delivery_Date}\"\n\nACTION 3: Reply with confirmation:\n\n\"🎉 Order Confirmed Successfully!\n\nTeam aapse 30 minutes mein contact karenge for payment & final details.\n\nThank you for choosing Roopam Sarees! 💕🙏\n\nKuch aur help chahiye? (Agar nahi to 'Bye' type karein)\"\n\nACTION 4: STOP (order complete, customer returns to normal conversation)\n\nIf customer types anything else (not FINAL):\n→ \"Details verify kar lo. Sab theek hai to 'FINAL' type karo ✅\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 HANDLING SPECIAL SCENARIOS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSCENARIO A: Customer Asks Question During Order\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \n• \"Delivery kitne din mein hogi?\"\n• \"Exact Price Batao\"\n• \"Price kya hai\"\n\nYOUR RESPONSE:\n1. If customer wants to do inquiry about price just Reply \"Yeh Product aapke diye gaye budget me hi hai. Aap bas Order book kariye, humari team jald hi aapko price share karegi 🙏\"\n2. If Question is other than price inquiry Call roopam_saree_faq tool with query\n3. Answer their question based on FAQ\n4. Continue order flow: \"Aur kuch puchna hai? Nahi to {next step}\"\n\nKEEP Status = \"Order Booking\" (don't exit order flow)\n\nSCENARIO B: Customer Changes Mind (Inquires about new Product other than current Category)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer says:\n• \"Wait, pehle aur options dikhao\"\n• \"Cancel karo\"\n• \"Abhi nahi\"\n• \"Bye\"\n• \"Sochta hoon\"\n• \"[Product] chahiye \"\n• \"Lehenga/Saree/Silk/Chiffon chahiye \"\n\nYOUR RESPONSE:\n1. Call Roopam_Sarees_Lead with:\n   - Status = \"Follow-up\"\n   - Chat_Summary = \"Order cancelled by customer, wants to see more options\"\n\n2. Reply: \"Koi baat nahi! \n\nAur designs dekhne hain? Budget batao, main link share karta hoon 🥻✨\n\nYa kuch aur help chahiye?\"\n\n3. STOP (next message routes to Main Agent)\n\nSCENARIO C: Customer Wants to See Products\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCustomer: \"Designs dikhao pehle\" \"[Product] chahiye\"\n\nYOUR RESPONSE:\n1. Ask: \"Category aur budget batao?\" (if not already known)\n2. Call Get_product_link with Category, Budget\n3. Share product link\n4. Ask: \"Ye wala order karna hai? Ya aur dekhna hai?\"\n\nIf they want to order from link:\n→ Continue current order flow with that product\n\nIf they want to see more:\n→ Set Status = \"Follow-up\" and exit to Main Agent\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💬 REPLY STYLE\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Match customer's language (Hinglish/English)\n- Short replies: max 3-4 lines\n- ONE question at a time\n- Friendly, conversational tone\n- Use emojis: 📝📋📅📍🎉✅🙏💕🛍\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n⚠️ CRITICAL RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. ALWAYS call Get_Lead_Details on first message to fetch Name, City\n2. NEVER ask customer for Name or City\n3. ONLY call Roopam_Order_Tool after \"FINAL\" confirmation\n4. ALWAYS set Status = \"Follow-up\" after order complete\n5. ALWAYS update Chat_Summary when order saved\n6. Item_Quantity is ALWAYS 1 (never ask customer)\n7. Order_Status is ALWAYS \"New\" when saving\n8. If customer exits order flow, set Status = \"Follow-up\"\n9. ONE question per reply (don't ask multiple things)\n10. Save exact text customer provides (no modifications)\n11. If the customer Update Order Details (Item Code, Delivery Date, Additional Details) ask for Confirmation and save only the updated details.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔄 CONVERSATION STATE TRACKING\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nUse conversation history to know:\n- What you last asked → What customer is responding to\n- What's already collected → What's still pending\n- Customer's last question → Context for your reply\n\nCheck memory before each response to determine which step you're on.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nEND OF INSTRUCTIONS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           }
         },
         "type": "@n8n/n8n-nodes-langchain.agent",
@@ -3091,7 +3125,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "url": "http://evolution-api:8080/message/sendText/Roopam",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3106,7 +3140,7 @@
             "parameters": [
               {
                 "name": "number",
-                "value": "=918003626766"
+                "value": "=919982922220"
               },
               {
                 "name": "text",
@@ -3129,7 +3163,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "url": "http://evolution-api:8080/message/sendText/Roopam",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3526,7 +3560,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "url": "http://evolution-api:8080/message/sendText/Roopam",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3610,7 +3644,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "url": "http://evolution-api:8080/message/sendText/Roopam",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3648,7 +3682,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
+          "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3678,6 +3712,88 @@
         "id": "565a5b27-fd86-41b1-8e28-1ce794e9f120",
         "name": "Send Typing Indicator",
         "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+            "mode": "list",
+            "cachedResultName": "Roopam_Sarees_Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Sheet1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Phone",
+                "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          2448,
+          528
+        ],
+        "id": "faa8867f-e767-40c4-be9e-0503141ff053",
+        "name": "Get_Lead_Details_to_Send",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+            "mode": "list",
+            "cachedResultName": "Roopam_Sarees_Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1509579590,
+            "mode": "list",
+            "cachedResultName": "Orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Phone",
+                "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          2352,
+          688
+        ],
+        "id": "62198e05-ec11-4d24-9908-ef62e1fd1883",
+        "name": "Get_Order_Details",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
       }
     ],
     "connections": {
@@ -3718,6 +3834,11 @@
             },
             {
               "node": "Order_Booking_Agent",
+              "type": "ai_memory",
+              "index": 0
+            },
+            {
+              "node": "Prepare Response for Issues",
               "type": "ai_memory",
               "index": 0
             }
@@ -3959,17 +4080,6 @@
           ]
         ]
       },
-      "Get row(s) in sheet in Google Sheets": {
-        "ai_tool": [
-          [
-            {
-              "node": "Prepare Response for Issues",
-              "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "Fetch_Customer_Status": {
         "main": [
           [
@@ -4122,10 +4232,32 @@
             }
           ]
         ]
+      },
+      "Get_Lead_Details_to_Send": {
+        "ai_tool": [
+          [
+            {
+              "node": "Prepare Response for Issues",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get_Order_Details": {
+        "ai_tool": [
+          [
+            {
+              "node": "Prepare Response for Issues",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version dd278959",
+    "name": "Version dfb1417e 2502 0743PM",
     "description": "",
     "autosaved": false
   },
