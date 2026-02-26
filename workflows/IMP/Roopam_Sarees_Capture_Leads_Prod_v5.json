@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-25T14:13:28.610Z",
+  "updatedAt": "2026-02-26T08:11:48.435Z",
   "createdAt": "2026-02-25T05:49:51.196Z",
   "id": "VBz1QO9cWvv53IgY",
   "name": "Roopam Sarees Capture Leads Prod v5",
@@ -86,22 +86,6 @@
       ],
       "id": "40900523-0a48-46e4-a6c6-73ba9f523dcf",
       "name": "Simple Memory1"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "whatsapp-roopam",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1184,
-        464
-      ],
-      "id": "0477d7ae-24d3-4886-b2d8-d439d50bda24",
-      "name": "Webhook1",
-      "webhookId": "38b8775c-625d-4c49-aa57-5332e402b607"
     },
     {
       "parameters": {
@@ -1587,6 +1571,22 @@
           "name": "Google Sheets account 2"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-roopam",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1232,
+        464
+      ],
+      "id": "2b491a03-0852-42da-88ec-1cb7d3e7c1db",
+      "name": "Webhook",
+      "webhookId": "38b8775c-625d-4c49-aa57-5332e402b607"
     }
   ],
   "connections": {
@@ -1633,17 +1633,6 @@
           {
             "node": "Prepare Response for Issues",
             "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook1": {
-      "main": [
-        [
-          {
-            "node": "Extract Data",
-            "type": "main",
             "index": 0
           }
         ]
@@ -2047,6 +2036,17 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2061,7 +2061,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Webhook1": [
+    "Webhook": [
       {
         "json": {
           "headers": {
@@ -2195,8 +2195,8 @@
       }
     ]
   },
-  "versionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
-  "activeVersionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
+  "versionId": "f2549c02-1e2a-42b3-a961-677c1b3bce6f",
+  "activeVersionId": "f2549c02-1e2a-42b3-a961-677c1b3bce6f",
   "triggerCount": 1,
   "shared": [
     {
@@ -2208,9 +2208,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-25T14:13:44.000Z",
-    "createdAt": "2026-02-25T14:13:28.613Z",
-    "versionId": "dfb1417e-d51e-4c6f-b699-905c02317511",
+    "updatedAt": "2026-02-26T08:12:02.000Z",
+    "createdAt": "2026-02-26T08:11:48.437Z",
+    "versionId": "f2549c02-1e2a-42b3-a961-677c1b3bce6f",
     "workflowId": "VBz1QO9cWvv53IgY",
     "nodes": [
       {
@@ -2293,22 +2293,6 @@
         ],
         "id": "40900523-0a48-46e4-a6c6-73ba9f523dcf",
         "name": "Simple Memory1"
-      },
-      {
-        "parameters": {
-          "httpMethod": "POST",
-          "path": "whatsapp-roopam",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "position": [
-          -1184,
-          464
-        ],
-        "id": "0477d7ae-24d3-4886-b2d8-d439d50bda24",
-        "name": "Webhook1",
-        "webhookId": "38b8775c-625d-4c49-aa57-5332e402b607"
       },
       {
         "parameters": {
@@ -3794,6 +3778,22 @@
             "name": "Google Sheets account 2"
           }
         }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "whatsapp-roopam",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1232,
+          464
+        ],
+        "id": "2b491a03-0852-42da-88ec-1cb7d3e7c1db",
+        "name": "Webhook",
+        "webhookId": "38b8775c-625d-4c49-aa57-5332e402b607"
       }
     ],
     "connections": {
@@ -3840,17 +3840,6 @@
             {
               "node": "Prepare Response for Issues",
               "type": "ai_memory",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Webhook1": {
-        "main": [
-          [
-            {
-              "node": "Extract Data",
-              "type": "main",
               "index": 0
             }
           ]
@@ -4254,10 +4243,21 @@
             }
           ]
         ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Extract Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version dfb1417e 2502 0743PM",
+    "name": "Version f2549c02 2602 0141PM",
     "description": "",
     "autosaved": false
   },
