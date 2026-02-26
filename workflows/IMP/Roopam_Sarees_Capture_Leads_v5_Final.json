@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-26T09:29:27.515Z",
+  "updatedAt": "2026-02-26T10:58:27.580Z",
   "createdAt": "2026-02-03T11:07:17.295Z",
   "id": "GFDV5iGFQSNP3kDy",
   "name": "Roopam Sarees Capture Leads v5 Final",
@@ -1534,9 +1534,9 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 10000\n}\n",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 5000\n}\n",
         "options": {
-          "timeout": 5000
+          "timeout": 10000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -2194,8 +2194,8 @@
       }
     ]
   },
-  "versionId": "497b8c20-6b99-47da-8014-a0a455f9deb5",
-  "activeVersionId": "497b8c20-6b99-47da-8014-a0a455f9deb5",
+  "versionId": "2207473c-1c48-466e-a5c5-d3a9cd55612e",
+  "activeVersionId": "2207473c-1c48-466e-a5c5-d3a9cd55612e",
   "triggerCount": 1,
   "shared": [
     {
@@ -2207,9 +2207,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-26T09:29:31.000Z",
-    "createdAt": "2026-02-26T09:29:27.519Z",
-    "versionId": "497b8c20-6b99-47da-8014-a0a455f9deb5",
+    "updatedAt": "2026-02-26T10:58:31.000Z",
+    "createdAt": "2026-02-26T10:58:27.586Z",
+    "versionId": "2207473c-1c48-466e-a5c5-d3a9cd55612e",
     "workflowId": "GFDV5iGFQSNP3kDy",
     "nodes": [
       {
@@ -3740,9 +3740,9 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 10000\n}\n",
+          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 5000\n}\n",
           "options": {
-            "timeout": 5000
+            "timeout": 10000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -4258,7 +4258,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 497b8c20",
+    "name": "Version 2207473c",
     "description": "",
     "autosaved": false
   },
