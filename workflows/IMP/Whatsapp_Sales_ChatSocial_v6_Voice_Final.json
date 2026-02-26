@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-21T09:04:45.231Z",
+  "updatedAt": "2026-02-26T09:57:00.309Z",
   "createdAt": "2026-02-17T13:50:21.407Z",
   "id": "Ze4RauWLVaHvdekp",
   "name": "Whatsapp Sales ChatSocial v6 Voice Final",
@@ -147,6 +147,55 @@
               },
               "renameOutput": true,
               "outputKey": "incoming_message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "20939db5-369b-440b-857c-396a16078205",
+                    "leftValue": "={{ $json.messages[0].button.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Button Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "=audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Message"
             }
           ]
         },
@@ -1279,6 +1328,64 @@
       ],
       "id": "253b0467-e2ff-4307-90a5-1aa8369a8286",
       "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.messages[0].button.text }}"
+            },
+            {
+              "id": "t2",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $json.messages[0].from }}"
+            },
+            {
+              "id": "t3",
+              "name": "senderName",
+              "type": "string",
+              "value": "={{ $json.contacts[0].profile.name }}"
+            },
+            {
+              "id": "t4",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ $json.contacts[0].wa_id }}"
+            },
+            {
+              "id": "t5",
+              "name": "messageType",
+              "type": "string",
+              "value": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "78ea8d64-a413-4221-a2eb-9e0f0074917e",
+      "name": "Set: Button Text Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        32
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        96
+      ],
+      "id": "29e1d964-fcea-46fa-aeaf-b09dab11d139",
+      "name": "No Operation, do nothing4"
     }
   ],
   "connections": {
@@ -1338,7 +1445,21 @@
         ],
         [
           {
+            "node": "Set: Button Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Get Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing4",
             "type": "main",
             "index": 0
           }
@@ -1667,6 +1788,17 @@
           }
         ]
       ]
+    },
+    "Set: Button Text Message": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1698,14 +1830,14 @@
           "messages": [
             {
               "from": "918239909115",
-              "id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0E4MTgwM0YyOUVGRkIwNTYyMTIA",
-              "timestamp": "1771354463",
+              "id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0E4NkYxNUYyNzkzOUFCOTE5QjcA",
+              "timestamp": "1772099668",
               "type": "audio",
               "audio": {
                 "mime_type": "audio/ogg; codecs=opus",
-                "sha256": "w7emrLg4OgNP+e5saAvetCi+zB+U/NgwTK0q5Tlnq+A=",
-                "id": "1639341450839867",
-                "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=1639341450839867&source=webhook&ext=1771354764&hash=ARk-0X7h__83USeQl4QyIycH5l9LuMKCV7ajgYcVaP0opw",
+                "sha256": "RTFnuw5ZJut66kBniXQ23Bz57EEFv8q17LlhkXSH+T0=",
+                "id": "806958978370313",
+                "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=806958978370313&source=webhook&ext=1772099969&hash=ARm1FsXRCAKvLSQcCPrlOJDnPIQ3dzdXbhmZJqMI6-3A3A",
                 "voice": true
               }
             }
@@ -1718,8 +1850,8 @@
       }
     ]
   },
-  "versionId": "8e841018-dbae-44a8-b855-e512eed90941",
-  "activeVersionId": "8e841018-dbae-44a8-b855-e512eed90941",
+  "versionId": "5e93d728-eb22-4259-be4b-87a5c612ca64",
+  "activeVersionId": "5e93d728-eb22-4259-be4b-87a5c612ca64",
   "triggerCount": 1,
   "shared": [
     {
@@ -1731,9 +1863,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-21T09:05:02.000Z",
-    "createdAt": "2026-02-21T09:04:45.233Z",
-    "versionId": "8e841018-dbae-44a8-b855-e512eed90941",
+    "updatedAt": "2026-02-26T09:57:09.000Z",
+    "createdAt": "2026-02-26T09:57:00.311Z",
+    "versionId": "5e93d728-eb22-4259-be4b-87a5c612ca64",
     "workflowId": "Ze4RauWLVaHvdekp",
     "nodes": [
       {
@@ -1877,6 +2009,55 @@
                 },
                 "renameOutput": true,
                 "outputKey": "incoming_message"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "20939db5-369b-440b-857c-396a16078205",
+                      "leftValue": "={{ $json.messages[0].button.text }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "string",
+                        "operation": "exists",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Button Text"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
+                      "leftValue": "={{ $json.messages[0].type }}",
+                      "rightValue": "=audio",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Audio Message"
               }
             ]
           },
@@ -3009,6 +3190,64 @@
         ],
         "id": "253b0467-e2ff-4307-90a5-1aa8369a8286",
         "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "t1",
+                "name": "message",
+                "type": "string",
+                "value": "={{ $json.messages[0].button.text }}"
+              },
+              {
+                "id": "t2",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $json.messages[0].from }}"
+              },
+              {
+                "id": "t3",
+                "name": "senderName",
+                "type": "string",
+                "value": "={{ $json.contacts[0].profile.name }}"
+              },
+              {
+                "id": "t4",
+                "name": "wa_id",
+                "type": "string",
+                "value": "={{ $json.contacts[0].wa_id }}"
+              },
+              {
+                "id": "t5",
+                "name": "messageType",
+                "type": "string",
+                "value": "text"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "78ea8d64-a413-4221-a2eb-9e0f0074917e",
+        "name": "Set: Button Text Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -752,
+          32
+        ]
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -1104,
+          96
+        ],
+        "id": "29e1d964-fcea-46fa-aeaf-b09dab11d139",
+        "name": "No Operation, do nothing4"
       }
     ],
     "connections": {
@@ -3068,7 +3307,21 @@
           ],
           [
             {
+              "node": "Set: Button Text Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
               "node": "Get Audio URL",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing4",
               "type": "main",
               "index": 0
             }
@@ -3397,10 +3650,21 @@
             }
           ]
         ]
+      },
+      "Set: Button Text Message": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 8e841018 2102 0234PM",
+    "name": "Version 5e93d728",
     "description": "",
     "autosaved": false
   },
