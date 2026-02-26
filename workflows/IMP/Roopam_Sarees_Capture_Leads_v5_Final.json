@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-25T05:52:06.725Z",
+  "updatedAt": "2026-02-26T08:18:34.953Z",
   "createdAt": "2026-02-03T11:07:17.295Z",
   "id": "GFDV5iGFQSNP3kDy",
   "name": "Roopam Sarees Capture Leads v5 Final",
@@ -347,6 +347,14 @@
           "cachedResultName": "Links",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1513928557"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Budget",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheetsTool",
@@ -682,7 +690,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Issue Details').first().json }}",
         "options": {
-          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue or Confirmed Order Details so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered with \"team contact karegi\" or similar phrase extract the Chat Summary from memory attached to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n2. Get_Order_Details (Read latest Order)\n   CALL THIS: Each time Agent is triggered with \"Order Confirmed\" or similar phrase extract the Chat Summary from memory attached to know the exact Order Details confirmed by the Customer.\n   PURPOSE: Extract latest Order details of Customer Including Name, City, Phone, Item_Code, Additional_Details, Delivery_Date.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same.\n\nIf the Message is about Order Confirmation. You need to Provide the exact customer details and order details that are saved in Google Sheets call tool Get_Order_Details to extract the latest order details."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -744,6 +752,15 @@
               "id": "c8ac746a-2045-4ec0-9149-ffabbfadd249",
               "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
               "rightValue": "team",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b70c8cea-db17-41ea-96cc-3e1fb0a0dea9",
+              "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+              "rightValue": "Order Confirmed",
               "operator": {
                 "type": "string",
                 "operation": "contains"
@@ -1537,6 +1554,47 @@
       "id": "e1518be5-97c8-4b5f-a250-3eb9f87058e1",
       "name": "Send Typing Indicator",
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "mode": "list",
+          "cachedResultName": "Roopam_Sarees_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1509579590,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2368,
+        752
+      ],
+      "id": "6fe37d48-4bb0-4617-af2f-b17ae6a08671",
+      "name": "Get_Order_Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
     }
   ],
   "connections": {
@@ -1577,6 +1635,11 @@
           },
           {
             "node": "Order_Booking_Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Prepare Response for Issues",
             "type": "ai_memory",
             "index": 0
           }
@@ -1981,6 +2044,17 @@
           }
         ]
       ]
+    },
+    "Get_Order_Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2126,8 +2200,8 @@
       }
     ]
   },
-  "versionId": "c38941c9-b814-4bae-9725-a12706e8f3e4",
-  "activeVersionId": "c38941c9-b814-4bae-9725-a12706e8f3e4",
+  "versionId": "6f70d1f5-3d59-4596-a027-b063608ff700",
+  "activeVersionId": "6f70d1f5-3d59-4596-a027-b063608ff700",
   "triggerCount": 1,
   "shared": [
     {
@@ -2139,9 +2213,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-23T12:34:18.000Z",
-    "createdAt": "2026-02-04T18:14:45.808Z",
-    "versionId": "c38941c9-b814-4bae-9725-a12706e8f3e4",
+    "updatedAt": "2026-02-26T08:18:50.000Z",
+    "createdAt": "2026-02-26T08:18:34.955Z",
+    "versionId": "6f70d1f5-3d59-4596-a027-b063608ff700",
     "workflowId": "GFDV5iGFQSNP3kDy",
     "nodes": [
       {
@@ -2485,6 +2559,14 @@
             "cachedResultName": "Links",
             "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1513928557"
           },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Budget",
+                "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+              }
+            ]
+          },
           "options": {}
         },
         "type": "n8n-nodes-base.googleSheetsTool",
@@ -2820,7 +2902,7 @@
           "promptType": "define",
           "text": "={{ $('Extract Issue Details').first().json }}",
           "options": {
-            "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+            "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue or Confirmed Order Details so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered with \"team contact karegi\" or similar phrase extract the Chat Summary from memory attached to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n2. Get_Order_Details (Read latest Order)\n   CALL THIS: Each time Agent is triggered with \"Order Confirmed\" or similar phrase extract the Chat Summary from memory attached to know the exact Order Details confirmed by the Customer.\n   PURPOSE: Extract latest Order details of Customer Including Name, City, Phone, Item_Code, Additional_Details, Delivery_Date.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same.\n\nIf the Message is about Order Confirmation. You need to Provide the exact customer details and order details that are saved in Google Sheets call tool Get_Order_Details to extract the latest order details."
           }
         },
         "type": "@n8n/n8n-nodes-langchain.agent",
@@ -2882,6 +2964,15 @@
                 "id": "c8ac746a-2045-4ec0-9149-ffabbfadd249",
                 "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
                 "rightValue": "team",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "b70c8cea-db17-41ea-96cc-3e1fb0a0dea9",
+                "leftValue": "={{ $('Merge Agent Output').item.json.output }}",
+                "rightValue": "Order Confirmed",
                 "operator": {
                   "type": "string",
                   "operation": "contains"
@@ -3675,6 +3766,47 @@
         "id": "e1518be5-97c8-4b5f-a250-3eb9f87058e1",
         "name": "Send Typing Indicator",
         "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+            "mode": "list",
+            "cachedResultName": "Roopam_Sarees_Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1509579590,
+            "mode": "list",
+            "cachedResultName": "Orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Phone",
+                "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          2368,
+          752
+        ],
+        "id": "6fe37d48-4bb0-4617-af2f-b17ae6a08671",
+        "name": "Get_Order_Details",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
       }
     ],
     "connections": {
@@ -3715,6 +3847,11 @@
             },
             {
               "node": "Order_Booking_Agent",
+              "type": "ai_memory",
+              "index": 0
+            },
+            {
+              "node": "Prepare Response for Issues",
               "type": "ai_memory",
               "index": 0
             }
@@ -4119,10 +4256,21 @@
             }
           ]
         ]
+      },
+      "Get_Order_Details": {
+        "ai_tool": [
+          [
+            {
+              "node": "Prepare Response for Issues",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version c38941c9",
+    "name": "Version 6f70d1f5 2602 0148PM",
     "description": "",
     "autosaved": false
   },
