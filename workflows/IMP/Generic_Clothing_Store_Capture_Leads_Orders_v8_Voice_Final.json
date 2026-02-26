@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-23T11:15:03.687Z",
+  "updatedAt": "2026-02-26T08:19:04.162Z",
   "createdAt": "2026-02-23T07:30:15.224Z",
   "id": "RnyedYNqdRpde8sb",
   "name": "Generic Clothing Store Capture Leads Orders v8 Voice Final",
@@ -169,10 +169,10 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -319,17 +319,29 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": 1513928557,
           "mode": "list",
           "cachedResultName": "Links",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1513928557"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit#gid=1513928557"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Budget",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            },
+            {
+              "lookupColumn": "Category",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values1_Value', ``, 'string') }}"
+            }
+          ]
         },
         "options": {}
       },
@@ -397,10 +409,10 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -576,10 +588,10 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -655,7 +667,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Issue Details').first().json }}",
         "options": {
-          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered to extract the Chat Summary to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same."
+          "systemMessage": "=You are a Helpful Assistant who prepares data from the attached Google Sheets. extract the customers exact issue or Confirmed Order Details so that a team member can handle or resolve this issue immediately.\n\n═══════════════════════════════════════\n🛠️ AVAILABLE TOOLS (When to Use Each)\n═══════════════════════════════════════\n\n1. Get_Lead_Details_to_Send (READ customer data)\n   CALL THIS: Each time Agent is triggered with \"team contact karegi\" or similar phrase extract the Chat Summary from memory attached to know the exact problem the Customer is facing.\n   PURPOSE: Extract all the details of Customer Including Name, Phone, Interest, Status, Chat_Summary.\n\n2. Get_Order_Details (Read latest Order)\n   CALL THIS: Each time Agent is triggered with \"Order Confirmed\" or similar phrase extract the Chat Summary from memory attached to know the exact Order Details confirmed by the Customer.\n   PURPOSE: Extract latest Order details of Customer Including Name, City, Phone, Item_Code, Additional_Details, Delivery_Date.\n\n\nYou MUST prepare the response in a proper structure with correct details so that person receiving this output is able to get the complete picture about the User and their query. Also add the last Message the user asked \n {{ $('Extract Data').item.json.message }} and add it to the message EXACTLY Same.\n\nIf the Message is about Order Confirmation. You need to Provide the exact customer details and order details that are saved in Google Sheets call tool Get_Order_Details to extract the latest order details."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -740,10 +752,10 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -781,51 +793,10 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "Phone",
-              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheetsTool",
-      "typeVersion": 4.7,
-      "position": [
-        2800,
-        464
-      ],
-      "id": "7fd8f23d-f663-493c-bd39-36f499df5bdf",
-      "name": "Get row(s) in sheet in Google Sheets",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
-          "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -1001,10 +972,10 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -1225,10 +1196,10 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -1292,10 +1263,10 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs",
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
           "mode": "list",
-          "cachedResultName": "Roopam_Sarees_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit?usp=drivesdk"
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -1797,6 +1768,88 @@
       ],
       "id": "616d9562-266d-432c-a88f-1cd3149a6c83",
       "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+          "mode": "list",
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2800,
+        464
+      ],
+      "id": "7fd8f23d-f663-493c-bd39-36f499df5bdf",
+      "name": "Get_Lead_Details_to_Send",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+          "mode": "list",
+          "cachedResultName": "Generic_Clothing_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1509579590,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=1509579590"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2704,
+        656
+      ],
+      "id": "85275d71-bdfb-470e-a256-bdbeb96be735",
+      "name": "Get_Order_Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
     }
   ],
   "connections": {
@@ -1837,6 +1890,11 @@
           },
           {
             "node": "Order_Booking_Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Prepare Response for Issues",
             "type": "ai_memory",
             "index": 0
           }
@@ -2046,17 +2104,6 @@
           {
             "node": "Prepare Response for Issues",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get row(s) in sheet in Google Sheets": {
-      "ai_tool": [
-        [
-          {
-            "node": "Prepare Response for Issues",
-            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -2322,6 +2369,28 @@
           }
         ]
       ]
+    },
+    "Get_Lead_Details_to_Send": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Order_Details": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prepare Response for Issues",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2334,7 +2403,7 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "b0ee563d-a91c-40ff-990d-ef2baa926a61",
+  "versionId": "e47f3ea6-c0c8-4f4c-8c29-737197328d24",
   "activeVersionId": "b0ee563d-a91c-40ff-990d-ef2baa926a61",
   "triggerCount": 0,
   "shared": [
