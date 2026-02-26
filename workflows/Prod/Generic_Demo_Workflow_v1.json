@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-02-23T11:16:56.584Z",
+  "updatedAt": "2026-02-26T12:30:12.230Z",
   "createdAt": "2026-02-23T08:30:44.975Z",
   "id": "8HUtdcsTal9bMijB",
   "name": "Generic Demo Workflow v1",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -247,8 +247,8 @@
       "id": "router-switch",
       "name": "Domain Router",
       "position": [
-        960,
-        -256
+        832,
+        -368
       ],
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4
@@ -274,8 +274,8 @@
       "id": "exec-clothing-wf",
       "name": "Execute Clothing Workflow",
       "position": [
-        1440,
-        -272
+        1360,
+        -560
       ],
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3
@@ -283,9 +283,9 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ $('Extract Data').item.json.message }}",
+        "text": "={{ $('Extract Data').first().json.message }}",
         "options": {
-          "systemMessage": "=You are a warm, helpful, and professional Demo Routing Assistant. Your goal is to politely welcome users, identify their Business Domain, optionally get their Name, and prepare them for a specialized Chatbot Demo.\n\n═══════════════════════════════════════ 🎯 YOUR CORE OBJECTIVES & FLOW ═══════════════════════════════════════\n\nSTAGE 1: GREETING & LEAD CAPTURE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ On the very first customer message, warmly welcome them. Ask for their Name and their Business Domain to proceed with the demo. Example: \"Welcome! aapka naam aur business domain kya hai jiski aapko demo dekhni hai? 😊\" ⚠️ CRITICAL: Business Domain is mandatory for the demo to work, but NEVER explicitly tell the user that it is compulsory. Keep it conversational.\n\nSTAGE 2: INTENT DETECTION & STRICT MITIGATION RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMATCH LANGUAGE: Always respond in the same language the user is speaking in. However, your primary fallback language is friendly Hinglish (Hindi + English).\nIRRELEVANT QUERIES: If the user asks general knowledge questions, chit-chats outside the demo flow, or asks something irrelevant, you MUST reply EXACTLY with: \"I am not able to answer your question.\"\nCUSTOM REQUESTS: If the user asks to build custom automation, talks about pricing for their own business, or asks about services beyond testing the pre-built demo: You MUST reply EXACTLY with: \"I only provide demo for the business domain. If you need to book a meeting with us to create this automation for your business you can Message on 09862861226.\"\nSTAGE 3: DOMAIN MATCHING & TOOL CALLING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ We ONLY support exactly these 4 Business Domains: • Clothing • Furniture • UPVC • Real-Estate\n\nIf the user provides a synonym (e.g., \"garments\", \"apparel\", \"boutique\"), map it silently to Clothing. If they provide a totally different domain not in the list, politely tell them we currently only support the above four.\n\n✅ WHEN DOMAIN IS IDENTIFIED:\n\nIMMEDIATELY call the Save_Domain tool (Google Sheets node).\nPass the user's mapped Business_Domain and Name (if they provided one) into the Tool.\n❌ CRITICAL: Do NOT simply extract or format the details in your chat message. You MUST rely ONLY on successfully executing the Save_Domain tool to save the details.\nSTAGE 4: ACKNOWLEDGMENT & HANDOFF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ONCE the Save_Domain tool has successfully logged the data into the sheet:\n\nCreate a nicely formatted, professional, and welcoming output message.\nPolitely acknowledge them by name (if provided) and let them know they can now start the interactive demo for their respective mapped domain.\n❌ CRITICAL: Do NOT explicitly tell the user that \"your details have been saved\" or mention databases/tools.\nExample Success Response: \"Thank you, {Name}! 🎉 You can now start the interactive demo specifically tailored for the {Business Domain} industry. Please let me know when you're ready to proceed! 😊\"\n\n═══════════════════════════════════════ 🛑 BOT LOOP PROTECTION & MEMORY CHECK ═══════════════════════════════════════\n\nCheck conversation memory. If the user (or an automated bot) repeatedly replies with \"Stop\", \"Unsubscribe\", \"Quit\" or sends rapid identical messages: → Acknowledge it gently: \"Conversation stopped. Thank you!\" and cease further prompt flows gracefully.\n═══════════════════════════════════════ 🚧 FINAL CONSTRAINTS ═══════════════════════════════════════\n\nDO NOT hallucinate tools.\nDO NOT answer general questions (use Mitigation Rule 2).\nALWAYS use the exact mitigate messages for irrelevant queries and custom requests."
+          "systemMessage": "=You are a warm, helpful, and professional Demo Routing Assistant. Your goal is to politely welcome users, identify their Business Domain, optionally get their Name, and prepare them for a specialized Chatbot Demo.\n\n═══════════════════════════════════════ 🎯 YOUR CORE OBJECTIVES & FLOW ═══════════════════════════════════════\n\nSTAGE 1: GREETING & LEAD CAPTURE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ On the very first customer message, warmly welcome them. Ask for their Name and their Business Domain to proceed with the demo. Example: \"Welcome! aapka naam aur business domain (Clothing, Furniture, UPVC, Real Estate) kya hai jiski aapko demo dekhni hai? 😊\" ⚠️ CRITICAL: Business Domain is mandatory for the demo to work, but NEVER explicitly tell the user that it is compulsory. Keep it conversational.\n\nSTAGE 2: INTENT DETECTION & STRICT MITIGATION RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMATCH LANGUAGE: Always respond in the same language the user is speaking in. However, your primary fallback language is friendly Hinglish (Hindi + English).\nIRRELEVANT QUERIES: If the user asks general knowledge questions, chit-chats outside the demo flow, or asks something irrelevant, you MUST reply EXACTLY with: \"I am not able to answer your question.\"\nCUSTOM REQUESTS: If the user asks to build custom automation, talks about pricing for their own business, or asks about services beyond testing the pre-built demo: You MUST reply EXACTLY with: \"I only provide demo for the business domain. If you need to book a meeting with us to create this automation for your business you can Message on 09862861226.\"\nSTAGE 3: DOMAIN MATCHING & TOOL CALLING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ We ONLY support exactly these 4 Business Domains: • Clothing • Furniture • UPVC • Real-Estate\n\nIf the user provides a synonym (e.g., \"garments\", \"apparel\", \"boutique\"), map it silently to Clothing. If they provide a totally different domain not in the list, politely tell them we currently only support the above four.\n\n✅ WHEN DOMAIN IS IDENTIFIED:\n\nIMMEDIATELY call the Save_Domain tool (Google Sheets node).\nPass the user's mapped Business_Domain and Name (if they provided one) into the Tool.\n❌ CRITICAL: Do NOT simply extract or format the details in your chat message. You MUST rely ONLY on successfully executing the Save_Domain tool to save the details.\nSTAGE 4: ACKNOWLEDGMENT & HANDOFF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ONCE the Save_Domain tool has successfully logged the data into the sheet:\n\nCreate a nicely formatted, professional, and welcoming output message.\nPolitely acknowledge them by name (if provided) and let them know they can now start the interactive demo for their respective mapped domain.\n❌ CRITICAL: Do NOT explicitly tell the user that \"your details have been saved\" or mention databases/tools.\nExample Success Response: \"Thank you, {Name}! 🎉 You can now start the interactive demo specifically tailored for the {Business Domain} industry. Please let me know when you're ready to proceed! 😊\"\n\n═══════════════════════════════════════ 🛑 BOT LOOP PROTECTION & MEMORY CHECK ═══════════════════════════════════════\n\nCheck conversation memory. If the user (or an automated bot) repeatedly replies with \"Stop\", \"Unsubscribe\", \"Quit\" or sends rapid identical messages: → Acknowledge it gently: \"Conversation stopped. Thank you!\" and cease further prompt flows gracefully.\n═══════════════════════════════════════ 🚧 FINAL CONSTRAINTS ═══════════════════════════════════════\n\nDO NOT hallucinate tools.\nDO NOT answer general questions (use Mitigation Rule 2).\nALWAYS use the exact mitigate messages for irrelevant queries and custom requests."
         }
       },
       "id": "ai-agent",
@@ -534,11 +534,55 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1216,
-        -272
+        1072,
+        -560
       ],
       "id": "ee0b4b65-7b6c-4f34-8d15-d21cf4c61a23",
       "name": "Send Webhook Data"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Webhook Trigger').first().json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -416
+      ],
+      "id": "5ff0fb48-aacc-481c-986c-0c19a8308f94",
+      "name": "Send Webhook Data1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "xsQ1PWBrRwmNBEsZTt-Xh",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/xsQ1PWBrRwmNBEsZTt-Xh",
+          "cachedResultName": "UPVC Furniture Leads"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1536,
+        -416
+      ],
+      "id": "4f7abd0f-de3c-4e46-ac02-8065de1189de",
+      "name": "Call 'UPVC Furniture Leads'"
     }
   ],
   "connections": {
@@ -581,8 +625,20 @@
             "index": 0
           }
         ],
-        [],
-        [],
+        [
+          {
+            "node": "Send Webhook Data1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Webhook Data1",
+            "type": "main",
+            "index": 0
+          }
+        ],
         []
       ]
     },
@@ -675,6 +731,17 @@
         [
           {
             "node": "Execute Clothing Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Webhook Data1": {
+      "main": [
+        [
+          {
+            "node": "Call 'UPVC Furniture Leads'",
             "type": "main",
             "index": 0
           }
@@ -833,8 +900,8 @@
       }
     ]
   },
-  "versionId": "db98d253-2d46-40a5-a481-47636cd2769b",
-  "activeVersionId": null,
+  "versionId": "db44ad10-9289-4a98-8174-81e47c96c269",
+  "activeVersionId": "db44ad10-9289-4a98-8174-81e47c96c269",
   "triggerCount": 1,
   "shared": [
     {
@@ -845,7 +912,760 @@
       "projectId": "iAhlMQ43wIQPVv31"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-02-26T12:30:15.000Z",
+    "createdAt": "2026-02-26T12:30:12.231Z",
+    "versionId": "db44ad10-9289-4a98-8174-81e47c96c269",
+    "workflowId": "8HUtdcsTal9bMijB",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "whatsapp-atul-demo",
+          "options": {}
+        },
+        "id": "webhook-trigger",
+        "name": "Webhook Trigger",
+        "position": [
+          0,
+          -112
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "webhookId": "105ad02c-6a6d-4bcd-84ba-131509e0f578"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "phone-assign",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}"
+              },
+              {
+                "id": "msg-assign",
+                "name": "message",
+                "type": "string",
+                "value": "={{ $json.body.data.message.conversation || $json.body.data.message.extendedTextMessage.text || '' }}"
+              },
+              {
+                "id": "msgid-assign",
+                "name": "messageId",
+                "type": "string",
+                "value": "={{ $json.body.data.key.id }}"
+              },
+              {
+                "id": "msgtype-assign",
+                "name": "messageType",
+                "type": "string",
+                "value": "={{ $json.body.data.messageType }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "extract-data",
+        "name": "Extract Data",
+        "position": [
+          224,
+          -112
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1757786219,
+            "mode": "list",
+            "cachedResultName": "Demo",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1757786219"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Phone",
+                "lookupValue": "={{ $json.phone }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "lookup-user",
+        "name": "Lookup User",
+        "position": [
+          448,
+          -112
+        ],
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "domain-exists-check",
+                "leftValue": "={{ $json.Business_Domain }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "type": "string"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "check-registration",
+        "name": "Check Registration",
+        "position": [
+          640,
+          -128
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "clothing-rule",
+                      "leftValue": "={{ $json.Business_Domain }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "Clothing"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "Clothing"
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "furniture-rule",
+                      "leftValue": "={{ $json.Business_Domain }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "Furniture"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "Furniture"
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "upvc-rule",
+                      "leftValue": "={{ $json.Business_Domain }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "UPVC"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "UPVC"
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "realestate-rule",
+                      "leftValue": "={{ $json.Business_Domain }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "Real-Estate"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "Real-Estate"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "none"
+          }
+        },
+        "id": "router-switch",
+        "name": "Domain Router",
+        "position": [
+          832,
+          -368
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "RnyedYNqdRpde8sb"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "mode": "each",
+          "options": {}
+        },
+        "id": "exec-clothing-wf",
+        "name": "Execute Clothing Workflow",
+        "position": [
+          1360,
+          -560
+        ],
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Extract Data').first().json.message }}",
+          "options": {
+            "systemMessage": "=You are a warm, helpful, and professional Demo Routing Assistant. Your goal is to politely welcome users, identify their Business Domain, optionally get their Name, and prepare them for a specialized Chatbot Demo.\n\n═══════════════════════════════════════ 🎯 YOUR CORE OBJECTIVES & FLOW ═══════════════════════════════════════\n\nSTAGE 1: GREETING & LEAD CAPTURE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ On the very first customer message, warmly welcome them. Ask for their Name and their Business Domain to proceed with the demo. Example: \"Welcome! aapka naam aur business domain (Clothing, Furniture, UPVC, Real Estate) kya hai jiski aapko demo dekhni hai? 😊\" ⚠️ CRITICAL: Business Domain is mandatory for the demo to work, but NEVER explicitly tell the user that it is compulsory. Keep it conversational.\n\nSTAGE 2: INTENT DETECTION & STRICT MITIGATION RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nMATCH LANGUAGE: Always respond in the same language the user is speaking in. However, your primary fallback language is friendly Hinglish (Hindi + English).\nIRRELEVANT QUERIES: If the user asks general knowledge questions, chit-chats outside the demo flow, or asks something irrelevant, you MUST reply EXACTLY with: \"I am not able to answer your question.\"\nCUSTOM REQUESTS: If the user asks to build custom automation, talks about pricing for their own business, or asks about services beyond testing the pre-built demo: You MUST reply EXACTLY with: \"I only provide demo for the business domain. If you need to book a meeting with us to create this automation for your business you can Message on 09862861226.\"\nSTAGE 3: DOMAIN MATCHING & TOOL CALLING ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ We ONLY support exactly these 4 Business Domains: • Clothing • Furniture • UPVC • Real-Estate\n\nIf the user provides a synonym (e.g., \"garments\", \"apparel\", \"boutique\"), map it silently to Clothing. If they provide a totally different domain not in the list, politely tell them we currently only support the above four.\n\n✅ WHEN DOMAIN IS IDENTIFIED:\n\nIMMEDIATELY call the Save_Domain tool (Google Sheets node).\nPass the user's mapped Business_Domain and Name (if they provided one) into the Tool.\n❌ CRITICAL: Do NOT simply extract or format the details in your chat message. You MUST rely ONLY on successfully executing the Save_Domain tool to save the details.\nSTAGE 4: ACKNOWLEDGMENT & HANDOFF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ONCE the Save_Domain tool has successfully logged the data into the sheet:\n\nCreate a nicely formatted, professional, and welcoming output message.\nPolitely acknowledge them by name (if provided) and let them know they can now start the interactive demo for their respective mapped domain.\n❌ CRITICAL: Do NOT explicitly tell the user that \"your details have been saved\" or mention databases/tools.\nExample Success Response: \"Thank you, {Name}! 🎉 You can now start the interactive demo specifically tailored for the {Business Domain} industry. Please let me know when you're ready to proceed! 😊\"\n\n═══════════════════════════════════════ 🛑 BOT LOOP PROTECTION & MEMORY CHECK ═══════════════════════════════════════\n\nCheck conversation memory. If the user (or an automated bot) repeatedly replies with \"Stop\", \"Unsubscribe\", \"Quit\" or sends rapid identical messages: → Acknowledge it gently: \"Conversation stopped. Thank you!\" and cease further prompt flows gracefully.\n═══════════════════════════════════════ 🚧 FINAL CONSTRAINTS ═══════════════════════════════════════\n\nDO NOT hallucinate tools.\nDO NOT answer general questions (use Mitigation Rule 2).\nALWAYS use the exact mitigate messages for irrelevant queries and custom requests."
+          }
+        },
+        "id": "ai-agent",
+        "name": "Domain Capture AI",
+        "position": [
+          896,
+          64
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "id": "llm-model",
+        "name": "OpenAI Chat Model",
+        "position": [
+          816,
+          288
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Extract Data').first().json.phone }}"
+        },
+        "id": "memory",
+        "name": "Window Buffer Memory",
+        "position": [
+          976,
+          288
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1757786219,
+            "mode": "list",
+            "cachedResultName": "Demo",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1757786219"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+              "Business_Domain": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Business_Domain', ``, 'string') }}",
+              "Created_At": "={{ $now }}",
+              "Phone": "={{ $('Extract Data').first().json.phone }}"
+            },
+            "matchingColumns": [
+              "Phone"
+            ],
+            "schema": [
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Name",
+                "displayName": "Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Business_Domain",
+                "displayName": "Business_Domain",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Created_At",
+                "displayName": "Created_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          1136,
+          288
+        ],
+        "id": "8ba4cde5-c5ab-4b3a-b481-62b27203a715",
+        "name": "Save_Domain",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "number",
+                "value": "={{ $('Extract Data').first().json.phone }}"
+              },
+              {
+                "name": "text",
+                "value": "={{ $('Domain Capture AI').first().json.output }}"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1536,
+          64
+        ],
+        "id": "fa84d52b-dae7-4e6e-b9e5-9155d02fa6be",
+        "name": "Reply to Customer",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "435e7194-12be-4f4a-9efb-eebed9cd3ae4",
+                "leftValue": "={{ $json.output }}",
+                "rightValue": "Conversation closed",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "974654cd-77c5-47c7-b326-2ea4f4268120",
+                "leftValue": "={{ $json.output }}",
+                "rightValue": "conversation closed",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              },
+              {
+                "id": "af425ca6-7c01-46f7-8add-91c6d6faec92",
+                "leftValue": "={{ $json.output }}",
+                "rightValue": "Conversation Closed",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1248,
+          64
+        ],
+        "id": "05eb9bd7-ed85-423a-9889-1b31453db54e",
+        "name": "Close Conversation"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1520,
+          -80
+        ],
+        "id": "262dfa1e-1c40-42dc-b945-1070e5c82f74",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ $('Webhook Trigger').first().json }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1072,
+          -560
+        ],
+        "id": "ee0b4b65-7b6c-4f34-8d15-d21cf4c61a23",
+        "name": "Send Webhook Data"
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ $('Webhook Trigger').first().json }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1200,
+          -416
+        ],
+        "id": "5ff0fb48-aacc-481c-986c-0c19a8308f94",
+        "name": "Send Webhook Data1"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "xsQ1PWBrRwmNBEsZTt-Xh",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/xsQ1PWBrRwmNBEsZTt-Xh",
+            "cachedResultName": "UPVC Furniture Leads"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "mode": "each",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          1536,
+          -416
+        ],
+        "id": "4f7abd0f-de3c-4e46-ac02-8065de1189de",
+        "name": "Call 'UPVC Furniture Leads'"
+      }
+    ],
+    "connections": {
+      "Check Registration": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Domain Router",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "node": "Domain Capture AI",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Domain Capture AI": {
+        "main": [
+          [
+            {
+              "node": "Close Conversation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Domain Router": {
+        "main": [
+          [
+            {
+              "node": "Send Webhook Data",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Webhook Data1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Webhook Data1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Extract Data": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Lookup User",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Lookup User": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Check Registration",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Domain Capture AI",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Webhook Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract Data",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Window Buffer Memory": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Domain Capture AI",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Save_Domain": {
+        "ai_tool": [
+          [
+            {
+              "node": "Domain Capture AI",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Close Conversation": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Reply to Customer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Webhook Data": {
+        "main": [
+          [
+            {
+              "node": "Execute Clothing Workflow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Webhook Data1": {
+        "main": [
+          [
+            {
+              "node": "Call 'UPVC Furniture Leads'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version db44ad10",
+    "description": "",
+    "autosaved": false
+  },
   "tags": [
     {
       "updatedAt": "2026-02-17T11:20:34.192Z",
