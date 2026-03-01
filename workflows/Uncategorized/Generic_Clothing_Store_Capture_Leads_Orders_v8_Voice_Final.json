@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-27T14:28:59.568Z",
+  "updatedAt": "2026-03-01T09:28:19.352Z",
   "createdAt": "2026-02-23T07:30:15.224Z",
   "id": "RnyedYNqdRpde8sb",
   "name": "Generic Clothing Store Capture Leads Orders v8 Voice Final",
@@ -51,9 +51,9 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-4o-mini",
+          "value": "gpt-4.1-mini",
           "mode": "list",
-          "cachedResultName": "gpt-4o-mini"
+          "cachedResultName": "gpt-4.1-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -76,7 +76,8 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Extract Data').first().json.phone }}"
+        "sessionKey": "={{ $('Extract Data').first().json.phone }}",
+        "contextWindowLength": 7
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
@@ -2365,8 +2366,8 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "896019f4-8322-42c9-9664-bf0ad4a73cfe",
-  "activeVersionId": "896019f4-8322-42c9-9664-bf0ad4a73cfe",
+  "versionId": "2b673551-335f-411c-8899-49fa18482f1a",
+  "activeVersionId": "b17cc7a2-a18f-42e6-a51c-21c7cf6d7090",
   "triggerCount": 0,
   "shared": [
     {
@@ -2378,9 +2379,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-27T14:29:01.000Z",
-    "createdAt": "2026-02-27T14:28:59.570Z",
-    "versionId": "896019f4-8322-42c9-9664-bf0ad4a73cfe",
+    "updatedAt": "2026-03-01T09:25:22.000Z",
+    "createdAt": "2026-03-01T09:24:55.789Z",
+    "versionId": "b17cc7a2-a18f-42e6-a51c-21c7cf6d7090",
     "workflowId": "RnyedYNqdRpde8sb",
     "nodes": [
       {
@@ -2428,9 +2429,9 @@
         "parameters": {
           "model": {
             "__rl": true,
-            "value": "gpt-4o-mini",
+            "value": "gpt-4.1-mini",
             "mode": "list",
-            "cachedResultName": "gpt-4o-mini"
+            "cachedResultName": "gpt-4.1-mini"
           },
           "builtInTools": {},
           "options": {}
@@ -4733,7 +4734,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 896019f4",
+    "name": "Version b17cc7a2 model changed to 4.1-mini from 4o-mini",
     "description": "",
     "autosaved": true
   },
