@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-26T10:43:53.825Z",
+  "updatedAt": "2026-03-02T11:01:14.128Z",
   "createdAt": "2026-02-17T12:34:36.398Z",
   "id": "bzWz4GuJcyWDdg2V",
   "name": "GitHub Workflow Backup - Hourly",
@@ -653,7 +653,9 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false,
     "errorWorkflow": "SjtJ7OpRhKfvfRCa",
-    "timeSavedMode": "fixed"
+    "timeSavedMode": "fixed",
+    "saveDataSuccessExecution": "none",
+    "binaryMode": "separate"
   },
   "staticData": {
     "node:Hourly Backup Trigger": {
