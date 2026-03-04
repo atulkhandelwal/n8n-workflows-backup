@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-04T12:28:33.425Z",
+  "updatedAt": "2026-03-04T13:08:20.506Z",
   "createdAt": "2026-03-04T06:19:08.006Z",
   "id": "c9L9npDoA7Nbi4c5",
   "name": "Whatsapp Sales ChatSocial v7 Voice Trial",
@@ -98,30 +98,6 @@
     },
     {
       "parameters": {
-        "operation": "send",
-        "phoneNumberId": "=934770033042697",
-        "recipientPhoneNumber": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
-        "textBody": "={{ $node[\"AI Agent\"].json.output }}",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.whatsApp",
-      "typeVersion": 1.1,
-      "position": [
-        2688,
-        320
-      ],
-      "id": "9503be1f-db95-4904-b93b-f47903e3c841",
-      "name": "Send message",
-      "webhookId": "9c44ff74-1ccb-4faa-9738-6e0ef49ddc6e",
-      "credentials": {
-        "whatsAppApi": {
-          "id": "H2Gy8N4zKljbdoeL",
-          "name": "WhatsApp account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "rules": {
           "values": [
             {
@@ -134,11 +110,12 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $('Webhook').item.json.body.conversation.messages[0].content_type }}",
+                    "leftValue": "={{ $('Webhook').item.json.body.content }}",
                     "rightValue": "text",
                     "operator": {
                       "type": "string",
-                      "operation": "equals"
+                      "operation": "notEmpty",
+                      "singleValue": true
                     },
                     "id": "check-incoming-message"
                   }
@@ -158,33 +135,8 @@
                 },
                 "conditions": [
                   {
-                    "id": "20939db5-369b-440b-857c-396a16078205",
-                    "leftValue": "={{ $json.messages[0].button.text }}",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "string",
-                      "operation": "exists",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Button Text"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                },
-                "conditions": [
-                  {
                     "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
-                    "leftValue": "={{ $json.messages[0].type }}",
+                    "leftValue": "={{ $('Webhook').item.json.body.conversation.messages[0].attachments[0].file_type }}",
                     "rightValue": "=audio",
                     "operator": {
                       "type": "string",
@@ -1472,7 +1424,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2476.4544941210497,
+        2480,
         320
       ],
       "id": "e89ccb67-c0ba-4f96-81c3-eb0165d11ff7",
@@ -1536,13 +1488,6 @@
         [
           {
             "node": "Set: Text Message",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Set: Button Text Message",
             "type": "main",
             "index": 0
           }
@@ -1930,21 +1875,21 @@
           "headers": {
             "host": "n8n-vps.chatsocialai.in",
             "user-agent": "rest-client/2.1.0 (linux-musl x86_64) ruby/3.4.4p34",
-            "content-length": "2484",
+            "content-length": "3297",
             "accept": "application/json",
             "accept-encoding": "gzip, br",
             "cdn-loop": "cloudflare; loops=1",
             "cf-connecting-ip": "82.112.238.115",
             "cf-ipcountry": "IN",
-            "cf-ray": "9d6f2a72ed423d0c-BOM",
+            "cf-ray": "9d70ec2d0b59f7e1-BOM",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "content-type": "application/json",
-            "x-forwarded-for": "82.112.238.115, 172.69.179.183",
+            "x-forwarded-for": "82.112.238.115, 172.71.202.168",
             "x-forwarded-host": "n8n-vps.chatsocialai.in",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "5ea393ddef79",
-            "x-real-ip": "172.69.179.183"
+            "x-real-ip": "172.71.202.168"
           },
           "params": {},
           "query": {},
@@ -1956,7 +1901,7 @@
             "additional_attributes": {},
             "content_attributes": {},
             "content_type": "text",
-            "content": "Hi",
+            "content": null,
             "conversation": {
               "additional_attributes": {},
               "can_reply": true,
@@ -1975,33 +1920,48 @@
               "inbox_id": 1,
               "messages": [
                 {
-                  "id": 5,
-                  "content": "Hi",
+                  "id": 9,
+                  "content": null,
                   "account_id": 1,
                   "inbox_id": 1,
                   "conversation_id": 1,
                   "message_type": 0,
-                  "created_at": 1772609323,
-                  "updated_at": "2026-03-04T07:28:43.792Z",
+                  "created_at": 1772627744,
+                  "updated_at": "2026-03-04T12:35:44.644Z",
                   "private": false,
                   "status": "sent",
-                  "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0E5NUExRDREQzFENjU2QTBERTgA",
+                  "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0FDNDBDNEI2NkQ3ODkxQ0I1RTMA",
                   "content_type": "text",
                   "content_attributes": {},
                   "sender_type": "Contact",
                   "sender_id": 1,
                   "external_source_ids": {},
                   "additional_attributes": {},
-                  "processed_message_content": "Hi",
+                  "processed_message_content": null,
                   "sentiment": {},
                   "conversation": {
                     "assignee_id": 1,
                     "unread_count": 1,
-                    "last_activity_at": 1772609323,
+                    "last_activity_at": 1772627744,
                     "contact_inbox": {
                       "source_id": "918239909115"
                     }
                   },
+                  "attachments": [
+                    {
+                      "id": 3,
+                      "message_id": 9,
+                      "file_type": "audio",
+                      "account_id": 1,
+                      "extension": null,
+                      "data_url": "https://chatwoot-chatwoot.zo8k0m.easypanel.host/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBDQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--7ebecbb686482f21c66a77a7b8b76746b14fec0e/File.ogg",
+                      "thumb_url": "",
+                      "file_size": 6418,
+                      "width": null,
+                      "height": null,
+                      "transcribed_text": ""
+                    }
+                  ],
                   "sender": {
                     "additional_attributes": {},
                     "custom_attributes": {},
@@ -2049,16 +2009,16 @@
               "unread_count": 1,
               "first_reply_created_at": "2026-03-04T06:13:49.182Z",
               "priority": null,
-              "waiting_since": 0,
-              "agent_last_seen_at": 1772605907,
+              "waiting_since": 1772609323,
+              "agent_last_seen_at": 1772627688,
               "contact_last_seen_at": 0,
-              "last_activity_at": 1772609323,
-              "timestamp": 1772609323,
+              "last_activity_at": 1772627744,
+              "timestamp": 1772627744,
               "created_at": 1772604818,
-              "updated_at": 1772609323.7979834
+              "updated_at": 1772627744.6488016
             },
-            "created_at": "2026-03-04T07:28:43.792Z",
-            "id": 5,
+            "created_at": "2026-03-04T12:35:44.644Z",
+            "id": 9,
             "inbox": {
               "id": 1,
               "name": "ChatSocialAI"
@@ -2081,7 +2041,22 @@
               "thumbnail": "",
               "blocked": false
             },
-            "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0E5NUExRDREQzFENjU2QTBERTgA",
+            "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0FDNDBDNEI2NkQ3ODkxQ0I1RTMA",
+            "attachments": [
+              {
+                "id": 3,
+                "message_id": 9,
+                "file_type": "audio",
+                "account_id": 1,
+                "extension": null,
+                "data_url": "https://chatwoot-chatwoot.zo8k0m.easypanel.host/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBDQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--7ebecbb686482f21c66a77a7b8b76746b14fec0e/File.ogg",
+                "thumb_url": "",
+                "file_size": 6418,
+                "width": null,
+                "height": null,
+                "transcribed_text": ""
+              }
+            ],
             "event": "message_created"
           },
           "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/chatwoot",
@@ -2093,8 +2068,8 @@
       }
     ]
   },
-  "versionId": "cedfcfd6-bccc-4936-9b21-98e65db0d1fe",
-  "activeVersionId": "0e3ab6b9-18a8-4d77-ab4a-d932117f4796",
+  "versionId": "96cc695b-e75e-44a4-882f-992732e0f0d4",
+  "activeVersionId": "96cc695b-e75e-44a4-882f-992732e0f0d4",
   "triggerCount": 1,
   "shared": [
     {
@@ -2106,9 +2081,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-04T06:21:17.000Z",
-    "createdAt": "2026-03-04T06:21:01.379Z",
-    "versionId": "0e3ab6b9-18a8-4d77-ab4a-d932117f4796",
+    "updatedAt": "2026-03-04T13:08:23.000Z",
+    "createdAt": "2026-03-04T13:08:20.507Z",
+    "versionId": "96cc695b-e75e-44a4-882f-992732e0f0d4",
     "workflowId": "c9L9npDoA7Nbi4c5",
     "nodes": [
       {
@@ -2153,13 +2128,13 @@
             "conditions": [
               {
                 "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
-                "leftValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.messages[0].from }}",
+                "leftValue": "={{ $('Edit Fields').item.json.phone }}",
                 "operator": {
                   "name": "filter.operator.notEquals",
                   "operation": "notEquals",
                   "type": "string"
                 },
-                "rightValue": "919462861226"
+                "rightValue": "+919462861226"
               }
             ],
             "combinator": "and"
@@ -2203,30 +2178,6 @@
       },
       {
         "parameters": {
-          "operation": "send",
-          "phoneNumberId": "=934770033042697",
-          "recipientPhoneNumber": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
-          "textBody": "={{ $node[\"AI Agent\"].json.output }}",
-          "additionalFields": {}
-        },
-        "type": "n8n-nodes-base.whatsApp",
-        "typeVersion": 1.1,
-        "position": [
-          2384,
-          176
-        ],
-        "id": "9503be1f-db95-4904-b93b-f47903e3c841",
-        "name": "Send message",
-        "webhookId": "9c44ff74-1ccb-4faa-9738-6e0ef49ddc6e",
-        "credentials": {
-          "whatsAppApi": {
-            "id": "H2Gy8N4zKljbdoeL",
-            "name": "WhatsApp account"
-          }
-        }
-      },
-      {
-        "parameters": {
           "rules": {
             "values": [
               {
@@ -2239,11 +2190,12 @@
                   },
                   "conditions": [
                     {
-                      "leftValue": "={{ $json.messages[0].type }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.content }}",
                       "rightValue": "text",
                       "operator": {
                         "type": "string",
-                        "operation": "equals"
+                        "operation": "notEmpty",
+                        "singleValue": true
                       },
                       "id": "check-incoming-message"
                     }
@@ -2263,33 +2215,8 @@
                   },
                   "conditions": [
                     {
-                      "id": "20939db5-369b-440b-857c-396a16078205",
-                      "leftValue": "={{ $json.messages[0].button.text }}",
-                      "rightValue": "",
-                      "operator": {
-                        "type": "string",
-                        "operation": "exists",
-                        "singleValue": true
-                      }
-                    }
-                  ],
-                  "combinator": "and"
-                },
-                "renameOutput": true,
-                "outputKey": "Button Text"
-              },
-              {
-                "conditions": {
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 1
-                  },
-                  "conditions": [
-                    {
                       "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
-                      "leftValue": "={{ $json.messages[0].type }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.conversation.messages[0].attachments[0].file_type }}",
                       "rightValue": "=audio",
                       "operator": {
                         "type": "string",
@@ -2363,7 +2290,7 @@
             "mappingMode": "defineBelow",
             "value": {
               "NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('NAME', ``, 'string') }}",
-              "PHONE NUMBER": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+              "PHONE NUMBER": "={{ $('Edit Fields').item.json.phone }}",
               "COMPANY NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('COMPANY_NAME', ``, 'string') }}",
               "Interested Product": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Interested_Product', ``, 'string') }}",
               "Problem Statement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Problem_Statement', ``, 'string') }}",
@@ -2507,7 +2434,7 @@
             "values": [
               {
                 "lookupColumn": "PHONE NUMBER",
-                "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+                "lookupValue": "={{ $('Edit Fields').item.json.phone }}"
               }
             ]
           },
@@ -2538,7 +2465,7 @@
       {
         "parameters": {
           "sessionIdType": "customKey",
-          "sessionKey": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+          "sessionKey": "={{ $('Edit Fields').item.json.phone }}"
         },
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
@@ -2569,7 +2496,7 @@
             "values": [
               {
                 "lookupColumn": "PHONE NUMBER",
-                "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+                "lookupValue": "={{ $('Edit Fields').item.json.phone }}"
               }
             ]
           },
@@ -2624,7 +2551,12 @@
       {
         "parameters": {
           "conditions": {
-            "combinator": "or",
+            "options": {
+              "version": 3,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
             "conditions": [
               {
                 "id": "00b2adf3-b224-46f2-b1b7-0bcd50885878",
@@ -2641,7 +2573,7 @@
                   "operation": "equals",
                   "type": "string"
                 },
-                "rightValue": ""
+                "rightValue": "Conversation Closed"
               },
               {
                 "id": "b2f84f87-a342-4828-bb85-bd9c41e637e8",
@@ -2662,12 +2594,7 @@
                 "rightValue": "conversation closed"
               }
             ],
-            "options": {
-              "version": 3,
-              "leftValue": "",
-              "caseSensitive": true,
-              "typeValidation": "strict"
-            }
+            "combinator": "or"
           },
           "options": {}
         },
@@ -2892,25 +2819,25 @@
                 "id": "t1",
                 "name": "message",
                 "type": "string",
-                "value": "={{ $json.messages[0].text.body }}"
+                "value": "={{ $json.message }}"
               },
               {
                 "id": "t2",
                 "name": "phone",
                 "type": "string",
-                "value": "={{ $json.messages[0].from }}"
+                "value": "={{ $json.phone }}"
               },
               {
                 "id": "t3",
                 "name": "senderName",
                 "type": "string",
-                "value": "={{ $json.contacts[0].profile.name }}"
+                "value": "={{ $json.user_name }}"
               },
               {
                 "id": "t4",
                 "name": "wa_id",
                 "type": "string",
-                "value": "={{ $json.contacts[0].wa_id }}"
+                "value": "={{ $json.account_id }}"
               },
               {
                 "id": "t5",
@@ -3334,8 +3261,8 @@
               },
               {
                 "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
-                "leftValue": "={{ $json.messages[0].from }}",
-                "rightValue": "919462861226",
+                "leftValue": "={{ $json.phone }}",
+                "rightValue": "+919462861226",
                 "operator": {
                   "type": "string",
                   "operation": "notEquals"
@@ -3378,12 +3305,21 @@
             "conditions": [
               {
                 "id": "67252c2c-d0f4-4988-95b4-b37e2b9bc8d3",
-                "leftValue": "={{ $json.messages[0].type }}",
+                "leftValue": "={{ $('Webhook').item.json.body.conversation.messages[0].content_type }}",
                 "rightValue": "",
                 "operator": {
                   "type": "string",
                   "operation": "exists",
                   "singleValue": true
+                }
+              },
+              {
+                "id": "3c88f894-a44e-464e-a24b-a97632dd0d0d",
+                "leftValue": "={{ $('Webhook').item.json.body.message_type }}",
+                "rightValue": "incoming",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
                 }
               }
             ],
@@ -3394,8 +3330,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          -1536,
-          -112
+          -1808,
+          -64
         ],
         "id": "440a47de-efa2-4096-be11-7f6ec2ff430d",
         "name": "If3"
@@ -3478,12 +3414,107 @@
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2.1,
         "position": [
-          -1728,
-          -112
+          -2224,
+          -64
         ],
         "id": "6c17f7cc-bbab-4442-b772-e163d5899e2e",
         "name": "Webhook",
         "webhookId": "71fb7237-404d-4dde-9362-40e4a60b50e9"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "606cb002-bf03-46a3-b060-ca7c960d4f06",
+                "name": "account_id",
+                "value": "={{ $json.body.conversation.messages[0].account_id }}",
+                "type": "string"
+              },
+              {
+                "id": "e35515da-8c8a-4272-bbb4-461fe15c0011",
+                "name": "conversation_id",
+                "value": "={{ $json.body.conversation.messages[0].conversation_id }}",
+                "type": "string"
+              },
+              {
+                "id": "3b9c64f7-c54b-49ae-9660-1c31a113a83c",
+                "name": "message_type",
+                "value": "={{ $json.body.conversation.messages[0].content_type }}",
+                "type": "string"
+              },
+              {
+                "id": "a15649a0-d25e-4be2-a097-f4e93e94b0b8",
+                "name": "user_name",
+                "value": "={{ $json.body.conversation.meta.sender.name }}",
+                "type": "string"
+              },
+              {
+                "id": "9c59bf55-e38f-4922-bb77-8663bb16ba08",
+                "name": "phone",
+                "value": "={{ $json.body.conversation.meta.sender.phone_number }}",
+                "type": "string"
+              },
+              {
+                "id": "53c16e78-a53b-4098-9ac4-70a19873e6e5",
+                "name": "message",
+                "value": "={{ $json.body.conversation.messages[0].content }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -2016,
+          -64
+        ],
+        "id": "36c7363c-af32-4c72-9abc-cbe08cd6893a",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://chatwoot-chatwoot.zo8k0m.easypanel.host/api/v1/accounts/{{ $('Edit Fields').item.json.account_id }}/conversations/{{ $('Edit Fields').item.json.conversation_id }}/messages",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "content",
+                "value": "={{ $node[\"AI Agent\"].json.output }}"
+              },
+              {
+                "name": "message_type",
+                "value": "outgoing"
+              },
+              {
+                "name": "private",
+                "value": "false"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          2480,
+          320
+        ],
+        "id": "e89ccb67-c0ba-4f96-81c3-eb0165d11ff7",
+        "name": "HTTP Request",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "024O8P6g27tuxxUY",
+            "name": "chatwoot_ChatSocialAI"
+          }
+        }
       }
     ],
     "connections": {
@@ -3537,13 +3568,6 @@
           [
             {
               "node": "Set: Text Message",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Set: Button Text Message",
               "type": "main",
               "index": 0
             }
@@ -3620,7 +3644,7 @@
           ],
           [
             {
-              "node": "Send message",
+              "node": "HTTP Request",
               "type": "main",
               "index": 0
             }
@@ -3891,16 +3915,32 @@
         "main": [
           [
             {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
               "node": "If3",
               "type": "main",
               "index": 0
             }
           ]
         ]
+      },
+      "HTTP Request": {
+        "main": [
+          []
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 0e3ab6b9",
+    "name": "Version 96cc695b",
     "description": "",
     "autosaved": true
   },
