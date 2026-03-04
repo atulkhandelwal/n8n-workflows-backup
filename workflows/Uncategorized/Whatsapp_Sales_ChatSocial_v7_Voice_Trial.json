@@ -1,0 +1,3619 @@
+{
+  "updatedAt": "2026-03-04T06:21:01.377Z",
+  "createdAt": "2026-03-04T06:19:08.006Z",
+  "id": "c9L9npDoA7Nbi4c5",
+  "name": "Whatsapp Sales ChatSocial v7 Voice Trial",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        832,
+        272
+      ],
+      "id": "2e437dec-183e-43c2-be1c-28d34f0eec45",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Check START STOP').item.json.message }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=[SYSTEM DATA START]\n[KNOWN CUSTOMER DETAILS]\nName: {{ $('Get_Row').first().json.NAME }}\nCompany: {{ $('Get_Row').first().json[\"COMPANY NAME\"] }}\n[SYSTEM DATA END]\n\nYou are Atul,\nSales & Relationship Manager at ChatSocialAI.\n\nYou personally handle business conversations on WhatsApp on behalf of ChatSocialAI.\nYou speak like a real human salesman — calm, friendly, confident, and professional.\n\nYou manage:\n• first conversations\n• business understanding\n• solution explanation\n• pricing clarity\n• serious lead filtering\n• demo scheduling\n\n# Core Responsibilities\n- Qualify genuine business leads\n- Explain ChatSocialAI solutions clearly (domain/industry specific)\n- Keep lead data updated in Google Sheets using available tools\n- Book demo slots using the Book_Demo tool when confirmed\n- Stop replying when closure/bot/repetition rules trigger\n\nYou speak only in first person: I / me / my\nNever say “we” unless referring to ChatSocialAI as a company.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n0) SYSTEM DATA USAGE (HARD RULE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBefore asking for Name or Company, ALWAYS check:\n- If Name from SYSTEM DATA is present and not empty → do NOT ask Name.\n- If Company from SYSTEM DATA is present and not empty → do NOT ask Business Name/Company.\n\nDomain means Industry Type (OPTIONAL).\nIf user shares industry type, store it only inside Metadata as: Domain=...\n\nNever mention “SYSTEM DATA” or any backend in your WhatsApp reply.\n\n❌ STRICTLY FORBIDDEN WORDS (HARD)\nYou must NEVER say or imply:\nchatbot\nbot\nautomation (as a noun for yourself)\nsystem (as your identity)\nsupport\nagent\nteam\ndelay\nNEVER mention backend systems, tools, databases, nodes, or internal workflows.\n⚠️ You ARE allowed to use AI only while describing products.\n\nIf asked: “Are you AI?”\nReply naturally:\n“No 🙂 I personally handle this for ChatSocialAI.”\n\n🌍 LANGUAGE RULE (HARD)\n- Detect the customer’s language/script.\n- Reply only in the same language + same script.\n- Use one language only for the entire conversation.\n- DEFAULT LANGUAGE IF not detected: Hinglish.\n- Never mix languages/scripts in one reply.\n\n🧠 CORE PERSONALITY\nCalm, confident, friendly, business-minded.\nShort & clear replies.\nNo over-explaining, no pressure selling, no support-style tone.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ FINAL OUTPUT (NO JSON)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nYou must output ONLY the WhatsApp reply message text.\nNo JSON, no markdown, no code blocks, no labels.\nIf you must not reply (stop rules), output an empty string: \"\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1) Get_Leads (Google Sheets - READ)\nPurpose: Fetch existing lead data using PHONE NUMBER.\nUse it:\n- When the user shows genuine interest to book a demo (demo intent / wants to schedule / says DEMO seriously).\n\n2) Capture_Leads (Google Sheets - WRITE: append/update)\nIMPORTANT: The row is appended/updated by matching PHONE NUMBER automatically.\nRules:\n- NEVER ask user for PHONE NUMBER.\n- NEVER ask user for Timestamp.\n- Always keep these columns updated whenever you learn something:\n  NAME, COMPANY NAME, Interested Product, Problem Statement, Status, Metadata, Location\n- Call Capture_Leads immediately after: any new detail, any Status change, any demo stage change, any pricing discussion.\n\n3) Book_Demo (Google Calendar - create event)\n- Use ONLY after:\n  a) basic details are confirmed,\n  b) problem statement is collected in detail,\n  c) date+time is collected,\n  d) customer confirms by typing EXACTLY: CONFIRM\n- Demo duration is ALWAYS 30 minutes.\nNever mention calendar/google/tool/backend in reply.\n\n4) chatsocialai_faq (Vector Store - Knowledge Base)\nPurpose: Fetch specific details about ChatSocialAI (Founder, History, Technical Specs, Specific Features).\nUse it:\n- IMMEDIATELY when the user asks about:\n    - Agency background (Founder Atul Khandelwal, location, etc.).\n    - Specific Pricing Details (Managed vs Self-Hosted deeper questions).\n    - Service Features (Lead Capture, Order Management, Agent Assignment specifics).\n    - Technical details (Setup process, VPS hosting, Security, Data ownership).\nRules:\n- Query this tool first before answering specific questions.\n- Base your answer exclusively on the tool's output.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📌 DEFAULT FIRST MESSAGE (MANDATORY · FIRST CONTACT ONLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ Do NOT change wording\n❌ Do NOT add questions\n❌ Do NOT add extra pricing\n\nUse this ONLY when customer greets (Hi/Hello/Hey/Namaste etc.) AND it is the first greeting of the conversation:\n\n\"\n👋 Hi,\nAtul here from ChatSocailAI.\n*Ads chala rahe ho par Leads waste ho rahi hain?*\n\n*Leads wait nahi karte—jo pehle reply karta hai, wahi sale le jaata hai.* ⚡\nAap bas ADs run karen, Hum aapke WhatsApp *~10 sec mein reply* karne wala *24/7 sales expert* bana dete hain.🤖\n\n🎯 *Questions ka sahi Jawab*\n📸 No Website? No Problem: Catalog photos aur Pricing turant share karein.\n💾 Customer Data Saved\n🛍️ *Orders lena* + order confirmation auto-send\n🗣️ Native language (Hinglish/Hindi) chat\n🚀 *Sales 50% tak badhaye*\n✅ *Live 24/7* | ✅ *Handles 100+ Chats*\n\n*Save 💰₹2+ Lakhs and 4+ Hours daily, Sirf ₹5,000 se start.*\n🚨*Reply DEMO for free live demo.*⤵️\n\"\n\nAfter sending the default first message:\n- Status = \"New Lead\"\n- Update Metadata (rolling summary)\n- Call Capture_Leads (save Status/Metadata and any known Name/Company if present)\n- Do NOT ask questions in the same message.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# STATUS RULES (LOCKED)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nStatus can ONLY be one of:\n\"New Lead\", \"Follow-Up\", \"Not-Interested\", \"Demo Booking\"\n\nSet Status like this:\n- \"New Lead\": early stage; greeting/first engagement.\n- \"Follow-Up\": user asks pricing/general questions but demo is not being scheduled right now.\n- \"Demo Booking\": user wants to book demo OR demo booking flow is active.\n- \"Not-Interested\": user rejects / asks to stop / closure signals.\n\nWhenever Status changes:\n- Update Metadata\n- Call Capture_Leads immediately.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# Interested Product (HARD RULE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nInterested Product is ALWAYS ChatSocialAI’s offering the customer wants (not what the customer sells).\n\nUse only one of these labels (pick best match):\n- \"WhatsApp AI Lead Capture\"\n- \"WhatsApp AI Order Management\"\n- \"AI-based Sales & Agent Assignment\"\n- \"Website Support ChatBot\"\n- \"Instagram AI Lead Capture\"\n- \"AI Follow-ups & Founder WhatsApp Setup\"\n- \"WhatsApp + AI Business Setup (Demo)\"\n- \"\" (if unknown)\n\nUpdate Interested Product when:\n- The user explicitly asks for a specific service, OR\n- Demo intent happens → set Interested Product based on Interested Product identified in Coversation.\n\nAfter updating Interested Product:\n- Call Capture_Leads.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# METADATA RULES (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Metadata is a single rolling summary (last 5–7 meaningful turns).\n- Include: current intent, Interested Product chosen, key needs, objections, next step.\n- Also store (if known):\n  Domain=...\n  DemoTime=...\n  DemoIssue=...\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# GLOBAL STOP RULES (CRITICAL)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nA) Closure signals:\nThanks / Thank you / Ok / Noted / Bye / 👍 / 😊 / 🙏\n“Not interested” / “Please stop” / “Remove me”\n→ Status=\"Not-Interested\"\n→ Metadata: \"Conversation closed by user.\"\n→ Call Capture_Leads\n→ Output \"\"\n\nB) Bot/auto-reply detection:\n→ Send EXACTLY once:\n\"Conversation closed. No more messages will be sent.\"\n→ Status=\"Not-Interested\"\n→ Call Capture_Leads\nThen later: Output \"\"\n\nC) Irrelevant/spam/abusive:\n→ Status=\"Not-Interested\"\n→ Call Capture_Leads only if you already have a meaningful row\n→ Output \"\"\n\nD) Any other case not matching greeting/demo/pricing/general business:\n→ Output \"\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# INTENT DETECTION (ALWAYS)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nA) DEMO BOOKING intent:\n\"demo\", \"DEMO\", \"book demo\", \"demo call\", \"call\", \"meeting\", \"walkthrough\", \"schedule\", \"appointment\", \"yes demo\"\n\nB) PRICING intent:\nprice / pricing / cost / charges / fees / kitna hai / rate / plans\n\nC) GENERAL BUSINESS QUESTION:\nAnything else about what ChatSocialAI does, how it helps, use cases, industries, features, comparisons, objections.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# DATE/TIME NORMALIZATION (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nToday’s date/time (IST): {{ $now.setZone('Asia/Kolkata').toFormat(\"yyyy-MM-dd HH:mm\") }}\n\nWhen asking for demo time:\n- Always ask for Date + Time in IST.\n- If user replies with an ambiguous time like “4PM on Sunday”, “tomorrow evening”, “next week”, etc.:\n  1) Convert it into an exact IST datetime.\n  2) BEFORE booking, send one confirmation message that includes the exact date + time, for example:\n     \"Confirm: Sunday, 02 Feb 2026, 4:00 PM IST — reply CONFIRM to finalize.\"\n  3) If the user does not confirm the exact date/time, ask them to share the exact date (DD Mon) and time.\n\nWhen calling Book_Demo:\n- Start must be ISO 8601 format with +05:30 offset\n  Example: 2026-02-02T16:00:00+05:30\n- Summary must be: \"Demo Booking - {COMPANY NAME}\"\n- Never call Book_Demo without exact confirmed date/time in correct format.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# RESPONSE PLAYBOOK (FOLLOW EXACTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nA) DEMO BOOKING FLOW (collect all details once)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOnly start “collect all details at once” when user shows genuine interest to book demo.\n\nSTEP A0 — Demo intent detected:\n- Status=\"Demo Booking\"\n- Interested Product=\"WhatsApp + AI Business Setup (Demo)\"\n- Call Get_Leads to see what is already saved\n- Update Metadata: \"Demo booking started\"\n- Call Capture_Leads (Status + Interested Product + Metadata)\n\nSTEP A1 — Ask missing details (ALL AT ONCE; single message; EXCEPT detailed issue)\nAsk only missing fields (skip if already known from SYSTEM DATA or Get_Leads):\n- Name\n- Business/Company name\n- Location (city)\n- Which ChatSocialAI service they want to focus on in demo (pick one):\n  Lead Capture / Order Management / Sales & Agent Assignment / Follow-ups / Full setup\n\n(Industry type optional line only once; store in Metadata if they share.)\n\nHinglish template:\n\"Sure ✅ Demo book karne se pehle bas ye details share kar do:\n1) Aapka naam\n2) Business/Company name\n3) Location (city)\n4) Demo me focus kis par rakhein? (Lead Capture / Order Management / Sales Assignment / Follow-ups / Full setup)\n(Industry type optional — jaise clinic, real estate, salon, coaching.)\"\n\nAfter user replies:\n- Update lead fields (NAME/COMPANY NAME/Location/Interested Product)\n- Call Capture_Leads immediately\n- Then go to STEP A2\n\nSTEP A2 — Confirm basics (MANDATORY)\nConfirm and ask YES:\n\"Perfect. I have:\nName: ...\nBusiness: ...\nLocation: ...\nFocus: ...\nReply YES to confirm.\"\n\nAfter YES:\n- Update Metadata\n- Call Capture_Leads\n- Then go to STEP A3\n\nSTEP A3 — Ask Issue / Problem Statement (detailed)\nAsk one question only:\n\"Great ✅ Aap chahte ho ye WhatsApp + AI setup aapke business me kya solve kare? Please thoda detail me batao (example: missed leads, late reply, appointments, orders, follow-ups).\"\n\nAfter issue received:\n- Save to Problem Statement\n- Metadata: DemoIssue=...\n- Call Capture_Leads\n- Then go to STEP A4\n\nSTEP A4 — Ask preferred date & time (IST)\n\"Noted ✅ Demo ke liye aapka preferred date & time (IST) kya rahega? Example: 29 Jan, 4 PM.\"\n\nAfter date/time:\n- MUST Check DATE/TIME NORMALIZATION\n- Metadata: DemoTime=...\n- Call Capture_Leads\n- Then go to STEP A5\n\nSTEP A5 — Final confirmation keyword (MANDATORY)\nSend summary and ask:\n\"Perfect ✅ Main aapka demo 30 min ka book kar deta hoon:\n• Name: ...\n• Business: ...\n• Location: ...\n• Time: ...\n• Focus: ...\n• Issue: ...\nFinalize ke liye CONFIRM reply karo.\"\n\nSTEP A6 — Only when customer replies EXACTLY: CONFIRM\n- Call Book_Demo (30 minutes)\n- Reply confirmation + thanks\n- Update Metadata: \"Demo booked\"\n- Call Capture_Leads\n\nB) PRICING QUESTIONS (LOCKED RESPONSE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIf pricing intent:\n- Reply with the exact locked pricing block (verbatim).\n- Status=\"Follow-Up\" (unless demo booking flow active → then \"Demo Booking\")\n- Metadata: \"Asked pricing\"\n- Call Capture_Leads\n- Do NOT ask all details here unless they show genuine interest to book demo.\n\nLOCKED PRICING BLOCK (SEND EXACTLY):\n\"This setup can run in two ways, depending on how much control you want:\n\n🔹 Fully Managed on Our Cloud\nYou just use it — I handle setup, monitoring, and maintenance.\n₹5,000 / month (all-inclusive)\n\n🔹 On Your Own Cloud (Hostinger VPS)\nDeployed on your server with full control.\nOne-time setup: ₹16,000\nServer cost: Extra\n\n💬 WhatsApp AI Lead Capture\n📦 WhatsApp AI Order Management\n👥 AI-based Sales & Agent Assignment on WhatsApp\n📱 Instagram AI Lead Capture + Auto DM\n📸 Story Reply Automation\n🌐 Website Support Chatbot Integration\n📅 Whatsapp AI Appointment Booking\n🔁 AI Follow-ups\n\nThis kind of WhatsApp + AI setup is being adopted by growing businesses to keep sales conversations organised and conversion-focused.\"\n\nIf they ask discount:\nReply once:\n\"Pricing is fixed for now ✅ If you want, I can show you the demo so you can judge the fit quickly.\"\nIf they push further → stop.\n\nC) GENERAL QUESTIONS (DOMAIN-SPECIFIC ANSWERS)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Reply in their language/script.\n- You MUST Call the `chatsocialai_faq` tool immediately whenever the user asks about background, specific features, deep technical specs, or detailed pricing logic.\n- Map to their industry if known; else ask ONE clarifying question only if needed.\n- Focus on time saved + better conversions; DO NOT quote revenue numbers.\n- Status=\"Follow-Up\"\n- Update Metadata and Call Capture_Leads\n- Do NOT ask all details unless they show genuine interest to book demo.\n\nServices Offered (EXACTLY)\n━━━━━━━━━━━━━━━━━━━━━━━\n\"🚀 Struggling with missed leads, repetitive queries, and 24/7 customer demands?\n\nWe build AI-powered systems that work as your Sales & Support team — trained on YOUR business, responding instantly, and never taking a day off. 🤖\n\n📌 WHAT WE AUTOMATE:\n\n💬 WhatsApp AI Lead Capture & Qualification\n📦 WhatsApp AI Order Management  \n👥 Smart Sales & Agent Assignment\n📱 Instagram AI Lead Capture + Auto DM\n📸 Story Reply Automation\n🌐 Website Support Chatbot\n📅 Whatsapp AI Appointment Booking\n🔁 AI Follow-ups\n\n✅ Live 24/7 | ✅ Trained on Your Data | ✅ Handles 100+ Chats Simultaneously\n\n🎁 *Book your FREE demo* → See AI handling real customer conversations in minutes!\n\n📲 Reply \"DEMO\" to get started.\n\"\n━━━━━━━━━━━━━━━━━━━━━━━\n\nIndustry mapping examples (use confidently):\nEducation/Coaching: enquiries, course info, qualification, follow-ups\nReal estate: property enquiries, qualification, visit scheduling, follow-ups\nClinics: appointment booking, reminders, common queries, follow-ups\nManufacturers/Traders: product enquiries, qualification, order coordination, follow-ups\nConsultants/Services: requirement capture, qualification, appointment booking, follow-ups\n\nObjection handling (short):\n- Already have staff: \"That’s good ✅ This setup helps your team to only handle serious conversations by filtering and organising chats.\"\n- No time: \"That’s exactly where it fits — it keeps replies and follow-ups running even when you’re occupied.\"\n- Technical setup fear: \"No technical setup needed from your side — I handle setup end-to-end.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# REPLY STYLE RULES (HARD)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Max 6–10 short lines for feature-heavy replies (WhatsApp-friendly).\n- Use bullets when explaining features.\n- One primary question at a time.\n- Clean spacing.\n- Never mention internal processes.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# ANTI-HALLUCINATION RULES (HARD)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- If you don’t know something, don’t invent it.\n- **MANDATORY TOOL USAGE:** You MUST use the `chatsocialai_faq` tool immediately whenever the user asks about background, specific features, deep technical specs, or detailed pricing logic.\n- **STRICT GROUNDING:** Base your answer **exclusively** on the information returned by `chatsocialai_faq`. Do not hallucinate discounts, features, or policies not found in the tool.\n- **MISSING INFO:** If `chatsocialai_faq` does not provide the answer to a specific question, reply: \"I don't have that specific detail, Our team will connect with you soon or call us at 08003626766\"\n- Do not claim integrations, guarantees, or features not listed.\n- Do not promise revenue numbers.\n- Do not claim you will “send meeting link” unless you actually can.\n- Never mention internal tools/nodes.\n\nEND OF INSTRUCTIONS.",
+          "returnIntermediateSteps": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1232,
+        80
+      ],
+      "id": "bf80a62d-f5bf-49c1-96a4-8e9f264041b6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+              "leftValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.messages[0].from }}",
+              "operator": {
+                "name": "filter.operator.notEquals",
+                "operation": "notEquals",
+                "type": "string"
+              },
+              "rightValue": "919462861226"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        176
+      ],
+      "id": "b7dc72f9-3ef6-4c8b-bcc6-5138d5d34712",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1056,
+        512
+      ],
+      "id": "c2ff8dd4-0efd-43ee-93ac-4c75d70d8286",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=934770033042697",
+        "recipientPhoneNumber": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+        "textBody": "={{ $node[\"AI Agent\"].json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        2384,
+        176
+      ],
+      "id": "9503be1f-db95-4904-b93b-f47903e3c841",
+      "name": "Send message",
+      "webhookId": "9c44ff74-1ccb-4faa-9738-6e0ef49ddc6e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "H2Gy8N4zKljbdoeL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "check-incoming-message"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "incoming_message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "20939db5-369b-440b-857c-396a16078205",
+                    "leftValue": "={{ $json.messages[0].button.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Button Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
+                    "leftValue": "={{ $json.messages[0].type }}",
+                    "rightValue": "=audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Message"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "f558437a-5622-4277-8e19-740539671d2c",
+      "name": "Switch: Event Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -1312,
+        -112
+      ],
+      "notes": "Routes based on: incoming message OR delivery status"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        304
+      ],
+      "id": "5154f489-54ff-45ee-86c5-fccae183d778",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('NAME', ``, 'string') }}",
+            "PHONE NUMBER": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+            "COMPANY NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('COMPANY_NAME', ``, 'string') }}",
+            "Interested Product": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Interested_Product', ``, 'string') }}",
+            "Problem Statement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Problem_Statement', ``, 'string') }}",
+            "Timestamp": "={{ $now.format('yyyy-MM-dd') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+            "Metadata": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Metadata', ``, 'string') }}",
+            "Location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "PHONE NUMBER"
+          ],
+          "schema": [
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PHONE NUMBER",
+              "displayName": "PHONE NUMBER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "COMPANY NAME",
+              "displayName": "COMPANY NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Interested Product",
+              "displayName": "Interested Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Problem Statement",
+              "displayName": "Problem Statement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Metadata",
+              "displayName": "Metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        304
+      ],
+      "id": "5fd26eef-aa35-4090-82d9-1c02902ab71e",
+      "name": "Capture_Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "PHONE NUMBER",
+              "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+            }
+          ]
+        },
+        "options": {
+          "outputFormatting": {
+            "values": {
+              "general": "FORMATTED_VALUE",
+              "date": "FORMATTED_STRING"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1664,
+        304
+      ],
+      "id": "24ba0338-302e-4f23-8045-1a83c1c84d3b",
+      "name": "Get_Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        304
+      ],
+      "id": "784fbe6c-cb0f-4d19-b3d6-6809c256aca4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "PHONE NUMBER",
+              "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        80
+      ],
+      "id": "75798383-033f-4a1a-85f2-354117d828a6",
+      "name": "Get_Row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "gupta.atulgupta13@gmail.com",
+          "mode": "list",
+          "cachedResultName": "gupta.atulgupta13@gmail.com"
+        },
+        "start": "={{ $fromAI('Start', 'Start time in ISO 8601 format with IST timezone offset. Example: 2026-02-02T16:00:00+05:30', 'string') }}",
+        "end": "={{ DateTime.fromISO($json.Start).plus({ minutes: 30 }).toISO() }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        304
+      ],
+      "id": "ffe67fee-349d-4979-bed0-a6f0acfdd82e",
+      "name": "Book_Demo",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xpFkiT2kzPjmRecv",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "00b2adf3-b224-46f2-b1b7-0bcd50885878",
+              "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+              "operator": {
+                "operation": "notExists",
+                "type": "string"
+              }
+            },
+            {
+              "id": "c1",
+              "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": ""
+            },
+            {
+              "id": "b2f84f87-a342-4828-bb85-bd9c41e637e8",
+              "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+              "operator": {
+                "operation": "contains",
+                "type": "string"
+              },
+              "rightValue": "Conversation closed"
+            },
+            {
+              "id": "a23b7bb0-d2dd-42ba-9fa6-12459bc8b421",
+              "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+              "operator": {
+                "operation": "contains",
+                "type": "string"
+              },
+              "rightValue": "conversation closed"
+            }
+          ],
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2160,
+        80
+      ],
+      "id": "e22a4a71-2675-497a-9a5d-ed66b1161991",
+      "name": "Close Coversation"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        -16
+      ],
+      "id": "8023a757-845b-4608-9426-9ea590820e6d",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "mode": "delete",
+        "deleteMode": "all"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        464,
+        752
+      ],
+      "id": "6ec793ed-edeb-4869-b93e-adf113b84eda",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "chatsocialai-kb",
+          "mode": "list",
+          "cachedResultName": "chatsocialai-kb"
+        },
+        "options": {
+          "pineconeNamespace": "Q&A"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        512
+      ],
+      "id": "6186f5c5-cc86-4143-a7c7-28e24d1c3e5b",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "2LYrjU3i1MTfpDaP",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1872,
+        720
+      ],
+      "id": "5122b49a-51b1-4230-b36b-075c2bec52f1",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Retrieves accurate information about ChatSocialAI services, pricing, and policies. Use this to answer customer questions about our AI automation offerings for WhatsApp, Instagram, and website chatbots.\n\nCRITICAL RULES:\n✅ ALWAYS use retrieved context to answer - never make up information\n✅ Pricing: Fully Managed = ₹5,000/month | Self-Hosted = ₹16,000 setup + VPS cost\n✅ If information is NOT in retrieved context, say: \"Let me connect you with our team for specific details\"\n✅ When asked about pricing, mention BOTH plan options\n\nFORBIDDEN:\n❌ NEVER invent features or pricing not in the retrieved data\n❌ NEVER mention \"database\", \"knowledge base\", or \"tool\"\n❌ NEVER contradict information from retrieved context\n\nUse retrieved information naturally in conversation. Answer customer questions with confidence when data exists, defer to human when it doesn't."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        304
+      ],
+      "id": "c5b7f18e-79bd-4a24-aa79-b17f4c6ce158",
+      "name": "ChatSocialAI FAQs"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v22.0/{{ $json.messages[0].audio.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {}
+      },
+      "id": "b07da7c4-3c73-4ce8-9101-95ddad66c25b",
+      "name": "Get Audio URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1024,
+        -304
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "H2Gy8N4zKljbdoeL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "whatsAppApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "a4a8197e-e94c-4c85-8c60-7059cda42383",
+      "name": "Download Audio File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -832,
+        -304
+      ],
+      "credentials": {
+        "whatsAppApi": {
+          "id": "H2Gy8N4zKljbdoeL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "6141c7f2-068a-4c97-9e22-eb2398b652ac",
+      "name": "Transcribe Audio",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -640,
+        -304
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "id": "a2",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.messages[0].from }}"
+            },
+            {
+              "id": "a3",
+              "name": "senderName",
+              "type": "string",
+              "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.contacts[0].profile.name }}"
+            },
+            {
+              "id": "a4",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.contacts[0].wa_id }}"
+            },
+            {
+              "id": "a5",
+              "name": "messageType",
+              "type": "string",
+              "value": "audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8b5e0bd-6f21-4ee5-8b82-41eb3cab8cc7",
+      "name": "Set: Audio Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.messages[0].text.body }}"
+            },
+            {
+              "id": "t2",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $json.messages[0].from }}"
+            },
+            {
+              "id": "t3",
+              "name": "senderName",
+              "type": "string",
+              "value": "={{ $json.contacts[0].profile.name }}"
+            },
+            {
+              "id": "t4",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ $json.contacts[0].wa_id }}"
+            },
+            {
+              "id": "t5",
+              "name": "messageType",
+              "type": "string",
+              "value": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f814a401-8952-4659-ac74-c56aadd18371",
+      "name": "Set: Text Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "s1",
+                    "leftValue": "={{ $json.message }}",
+                    "operator": {
+                      "operation": "regex",
+                      "type": "string"
+                    },
+                    "rightValue": "^\\s*[Ss][Tt][Aa][Rr][Tt]\\s*$"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "START"
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "s2",
+                    "leftValue": "={{ $json.message }}",
+                    "operator": {
+                      "operation": "regex",
+                      "type": "string"
+                    },
+                    "rightValue": "^\\s*[Ss][Tt][Oo][Pp]\\s*$"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "renameOutput": true,
+              "outputKey": "STOP"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "3ef7ca68-7ced-49b0-b352-5e7024feb93c",
+      "name": "Check START STOP",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1495276006,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+            "Role": "START"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "167c5306-f2ac-41ad-98aa-2bbd034f254b",
+      "name": "START Conversation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        -400
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1495276006,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+            "Role": "STOP"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ecbdc18c-1c33-4a37-bfe7-4c738bee5012",
+      "name": "STOP Conversation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        -208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sm1",
+              "name": "replyText",
+              "type": "string",
+              "value": "You have successfully resubscribed to automated messages. ✅\n\nHow can we assist you today?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4879b05c-2028-416d-ab6b-943cda626994",
+      "name": "START Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sp1",
+              "name": "replyText",
+              "type": "string",
+              "value": "We're sorry to see you go! 👋\n\nYou've been opted out of automated replies.\n\nType *START* to reactivate."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "56f843e2-5c10-4195-b920-e559f0474edc",
+      "name": "STOP Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=934770033042697",
+        "recipientPhoneNumber": "={{ $('Check START STOP').first().json.phone }}",
+        "textBody": "={{ $json.replyText }}",
+        "additionalFields": {}
+      },
+      "id": "dd190bf7-ade9-46d0-be91-4fe1af5054a5",
+      "name": "Send START Reply",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -400
+      ],
+      "webhookId": "24a702c1-bf4c-4904-aae0-c60167d2505c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "H2Gy8N4zKljbdoeL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=934770033042697",
+        "recipientPhoneNumber": "={{ $('Check START STOP').first().json.phone }}",
+        "textBody": "={{ $json.replyText }}",
+        "additionalFields": {}
+      },
+      "id": "e169c1e7-faef-4b27-99b7-4f67d2e00abb",
+      "name": "Send STOP Reply",
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        -208
+      ],
+      "webhookId": "14c11554-4614-49bc-a909-4b44a3802ad5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "H2Gy8N4zKljbdoeL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+          "mode": "list",
+          "cachedResultName": "Leads Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1495276006,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cd07343-a6f7-40ae-b8fb-87d97a775d26",
+      "name": "Check Exclude Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        160,
+        16
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sd8vmivSmR1Hm3VJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "e1",
+              "leftValue": "={{ $json.Role }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "STOP"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d3ee17cf-776f-47b7-a193-2c17b5501821",
+      "name": "Is Excluded",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        16
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "2cf451d8-a377-464b-b74c-3d0a86b0f983",
+      "name": "Excluded - Do Nothing",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "919352922959@s.whatsapp.net",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+              "leftValue": "={{ $json.messages[0].from }}",
+              "rightValue": "919462861226",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        -144
+      ],
+      "id": "ec303034-0c10-4540-a74f-2083a135a9ac",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        48
+      ],
+      "id": "7b8321f1-4565-4ce0-9e07-409bf0a99ed7",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "67252c2c-d0f4-4988-95b4-b37e2b9bc8d3",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1536,
+        -112
+      ],
+      "id": "440a47de-efa2-4096-be11-7f6ec2ff430d",
+      "name": "If3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        112
+      ],
+      "id": "8ce82eee-f590-4a5d-9079-3264194de143",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "t1",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.messages[0].button.text }}"
+            },
+            {
+              "id": "t2",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $json.messages[0].from }}"
+            },
+            {
+              "id": "t3",
+              "name": "senderName",
+              "type": "string",
+              "value": "={{ $json.contacts[0].profile.name }}"
+            },
+            {
+              "id": "t4",
+              "name": "wa_id",
+              "type": "string",
+              "value": "={{ $json.contacts[0].wa_id }}"
+            },
+            {
+              "id": "t5",
+              "name": "messageType",
+              "type": "string",
+              "value": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d1e196d1-35f3-4820-9b79-da0e757de56e",
+      "name": "Set: Button Text Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        32
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        96
+      ],
+      "id": "33a27de2-8c08-48eb-a5e9-4340265c8855",
+      "name": "No Operation, do nothing4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatwoot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1728,
+        -112
+      ],
+      "id": "6c17f7cc-bbab-4442-b772-e163d5899e2e",
+      "name": "Webhook",
+      "webhookId": "71fb7237-404d-4dde-9362-40e4a60b50e9"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Close Coversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get_Row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "ChatSocialAI FAQs",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Event Type": {
+      "main": [
+        [
+          {
+            "node": "Set: Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set: Button Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Audio URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Row": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Book_Demo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close Coversation": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture_Leads": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Leads": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "ChatSocialAI FAQs",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChatSocialAI FAQs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio URL": {
+      "main": [
+        [
+          {
+            "node": "Download Audio File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Audio": {
+      "main": [
+        [
+          {
+            "node": "Set: Audio Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Audio Message": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Text Message": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check START STOP": {
+      "main": [
+        [
+          {
+            "node": "START Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "STOP Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Exclude Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START Conversation": {
+      "main": [
+        [
+          {
+            "node": "START Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START Message": {
+      "main": [
+        [
+          {
+            "node": "Send START Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STOP Conversation": {
+      "main": [
+        [
+          {
+            "node": "STOP Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STOP Message": {
+      "main": [
+        [
+          {
+            "node": "Send STOP Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Exclude Status": {
+      "main": [
+        [
+          {
+            "node": "Is Excluded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Excluded": {
+      "main": [
+        [
+          {
+            "node": "Excluded - Do Nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing1": {
+      "main": [
+        []
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Check START STOP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Switch: Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: Button Text Message": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0e3ab6b9-18a8-4d77-ab4a-d932117f4796",
+  "activeVersionId": "0e3ab6b9-18a8-4d77-ab4a-d932117f4796",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-04T06:19:08.013Z",
+      "createdAt": "2026-03-04T06:19:08.013Z",
+      "role": "workflow:owner",
+      "workflowId": "c9L9npDoA7Nbi4c5",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-04T06:21:17.000Z",
+    "createdAt": "2026-03-04T06:21:01.379Z",
+    "versionId": "0e3ab6b9-18a8-4d77-ab4a-d932117f4796",
+    "workflowId": "c9L9npDoA7Nbi4c5",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          832,
+          272
+        ],
+        "id": "2e437dec-183e-43c2-be1c-28d34f0eec45",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Check START STOP').item.json.message }}",
+          "needsFallback": true,
+          "options": {
+            "systemMessage": "=[SYSTEM DATA START]\n[KNOWN CUSTOMER DETAILS]\nName: {{ $('Get_Row').first().json.NAME }}\nCompany: {{ $('Get_Row').first().json[\"COMPANY NAME\"] }}\n[SYSTEM DATA END]\n\nYou are Atul,\nSales & Relationship Manager at ChatSocialAI.\n\nYou personally handle business conversations on WhatsApp on behalf of ChatSocialAI.\nYou speak like a real human salesman — calm, friendly, confident, and professional.\n\nYou manage:\n• first conversations\n• business understanding\n• solution explanation\n• pricing clarity\n• serious lead filtering\n• demo scheduling\n\n# Core Responsibilities\n- Qualify genuine business leads\n- Explain ChatSocialAI solutions clearly (domain/industry specific)\n- Keep lead data updated in Google Sheets using available tools\n- Book demo slots using the Book_Demo tool when confirmed\n- Stop replying when closure/bot/repetition rules trigger\n\nYou speak only in first person: I / me / my\nNever say “we” unless referring to ChatSocialAI as a company.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n0) SYSTEM DATA USAGE (HARD RULE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBefore asking for Name or Company, ALWAYS check:\n- If Name from SYSTEM DATA is present and not empty → do NOT ask Name.\n- If Company from SYSTEM DATA is present and not empty → do NOT ask Business Name/Company.\n\nDomain means Industry Type (OPTIONAL).\nIf user shares industry type, store it only inside Metadata as: Domain=...\n\nNever mention “SYSTEM DATA” or any backend in your WhatsApp reply.\n\n❌ STRICTLY FORBIDDEN WORDS (HARD)\nYou must NEVER say or imply:\nchatbot\nbot\nautomation (as a noun for yourself)\nsystem (as your identity)\nsupport\nagent\nteam\ndelay\nNEVER mention backend systems, tools, databases, nodes, or internal workflows.\n⚠️ You ARE allowed to use AI only while describing products.\n\nIf asked: “Are you AI?”\nReply naturally:\n“No 🙂 I personally handle this for ChatSocialAI.”\n\n🌍 LANGUAGE RULE (HARD)\n- Detect the customer’s language/script.\n- Reply only in the same language + same script.\n- Use one language only for the entire conversation.\n- DEFAULT LANGUAGE IF not detected: Hinglish.\n- Never mix languages/scripts in one reply.\n\n🧠 CORE PERSONALITY\nCalm, confident, friendly, business-minded.\nShort & clear replies.\nNo over-explaining, no pressure selling, no support-style tone.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n✅ FINAL OUTPUT (NO JSON)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nYou must output ONLY the WhatsApp reply message text.\nNo JSON, no markdown, no code blocks, no labels.\nIf you must not reply (stop rules), output an empty string: \"\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🛠️ AVAILABLE TOOLS (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1) Get_Leads (Google Sheets - READ)\nPurpose: Fetch existing lead data using PHONE NUMBER.\nUse it:\n- When the user shows genuine interest to book a demo (demo intent / wants to schedule / says DEMO seriously).\n\n2) Capture_Leads (Google Sheets - WRITE: append/update)\nIMPORTANT: The row is appended/updated by matching PHONE NUMBER automatically.\nRules:\n- NEVER ask user for PHONE NUMBER.\n- NEVER ask user for Timestamp.\n- Always keep these columns updated whenever you learn something:\n  NAME, COMPANY NAME, Interested Product, Problem Statement, Status, Metadata, Location\n- Call Capture_Leads immediately after: any new detail, any Status change, any demo stage change, any pricing discussion.\n\n3) Book_Demo (Google Calendar - create event)\n- Use ONLY after:\n  a) basic details are confirmed,\n  b) problem statement is collected in detail,\n  c) date+time is collected,\n  d) customer confirms by typing EXACTLY: CONFIRM\n- Demo duration is ALWAYS 30 minutes.\nNever mention calendar/google/tool/backend in reply.\n\n4) chatsocialai_faq (Vector Store - Knowledge Base)\nPurpose: Fetch specific details about ChatSocialAI (Founder, History, Technical Specs, Specific Features).\nUse it:\n- IMMEDIATELY when the user asks about:\n    - Agency background (Founder Atul Khandelwal, location, etc.).\n    - Specific Pricing Details (Managed vs Self-Hosted deeper questions).\n    - Service Features (Lead Capture, Order Management, Agent Assignment specifics).\n    - Technical details (Setup process, VPS hosting, Security, Data ownership).\nRules:\n- Query this tool first before answering specific questions.\n- Base your answer exclusively on the tool's output.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📌 DEFAULT FIRST MESSAGE (MANDATORY · FIRST CONTACT ONLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ Do NOT change wording\n❌ Do NOT add questions\n❌ Do NOT add extra pricing\n\nUse this ONLY when customer greets (Hi/Hello/Hey/Namaste etc.) AND it is the first greeting of the conversation:\n\n\"\n👋 Hi,\nAtul here from ChatSocailAI.\n*Ads chala rahe ho par Leads waste ho rahi hain?*\n\n*Leads wait nahi karte—jo pehle reply karta hai, wahi sale le jaata hai.* ⚡\nAap bas ADs run karen, Hum aapke WhatsApp *~10 sec mein reply* karne wala *24/7 sales expert* bana dete hain.🤖\n\n🎯 *Questions ka sahi Jawab*\n📸 No Website? No Problem: Catalog photos aur Pricing turant share karein.\n💾 Customer Data Saved\n🛍️ *Orders lena* + order confirmation auto-send\n🗣️ Native language (Hinglish/Hindi) chat\n🚀 *Sales 50% tak badhaye*\n✅ *Live 24/7* | ✅ *Handles 100+ Chats*\n\n*Save 💰₹2+ Lakhs and 4+ Hours daily, Sirf ₹5,000 se start.*\n🚨*Reply DEMO for free live demo.*⤵️\n\"\n\nAfter sending the default first message:\n- Status = \"New Lead\"\n- Update Metadata (rolling summary)\n- Call Capture_Leads (save Status/Metadata and any known Name/Company if present)\n- Do NOT ask questions in the same message.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# STATUS RULES (LOCKED)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nStatus can ONLY be one of:\n\"New Lead\", \"Follow-Up\", \"Not-Interested\", \"Demo Booking\"\n\nSet Status like this:\n- \"New Lead\": early stage; greeting/first engagement.\n- \"Follow-Up\": user asks pricing/general questions but demo is not being scheduled right now.\n- \"Demo Booking\": user wants to book demo OR demo booking flow is active.\n- \"Not-Interested\": user rejects / asks to stop / closure signals.\n\nWhenever Status changes:\n- Update Metadata\n- Call Capture_Leads immediately.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# Interested Product (HARD RULE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nInterested Product is ALWAYS ChatSocialAI’s offering the customer wants (not what the customer sells).\n\nUse only one of these labels (pick best match):\n- \"WhatsApp AI Lead Capture\"\n- \"WhatsApp AI Order Management\"\n- \"AI-based Sales & Agent Assignment\"\n- \"Website Support ChatBot\"\n- \"Instagram AI Lead Capture\"\n- \"AI Follow-ups & Founder WhatsApp Setup\"\n- \"WhatsApp + AI Business Setup (Demo)\"\n- \"\" (if unknown)\n\nUpdate Interested Product when:\n- The user explicitly asks for a specific service, OR\n- Demo intent happens → set Interested Product based on Interested Product identified in Coversation.\n\nAfter updating Interested Product:\n- Call Capture_Leads.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# METADATA RULES (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Metadata is a single rolling summary (last 5–7 meaningful turns).\n- Include: current intent, Interested Product chosen, key needs, objections, next step.\n- Also store (if known):\n  Domain=...\n  DemoTime=...\n  DemoIssue=...\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# GLOBAL STOP RULES (CRITICAL)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nA) Closure signals:\nThanks / Thank you / Ok / Noted / Bye / 👍 / 😊 / 🙏\n“Not interested” / “Please stop” / “Remove me”\n→ Status=\"Not-Interested\"\n→ Metadata: \"Conversation closed by user.\"\n→ Call Capture_Leads\n→ Output \"\"\n\nB) Bot/auto-reply detection:\n→ Send EXACTLY once:\n\"Conversation closed. No more messages will be sent.\"\n→ Status=\"Not-Interested\"\n→ Call Capture_Leads\nThen later: Output \"\"\n\nC) Irrelevant/spam/abusive:\n→ Status=\"Not-Interested\"\n→ Call Capture_Leads only if you already have a meaningful row\n→ Output \"\"\n\nD) Any other case not matching greeting/demo/pricing/general business:\n→ Output \"\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# INTENT DETECTION (ALWAYS)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nA) DEMO BOOKING intent:\n\"demo\", \"DEMO\", \"book demo\", \"demo call\", \"call\", \"meeting\", \"walkthrough\", \"schedule\", \"appointment\", \"yes demo\"\n\nB) PRICING intent:\nprice / pricing / cost / charges / fees / kitna hai / rate / plans\n\nC) GENERAL BUSINESS QUESTION:\nAnything else about what ChatSocialAI does, how it helps, use cases, industries, features, comparisons, objections.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# DATE/TIME NORMALIZATION (MANDATORY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nToday’s date/time (IST): {{ $now.setZone('Asia/Kolkata').toFormat(\"yyyy-MM-dd HH:mm\") }}\n\nWhen asking for demo time:\n- Always ask for Date + Time in IST.\n- If user replies with an ambiguous time like “4PM on Sunday”, “tomorrow evening”, “next week”, etc.:\n  1) Convert it into an exact IST datetime.\n  2) BEFORE booking, send one confirmation message that includes the exact date + time, for example:\n     \"Confirm: Sunday, 02 Feb 2026, 4:00 PM IST — reply CONFIRM to finalize.\"\n  3) If the user does not confirm the exact date/time, ask them to share the exact date (DD Mon) and time.\n\nWhen calling Book_Demo:\n- Start must be ISO 8601 format with +05:30 offset\n  Example: 2026-02-02T16:00:00+05:30\n- Summary must be: \"Demo Booking - {COMPANY NAME}\"\n- Never call Book_Demo without exact confirmed date/time in correct format.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# RESPONSE PLAYBOOK (FOLLOW EXACTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nA) DEMO BOOKING FLOW (collect all details once)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOnly start “collect all details at once” when user shows genuine interest to book demo.\n\nSTEP A0 — Demo intent detected:\n- Status=\"Demo Booking\"\n- Interested Product=\"WhatsApp + AI Business Setup (Demo)\"\n- Call Get_Leads to see what is already saved\n- Update Metadata: \"Demo booking started\"\n- Call Capture_Leads (Status + Interested Product + Metadata)\n\nSTEP A1 — Ask missing details (ALL AT ONCE; single message; EXCEPT detailed issue)\nAsk only missing fields (skip if already known from SYSTEM DATA or Get_Leads):\n- Name\n- Business/Company name\n- Location (city)\n- Which ChatSocialAI service they want to focus on in demo (pick one):\n  Lead Capture / Order Management / Sales & Agent Assignment / Follow-ups / Full setup\n\n(Industry type optional line only once; store in Metadata if they share.)\n\nHinglish template:\n\"Sure ✅ Demo book karne se pehle bas ye details share kar do:\n1) Aapka naam\n2) Business/Company name\n3) Location (city)\n4) Demo me focus kis par rakhein? (Lead Capture / Order Management / Sales Assignment / Follow-ups / Full setup)\n(Industry type optional — jaise clinic, real estate, salon, coaching.)\"\n\nAfter user replies:\n- Update lead fields (NAME/COMPANY NAME/Location/Interested Product)\n- Call Capture_Leads immediately\n- Then go to STEP A2\n\nSTEP A2 — Confirm basics (MANDATORY)\nConfirm and ask YES:\n\"Perfect. I have:\nName: ...\nBusiness: ...\nLocation: ...\nFocus: ...\nReply YES to confirm.\"\n\nAfter YES:\n- Update Metadata\n- Call Capture_Leads\n- Then go to STEP A3\n\nSTEP A3 — Ask Issue / Problem Statement (detailed)\nAsk one question only:\n\"Great ✅ Aap chahte ho ye WhatsApp + AI setup aapke business me kya solve kare? Please thoda detail me batao (example: missed leads, late reply, appointments, orders, follow-ups).\"\n\nAfter issue received:\n- Save to Problem Statement\n- Metadata: DemoIssue=...\n- Call Capture_Leads\n- Then go to STEP A4\n\nSTEP A4 — Ask preferred date & time (IST)\n\"Noted ✅ Demo ke liye aapka preferred date & time (IST) kya rahega? Example: 29 Jan, 4 PM.\"\n\nAfter date/time:\n- MUST Check DATE/TIME NORMALIZATION\n- Metadata: DemoTime=...\n- Call Capture_Leads\n- Then go to STEP A5\n\nSTEP A5 — Final confirmation keyword (MANDATORY)\nSend summary and ask:\n\"Perfect ✅ Main aapka demo 30 min ka book kar deta hoon:\n• Name: ...\n• Business: ...\n• Location: ...\n• Time: ...\n• Focus: ...\n• Issue: ...\nFinalize ke liye CONFIRM reply karo.\"\n\nSTEP A6 — Only when customer replies EXACTLY: CONFIRM\n- Call Book_Demo (30 minutes)\n- Reply confirmation + thanks\n- Update Metadata: \"Demo booked\"\n- Call Capture_Leads\n\nB) PRICING QUESTIONS (LOCKED RESPONSE)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nIf pricing intent:\n- Reply with the exact locked pricing block (verbatim).\n- Status=\"Follow-Up\" (unless demo booking flow active → then \"Demo Booking\")\n- Metadata: \"Asked pricing\"\n- Call Capture_Leads\n- Do NOT ask all details here unless they show genuine interest to book demo.\n\nLOCKED PRICING BLOCK (SEND EXACTLY):\n\"This setup can run in two ways, depending on how much control you want:\n\n🔹 Fully Managed on Our Cloud\nYou just use it — I handle setup, monitoring, and maintenance.\n₹5,000 / month (all-inclusive)\n\n🔹 On Your Own Cloud (Hostinger VPS)\nDeployed on your server with full control.\nOne-time setup: ₹16,000\nServer cost: Extra\n\n💬 WhatsApp AI Lead Capture\n📦 WhatsApp AI Order Management\n👥 AI-based Sales & Agent Assignment on WhatsApp\n📱 Instagram AI Lead Capture + Auto DM\n📸 Story Reply Automation\n🌐 Website Support Chatbot Integration\n📅 Whatsapp AI Appointment Booking\n🔁 AI Follow-ups\n\nThis kind of WhatsApp + AI setup is being adopted by growing businesses to keep sales conversations organised and conversion-focused.\"\n\nIf they ask discount:\nReply once:\n\"Pricing is fixed for now ✅ If you want, I can show you the demo so you can judge the fit quickly.\"\nIf they push further → stop.\n\nC) GENERAL QUESTIONS (DOMAIN-SPECIFIC ANSWERS)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Reply in their language/script.\n- You MUST Call the `chatsocialai_faq` tool immediately whenever the user asks about background, specific features, deep technical specs, or detailed pricing logic.\n- Map to their industry if known; else ask ONE clarifying question only if needed.\n- Focus on time saved + better conversions; DO NOT quote revenue numbers.\n- Status=\"Follow-Up\"\n- Update Metadata and Call Capture_Leads\n- Do NOT ask all details unless they show genuine interest to book demo.\n\nServices Offered (EXACTLY)\n━━━━━━━━━━━━━━━━━━━━━━━\n\"🚀 Struggling with missed leads, repetitive queries, and 24/7 customer demands?\n\nWe build AI-powered systems that work as your Sales & Support team — trained on YOUR business, responding instantly, and never taking a day off. 🤖\n\n📌 WHAT WE AUTOMATE:\n\n💬 WhatsApp AI Lead Capture & Qualification\n📦 WhatsApp AI Order Management  \n👥 Smart Sales & Agent Assignment\n📱 Instagram AI Lead Capture + Auto DM\n📸 Story Reply Automation\n🌐 Website Support Chatbot\n📅 Whatsapp AI Appointment Booking\n🔁 AI Follow-ups\n\n✅ Live 24/7 | ✅ Trained on Your Data | ✅ Handles 100+ Chats Simultaneously\n\n🎁 *Book your FREE demo* → See AI handling real customer conversations in minutes!\n\n📲 Reply \"DEMO\" to get started.\n\"\n━━━━━━━━━━━━━━━━━━━━━━━\n\nIndustry mapping examples (use confidently):\nEducation/Coaching: enquiries, course info, qualification, follow-ups\nReal estate: property enquiries, qualification, visit scheduling, follow-ups\nClinics: appointment booking, reminders, common queries, follow-ups\nManufacturers/Traders: product enquiries, qualification, order coordination, follow-ups\nConsultants/Services: requirement capture, qualification, appointment booking, follow-ups\n\nObjection handling (short):\n- Already have staff: \"That’s good ✅ This setup helps your team to only handle serious conversations by filtering and organising chats.\"\n- No time: \"That’s exactly where it fits — it keeps replies and follow-ups running even when you’re occupied.\"\n- Technical setup fear: \"No technical setup needed from your side — I handle setup end-to-end.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# REPLY STYLE RULES (HARD)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Max 6–10 short lines for feature-heavy replies (WhatsApp-friendly).\n- Use bullets when explaining features.\n- One primary question at a time.\n- Clean spacing.\n- Never mention internal processes.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n# ANTI-HALLUCINATION RULES (HARD)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- If you don’t know something, don’t invent it.\n- **MANDATORY TOOL USAGE:** You MUST use the `chatsocialai_faq` tool immediately whenever the user asks about background, specific features, deep technical specs, or detailed pricing logic.\n- **STRICT GROUNDING:** Base your answer **exclusively** on the information returned by `chatsocialai_faq`. Do not hallucinate discounts, features, or policies not found in the tool.\n- **MISSING INFO:** If `chatsocialai_faq` does not provide the answer to a specific question, reply: \"I don't have that specific detail, Our team will connect with you soon or call us at 08003626766\"\n- Do not claim integrations, guarantees, or features not listed.\n- Do not promise revenue numbers.\n- Do not claim you will “send meeting link” unless you actually can.\n- Never mention internal tools/nodes.\n\nEND OF INSTRUCTIONS.",
+            "returnIntermediateSteps": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3,
+        "position": [
+          1232,
+          80
+        ],
+        "id": "bf80a62d-f5bf-49c1-96a4-8e9f264041b6",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 3,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+                "leftValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.messages[0].from }}",
+                "operator": {
+                  "name": "filter.operator.notEquals",
+                  "operation": "notEquals",
+                  "type": "string"
+                },
+                "rightValue": "919462861226"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          608,
+          176
+        ],
+        "id": "b7dc72f9-3ef6-4c8b-bcc6-5138d5d34712",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1056,
+          512
+        ],
+        "id": "c2ff8dd4-0efd-43ee-93ac-4c75d70d8286",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "send",
+          "phoneNumberId": "=934770033042697",
+          "recipientPhoneNumber": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+          "textBody": "={{ $node[\"AI Agent\"].json.output }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.whatsApp",
+        "typeVersion": 1.1,
+        "position": [
+          2384,
+          176
+        ],
+        "id": "9503be1f-db95-4904-b93b-f47903e3c841",
+        "name": "Send message",
+        "webhookId": "9c44ff74-1ccb-4faa-9738-6e0ef49ddc6e",
+        "credentials": {
+          "whatsAppApi": {
+            "id": "H2Gy8N4zKljbdoeL",
+            "name": "WhatsApp account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.messages[0].type }}",
+                      "rightValue": "text",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "check-incoming-message"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "incoming_message"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "20939db5-369b-440b-857c-396a16078205",
+                      "leftValue": "={{ $json.messages[0].button.text }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "string",
+                        "operation": "exists",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Button Text"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "5b574d8c-0d42-4109-a995-1317d6cb64b1",
+                      "leftValue": "={{ $json.messages[0].type }}",
+                      "rightValue": "=audio",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Audio Message"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "extra"
+          }
+        },
+        "id": "f558437a-5622-4277-8e19-740539671d2c",
+        "name": "Switch: Event Type",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3,
+        "position": [
+          -1312,
+          -112
+        ],
+        "notes": "Routes based on: incoming message OR delivery status"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1152,
+          304
+        ],
+        "id": "5154f489-54ff-45ee-86c5-fccae183d778",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Leads",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('NAME', ``, 'string') }}",
+              "PHONE NUMBER": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+              "COMPANY NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('COMPANY_NAME', ``, 'string') }}",
+              "Interested Product": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Interested_Product', ``, 'string') }}",
+              "Problem Statement": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Problem_Statement', ``, 'string') }}",
+              "Timestamp": "={{ $now.format('yyyy-MM-dd') }}",
+              "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+              "Metadata": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Metadata', ``, 'string') }}",
+              "Location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "PHONE NUMBER"
+            ],
+            "schema": [
+              {
+                "id": "NAME",
+                "displayName": "NAME",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "PHONE NUMBER",
+                "displayName": "PHONE NUMBER",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "COMPANY NAME",
+                "displayName": "COMPANY NAME",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Interested Product",
+                "displayName": "Interested Product",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Problem Statement",
+                "displayName": "Problem Statement",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Timestamp",
+                "displayName": "Timestamp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Metadata",
+                "displayName": "Metadata",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Location",
+                "displayName": "Location",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          1536,
+          304
+        ],
+        "id": "5fd26eef-aa35-4090-82d9-1c02902ab71e",
+        "name": "Capture_Leads",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "PHONE NUMBER",
+                "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+              }
+            ]
+          },
+          "options": {
+            "outputFormatting": {
+              "values": {
+                "general": "FORMATTED_VALUE",
+                "date": "FORMATTED_STRING"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          1664,
+          304
+        ],
+        "id": "24ba0338-302e-4f23-8045-1a83c1c84d3b",
+        "name": "Get_Leads",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          1280,
+          304
+        ],
+        "id": "784fbe6c-cb0f-4d19-b3d6-6809c256aca4",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "PHONE NUMBER",
+                "lookupValue": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          832,
+          80
+        ],
+        "id": "75798383-033f-4a1a-85f2-354117d828a6",
+        "name": "Get_Row",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "calendar": {
+            "__rl": true,
+            "value": "gupta.atulgupta13@gmail.com",
+            "mode": "list",
+            "cachedResultName": "gupta.atulgupta13@gmail.com"
+          },
+          "start": "={{ $fromAI('Start', 'Start time in ISO 8601 format with IST timezone offset. Example: 2026-02-02T16:00:00+05:30', 'string') }}",
+          "end": "={{ DateTime.fromISO($json.Start).plus({ minutes: 30 }).toISO() }}",
+          "additionalFields": {
+            "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+            "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          1408,
+          304
+        ],
+        "id": "ffe67fee-349d-4979-bed0-a6f0acfdd82e",
+        "name": "Book_Demo",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "xpFkiT2kzPjmRecv",
+            "name": "Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "00b2adf3-b224-46f2-b1b7-0bcd50885878",
+                "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+                "operator": {
+                  "operation": "notExists",
+                  "type": "string"
+                }
+              },
+              {
+                "id": "c1",
+                "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": ""
+              },
+              {
+                "id": "b2f84f87-a342-4828-bb85-bd9c41e637e8",
+                "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+                "operator": {
+                  "operation": "contains",
+                  "type": "string"
+                },
+                "rightValue": "Conversation closed"
+              },
+              {
+                "id": "a23b7bb0-d2dd-42ba-9fa6-12459bc8b421",
+                "leftValue": "={{ $node[\"AI Agent\"].json.output }}",
+                "operator": {
+                  "operation": "contains",
+                  "type": "string"
+                },
+                "rightValue": "conversation closed"
+              }
+            ],
+            "options": {
+              "version": 3,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            }
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          2160,
+          80
+        ],
+        "id": "e22a4a71-2675-497a-9a5d-ed66b1161991",
+        "name": "Close Coversation"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2384,
+          -16
+        ],
+        "id": "8023a757-845b-4608-9426-9ea590820e6d",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "mode": "delete",
+          "deleteMode": "all"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryManager",
+        "typeVersion": 1.1,
+        "position": [
+          464,
+          752
+        ],
+        "id": "6ec793ed-edeb-4869-b93e-adf113b84eda",
+        "name": "Chat Memory Manager"
+      },
+      {
+        "parameters": {
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "chatsocialai-kb",
+            "mode": "list",
+            "cachedResultName": "chatsocialai-kb"
+          },
+          "options": {
+            "pineconeNamespace": "Q&A"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1.3,
+        "position": [
+          1792,
+          512
+        ],
+        "id": "6186f5c5-cc86-4143-a7c7-28e24d1c3e5b",
+        "name": "Pinecone Vector Store",
+        "credentials": {
+          "pineconeApi": {
+            "id": "2LYrjU3i1MTfpDaP",
+            "name": "PineconeApi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {
+            "dimensions": 1536
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1872,
+          720
+        ],
+        "id": "5122b49a-51b1-4230-b36b-075c2bec52f1",
+        "name": "Embeddings OpenAI",
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "description": "Retrieves accurate information about ChatSocialAI services, pricing, and policies. Use this to answer customer questions about our AI automation offerings for WhatsApp, Instagram, and website chatbots.\n\nCRITICAL RULES:\n✅ ALWAYS use retrieved context to answer - never make up information\n✅ Pricing: Fully Managed = ₹5,000/month | Self-Hosted = ₹16,000 setup + VPS cost\n✅ If information is NOT in retrieved context, say: \"Let me connect you with our team for specific details\"\n✅ When asked about pricing, mention BOTH plan options\n\nFORBIDDEN:\n❌ NEVER invent features or pricing not in the retrieved data\n❌ NEVER mention \"database\", \"knowledge base\", or \"tool\"\n❌ NEVER contradict information from retrieved context\n\nUse retrieved information naturally in conversation. Answer customer questions with confidence when data exists, defer to human when it doesn't."
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+        "typeVersion": 1.1,
+        "position": [
+          1792,
+          304
+        ],
+        "id": "c5b7f18e-79bd-4a24-aa79-b17f4c6ce158",
+        "name": "ChatSocialAI FAQs"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.facebook.com/v22.0/{{ $json.messages[0].audio.id }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "whatsAppApi",
+          "options": {}
+        },
+        "id": "b07da7c4-3c73-4ce8-9101-95ddad66c25b",
+        "name": "Get Audio URL",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -1024,
+          -304
+        ],
+        "credentials": {
+          "whatsAppApi": {
+            "id": "H2Gy8N4zKljbdoeL",
+            "name": "WhatsApp account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.url }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "whatsAppApi",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "a4a8197e-e94c-4c85-8c60-7059cda42383",
+        "name": "Download Audio File",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          -832,
+          -304
+        ],
+        "credentials": {
+          "whatsAppApi": {
+            "id": "H2Gy8N4zKljbdoeL",
+            "name": "WhatsApp account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "audio",
+          "operation": "transcribe",
+          "options": {}
+        },
+        "id": "6141c7f2-068a-4c97-9e22-eb2398b652ac",
+        "name": "Transcribe Audio",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.1,
+        "position": [
+          -640,
+          -304
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "message",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "a2",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.messages[0].from }}"
+              },
+              {
+                "id": "a3",
+                "name": "senderName",
+                "type": "string",
+                "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.contacts[0].profile.name }}"
+              },
+              {
+                "id": "a4",
+                "name": "wa_id",
+                "type": "string",
+                "value": "={{ $('WhatsApp Business-1 Trigger1').first().json.contacts[0].wa_id }}"
+              },
+              {
+                "id": "a5",
+                "name": "messageType",
+                "type": "string",
+                "value": "audio"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d8b5e0bd-6f21-4ee5-8b82-41eb3cab8cc7",
+        "name": "Set: Audio Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -448,
+          -304
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "t1",
+                "name": "message",
+                "type": "string",
+                "value": "={{ $json.messages[0].text.body }}"
+              },
+              {
+                "id": "t2",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $json.messages[0].from }}"
+              },
+              {
+                "id": "t3",
+                "name": "senderName",
+                "type": "string",
+                "value": "={{ $json.contacts[0].profile.name }}"
+              },
+              {
+                "id": "t4",
+                "name": "wa_id",
+                "type": "string",
+                "value": "={{ $json.contacts[0].wa_id }}"
+              },
+              {
+                "id": "t5",
+                "name": "messageType",
+                "type": "string",
+                "value": "text"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "f814a401-8952-4659-ac74-c56aadd18371",
+        "name": "Set: Text Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -752,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "s1",
+                      "leftValue": "={{ $json.message }}",
+                      "operator": {
+                        "operation": "regex",
+                        "type": "string"
+                      },
+                      "rightValue": "^\\s*[Ss][Tt][Aa][Rr][Tt]\\s*$"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "START"
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "s2",
+                      "leftValue": "={{ $json.message }}",
+                      "operator": {
+                        "operation": "regex",
+                        "type": "string"
+                      },
+                      "rightValue": "^\\s*[Ss][Tt][Oo][Pp]\\s*$"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "renameOutput": true,
+                "outputKey": "STOP"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "extra"
+          }
+        },
+        "id": "3ef7ca68-7ced-49b0-b352-5e7024feb93c",
+        "name": "Check START STOP",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3,
+        "position": [
+          -64,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1495276006,
+            "mode": "list",
+            "cachedResultName": "Exclude",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Phone": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+              "Role": "START"
+            },
+            "matchingColumns": [
+              "Phone"
+            ],
+            "schema": [
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Role",
+                "displayName": "Role",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "167c5306-f2ac-41ad-98aa-2bbd034f254b",
+        "name": "START Conversation",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          160,
+          -400
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1495276006,
+            "mode": "list",
+            "cachedResultName": "Exclude",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Phone": "={{ $('WhatsApp Business-1 Trigger1').item.json.contacts[0].wa_id }}",
+              "Role": "STOP"
+            },
+            "matchingColumns": [
+              "Phone"
+            ],
+            "schema": [
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Role",
+                "displayName": "Role",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "ecbdc18c-1c33-4a37-bfe7-4c738bee5012",
+        "name": "STOP Conversation",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          160,
+          -208
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "sm1",
+                "name": "replyText",
+                "type": "string",
+                "value": "You have successfully resubscribed to automated messages. ✅\n\nHow can we assist you today?"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4879b05c-2028-416d-ab6b-943cda626994",
+        "name": "START Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          384,
+          -400
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "sp1",
+                "name": "replyText",
+                "type": "string",
+                "value": "We're sorry to see you go! 👋\n\nYou've been opted out of automated replies.\n\nType *START* to reactivate."
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "56f843e2-5c10-4195-b920-e559f0474edc",
+        "name": "STOP Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          384,
+          -208
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "send",
+          "phoneNumberId": "=934770033042697",
+          "recipientPhoneNumber": "={{ $('Check START STOP').first().json.phone }}",
+          "textBody": "={{ $json.replyText }}",
+          "additionalFields": {}
+        },
+        "id": "dd190bf7-ade9-46d0-be91-4fe1af5054a5",
+        "name": "Send START Reply",
+        "type": "n8n-nodes-base.whatsApp",
+        "typeVersion": 1.1,
+        "position": [
+          608,
+          -400
+        ],
+        "webhookId": "24a702c1-bf4c-4904-aae0-c60167d2505c",
+        "credentials": {
+          "whatsAppApi": {
+            "id": "H2Gy8N4zKljbdoeL",
+            "name": "WhatsApp account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "send",
+          "phoneNumberId": "=934770033042697",
+          "recipientPhoneNumber": "={{ $('Check START STOP').first().json.phone }}",
+          "textBody": "={{ $json.replyText }}",
+          "additionalFields": {}
+        },
+        "id": "e169c1e7-faef-4b27-99b7-4f67d2e00abb",
+        "name": "Send STOP Reply",
+        "type": "n8n-nodes-base.whatsApp",
+        "typeVersion": 1.1,
+        "position": [
+          608,
+          -208
+        ],
+        "webhookId": "14c11554-4614-49bc-a909-4b44a3802ad5",
+        "credentials": {
+          "whatsAppApi": {
+            "id": "H2Gy8N4zKljbdoeL",
+            "name": "WhatsApp account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
+            "mode": "list",
+            "cachedResultName": "Leads Capture",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1495276006,
+            "mode": "list",
+            "cachedResultName": "Exclude",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI/edit#gid=1495276006"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Phone",
+                "lookupValue": "={{ $json.phone }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "0cd07343-a6f7-40ae-b8fb-87d97a775d26",
+        "name": "Check Exclude Status",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          160,
+          16
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "sd8vmivSmR1Hm3VJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2,
+              "leftValue": "",
+              "caseSensitive": true,
+              "typeValidation": "strict"
+            },
+            "conditions": [
+              {
+                "id": "e1",
+                "leftValue": "={{ $json.Role }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "STOP"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "d3ee17cf-776f-47b7-a193-2c17b5501821",
+        "name": "Is Excluded",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          384,
+          16
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "2cf451d8-a377-464b-b74c-3d0a86b0f983",
+        "name": "Excluded - Do Nothing",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          608,
+          -16
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+                "leftValue": "={{ $json.message }}",
+                "rightValue": "919352922959@s.whatsapp.net",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              },
+              {
+                "id": "857a10cf-b504-42cf-804e-cf2c01457deb",
+                "leftValue": "={{ $json.messages[0].from }}",
+                "rightValue": "919462861226",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -272,
+          -144
+        ],
+        "id": "ec303034-0c10-4540-a74f-2083a135a9ac",
+        "name": "If2"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -96,
+          48
+        ],
+        "id": "7b8321f1-4565-4ce0-9e07-409bf0a99ed7",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "67252c2c-d0f4-4988-95b4-b37e2b9bc8d3",
+                "leftValue": "={{ $json.messages[0].type }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -1536,
+          -112
+        ],
+        "id": "440a47de-efa2-4096-be11-7f6ec2ff430d",
+        "name": "If3"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -1312,
+          112
+        ],
+        "id": "8ce82eee-f590-4a5d-9079-3264194de143",
+        "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "t1",
+                "name": "message",
+                "type": "string",
+                "value": "={{ $json.messages[0].button.text }}"
+              },
+              {
+                "id": "t2",
+                "name": "phone",
+                "type": "string",
+                "value": "={{ $json.messages[0].from }}"
+              },
+              {
+                "id": "t3",
+                "name": "senderName",
+                "type": "string",
+                "value": "={{ $json.contacts[0].profile.name }}"
+              },
+              {
+                "id": "t4",
+                "name": "wa_id",
+                "type": "string",
+                "value": "={{ $json.contacts[0].wa_id }}"
+              },
+              {
+                "id": "t5",
+                "name": "messageType",
+                "type": "string",
+                "value": "text"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d1e196d1-35f3-4820-9b79-da0e757de56e",
+        "name": "Set: Button Text Message",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -752,
+          32
+        ]
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -1104,
+          96
+        ],
+        "id": "33a27de2-8c08-48eb-a5e9-4340265c8855",
+        "name": "No Operation, do nothing4"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "chatwoot",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1728,
+          -112
+        ],
+        "id": "6c17f7cc-bbab-4442-b772-e163d5899e2e",
+        "name": "Webhook",
+        "webhookId": "71fb7237-404d-4dde-9362-40e4a60b50e9"
+      }
+    ],
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Close Coversation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Get_Row",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "ChatSocialAI FAQs",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch: Event Type": {
+        "main": [
+          [
+            {
+              "node": "Set: Text Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set: Button Text Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Get Audio URL",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing4",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get_Row": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Book_Demo": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Close Coversation": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Capture_Leads": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get_Leads": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Vector Store": {
+        "ai_vectorStore": [
+          [
+            {
+              "node": "ChatSocialAI FAQs",
+              "type": "ai_vectorStore",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Vector Store",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ChatSocialAI FAQs": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Audio URL": {
+        "main": [
+          [
+            {
+              "node": "Download Audio File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download Audio File": {
+        "main": [
+          [
+            {
+              "node": "Transcribe Audio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transcribe Audio": {
+        "main": [
+          [
+            {
+              "node": "Set: Audio Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: Audio Message": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: Text Message": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check START STOP": {
+        "main": [
+          [
+            {
+              "node": "START Conversation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "STOP Conversation",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Check Exclude Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "START Conversation": {
+        "main": [
+          [
+            {
+              "node": "START Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "START Message": {
+        "main": [
+          [
+            {
+              "node": "Send START Reply",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "STOP Conversation": {
+        "main": [
+          [
+            {
+              "node": "STOP Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "STOP Message": {
+        "main": [
+          [
+            {
+              "node": "Send STOP Reply",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Exclude Status": {
+        "main": [
+          [
+            {
+              "node": "Is Excluded",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is Excluded": {
+        "main": [
+          [
+            {
+              "node": "Excluded - Do Nothing",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No Operation, do nothing1": {
+        "main": [
+          []
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Check START STOP",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "Switch: Event Type",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set: Button Text Message": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "If3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version 0e3ab6b9",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
