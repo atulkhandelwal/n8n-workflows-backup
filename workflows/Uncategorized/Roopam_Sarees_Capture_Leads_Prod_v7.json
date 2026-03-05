@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-01T10:08:01.901Z",
+  "updatedAt": "2026-03-05T04:27:37.518Z",
   "createdAt": "2026-02-26T09:43:43.141Z",
   "id": "NgZjeqqQVbDq0lzI",
   "name": "Roopam Sarees Capture Leads Prod v7",
@@ -57,7 +57,9 @@
           "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "temperature": 0.5
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
@@ -905,7 +907,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Roopam",
+        "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -943,7 +945,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Roopam",
+        "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1340,7 +1342,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Roopam",
+        "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1424,7 +1426,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Roopam",
+        "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1462,7 +1464,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam",
+        "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam-Saree",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1478,9 +1480,9 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 10000\n}\n",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
         "options": {
-          "timeout": 5000
+          "timeout": 2000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1588,7 +1590,7 @@
         464
       ],
       "id": "da5744b9-d265-48e8-80a7-763e933bea5c",
-      "name": "Webhook",
+      "name": "Webhook1",
       "webhookId": "03579f95-ad6b-4f93-aa86-f329c1636f30"
     }
   ],
@@ -2040,7 +2042,7 @@
         ]
       ]
     },
-    "Webhook": {
+    "Webhook1": {
       "main": [
         [
           {
@@ -2064,46 +2066,46 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Webhook": [
+    "Webhook1": [
       {
         "json": {
           "headers": {
             "host": "n8n-vps.chatsocialai.in",
             "user-agent": "axios/1.13.2",
-            "content-length": "1453",
+            "content-length": "1433",
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, br",
             "cdn-loop": "cloudflare; loops=1",
             "cf-connecting-ip": "82.112.238.115",
             "cf-ipcountry": "IN",
-            "cf-ray": "9c295241ed18eccd-BOM",
+            "cf-ray": "9d765ccb7a343b03-BOM",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "content-type": "application/json",
-            "x-forwarded-for": "82.112.238.115, 172.71.198.148",
+            "x-forwarded-for": "82.112.238.115, 172.69.179.183",
             "x-forwarded-host": "n8n-vps.chatsocialai.in",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
-            "x-forwarded-server": "2fcb207db2c0",
-            "x-real-ip": "172.71.198.148"
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "172.69.179.183"
           },
           "params": {},
           "query": {},
           "body": {
             "event": "messages.upsert",
-            "instance": "Atul-Demo",
+            "instance": "Roopam-Saree",
             "data": {
               "key": {
                 "remoteJid": "918239909115@s.whatsapp.net",
-                "remoteJidAlt": "185637277827204@lid",
+                "remoteJidAlt": "918239909115@s.whatsapp.net",
                 "fromMe": false,
-                "id": "3AA6CCFA28DECB11EB70",
+                "id": "3AFD4A159939BA75F855",
                 "participant": "",
-                "addressingMode": "pn"
+                "addressingMode": "lid"
               },
               "pushName": "Atul Khandelwal",
               "status": "DELIVERY_ACK",
               "message": {
-                "conversation": "Start",
+                "conversation": "Hey",
                 "messageContextInfo": {
                   "threadId": [],
                   "deviceListMetadata": {
@@ -2122,84 +2124,87 @@
                       "9": 49
                     },
                     "senderTimestamp": {
-                      "low": 1768892242,
+                      "low": 1771488567,
                       "high": 0,
                       "unsigned": true
                     },
                     "recipientKeyHash": {
-                      "0": 173,
-                      "1": 158,
-                      "2": 219,
-                      "3": 91,
-                      "4": 15,
-                      "5": 79,
-                      "6": 157,
-                      "7": 133,
-                      "8": 202,
-                      "9": 11
+                      "0": 147,
+                      "1": 151,
+                      "2": 208,
+                      "3": 78,
+                      "4": 192,
+                      "5": 180,
+                      "6": 223,
+                      "7": 232,
+                      "8": 163,
+                      "9": 130
                     },
                     "recipientTimestamp": {
-                      "low": 1768892107,
+                      "low": 1772011594,
                       "high": 0,
                       "unsigned": true
                     }
                   },
                   "deviceListMetadataVersion": 2,
                   "messageSecret": {
-                    "0": 26,
-                    "1": 99,
-                    "2": 38,
-                    "3": 126,
-                    "4": 189,
-                    "5": 168,
-                    "6": 128,
-                    "7": 11,
-                    "8": 215,
-                    "9": 202,
-                    "10": 206,
-                    "11": 78,
-                    "12": 117,
-                    "13": 111,
-                    "14": 135,
-                    "15": 199,
-                    "16": 219,
-                    "17": 136,
-                    "18": 237,
-                    "19": 20,
-                    "20": 188,
-                    "21": 4,
-                    "22": 42,
-                    "23": 118,
-                    "24": 29,
-                    "25": 240,
-                    "26": 213,
-                    "27": 26,
-                    "28": 211,
-                    "29": 131,
-                    "30": 162,
-                    "31": 182
+                    "0": 47,
+                    "1": 153,
+                    "2": 32,
+                    "3": 101,
+                    "4": 116,
+                    "5": 5,
+                    "6": 140,
+                    "7": 139,
+                    "8": 126,
+                    "9": 153,
+                    "10": 69,
+                    "11": 203,
+                    "12": 206,
+                    "13": 9,
+                    "14": 46,
+                    "15": 235,
+                    "16": 127,
+                    "17": 164,
+                    "18": 169,
+                    "19": 15,
+                    "20": 26,
+                    "21": 175,
+                    "22": 125,
+                    "23": 151,
+                    "24": 249,
+                    "25": 92,
+                    "26": 134,
+                    "27": 6,
+                    "28": 144,
+                    "29": 161,
+                    "30": 178,
+                    "31": 119
                   }
                 }
               },
               "messageType": "conversation",
-              "messageTimestamp": 1769192596,
-              "instanceId": "1973ce79-daaa-4453-9e44-94d111cfc670",
+              "messageTimestamp": 1772684786,
+              "instanceId": "450e869c-92ad-4d4d-8b2c-1e6934efccab",
               "source": "ios"
             },
-            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-atul-demo",
-            "date_time": "2026-01-23T15:23:16.787Z",
-            "sender": "918003626766@s.whatsapp.net",
+            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-roopam",
+            "date_time": "2026-03-05T01:26:26.412Z",
+            "sender": "919982922220@s.whatsapp.net",
             "server_url": "https://api.chatsocialai.in",
-            "apikey": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
+            "apikey": "96CF07781078-4DB8-9C42-F30773A21D04"
           },
-          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-atul-demo",
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-roopam",
           "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
         }
       }
     ]
   },
-  "versionId": "ba4c2d6e-0f77-4c1a-9357-73ef7d498454",
-  "activeVersionId": "ba4c2d6e-0f77-4c1a-9357-73ef7d498454",
+  "versionId": "46236e78-ac79-4419-af25-3c696f3ad557",
+  "activeVersionId": "46236e78-ac79-4419-af25-3c696f3ad557",
   "triggerCount": 1,
   "shared": [
     {
@@ -2211,9 +2216,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-01T10:08:24.000Z",
-    "createdAt": "2026-03-01T10:08:01.903Z",
-    "versionId": "ba4c2d6e-0f77-4c1a-9357-73ef7d498454",
+    "updatedAt": "2026-03-05T04:27:44.000Z",
+    "createdAt": "2026-03-05T04:27:37.519Z",
+    "versionId": "46236e78-ac79-4419-af25-3c696f3ad557",
     "workflowId": "NgZjeqqQVbDq0lzI",
     "nodes": [
       {
@@ -2267,7 +2272,9 @@
             "cachedResultName": "gpt-4o-mini"
           },
           "builtInTools": {},
-          "options": {}
+          "options": {
+            "temperature": 0.5
+          }
         },
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
@@ -3115,7 +3122,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Roopam",
+          "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3153,7 +3160,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Roopam",
+          "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3550,7 +3557,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Roopam",
+          "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3634,7 +3641,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Roopam",
+          "url": "http://evolution-api:8080/message/sendText/Roopam-Saree",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3672,7 +3679,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam",
+          "url": "https://api.chatsocialai.in/chat/sendPresence/Roopam-Saree",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3688,9 +3695,9 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 10000\n}\n",
+          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
           "options": {
-            "timeout": 5000
+            "timeout": 2000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -3798,7 +3805,7 @@
           464
         ],
         "id": "da5744b9-d265-48e8-80a7-763e933bea5c",
-        "name": "Webhook",
+        "name": "Webhook1",
         "webhookId": "03579f95-ad6b-4f93-aa86-f329c1636f30"
       }
     ],
@@ -4250,7 +4257,7 @@
           ]
         ]
       },
-      "Webhook": {
+      "Webhook1": {
         "main": [
           [
             {
@@ -4263,7 +4270,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version ba4c2d6e Added Instagram Link to Order Booking",
+    "name": "Version 46236e78",
     "description": "",
     "autosaved": true
   },
