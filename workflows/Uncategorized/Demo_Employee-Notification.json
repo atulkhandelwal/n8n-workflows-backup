@@ -1,0 +1,431 @@
+{
+  "updatedAt": "2026-03-07T08:23:45.253Z",
+  "createdAt": "2026-03-07T08:23:09.739Z",
+  "id": "v3qwRn0velntPBqV",
+  "name": "Demo Employee-Notification",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 1,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1eVlYfFC_FXi2hcQdn7t4yZjd6G1IbK31fQurr5hDpBs",
+          "mode": "list",
+          "cachedResultName": "Vi tech Ai"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Order Status"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1600,
+        80
+      ],
+      "id": "a085c8d4-b1b4-4233-a375-f48a08524604",
+      "name": "New Order Rows"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process ALL orders and extract ALL employees\nconst allOrders = $input.all();\nconst employeeNotifications = [];\n\nfor (const order of allOrders) {\n  const orderData = order.json;\n\n  // Skip if no employee names in both fields\n  const glassEmployee = orderData.glass?.trim();\n  const materialEmployee = orderData['Material ']?.trim();\n\n  if (!glassEmployee && !materialEmployee) {\n    console.log(`⚠️  Order ${orderData['Order ID']} has no employees assigned - SKIPPING`);\n    continue;\n  }\n\n  // Extract glass employee\n  if (glassEmployee && glassEmployee !== '') {\n    employeeNotifications.push({\n      json: {\n        employeeName: glassEmployee,\n        employeeRole: 'glass',\n        orderName: orderData.Name,\n        orderContactNumber: orderData['Contact Number'],\n        orderAddress: orderData.Address,\n        orderID: orderData['Order ID'],\n        orderDate: orderData['Order Date'],\n        orderQty: orderData['Total \\nQTY'],\n        orderMaterial: orderData['Material\\n (uPVC/Aluminium)'],\n        orderSize: orderData['Quotation Size']\n      }\n    });\n  }\n\n  // Extract Material employee\n  if (materialEmployee && materialEmployee !== '') {\n    employeeNotifications.push({\n      json: {\n        employeeName: materialEmployee,\n        employeeRole: 'material',\n        orderName: orderData.Name,\n        orderContactNumber: orderData['Contact Number'],\n        orderAddress: orderData.Address,\n        orderID: orderData['Order ID'],\n        orderDate: orderData['Order Date'],\n        orderQty: orderData['Total \\nQTY'],\n        orderMaterial: orderData['Material\\n (uPVC/Aluminium)'],\n        orderSize: orderData['Quotation Size']\n      }\n    });\n  }\n}\n\nconsole.log(`✅ Extracted ${employeeNotifications.length} employee notifications from ${allOrders.length} orders`);\nreturn employeeNotifications;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1408,
+        80
+      ],
+      "id": "4ec0c1a5-07c9-4986-82a5-2858ead29bd4",
+      "name": "Extract All Employees"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.employeeName }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        48
+      ],
+      "id": "b3255f8f-14a5-4d60-b5b0-81a1f8936e7e",
+      "name": "Has Employees?"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -992,
+        32
+      ],
+      "id": "50281acc-51c5-4adf-9e3a-63f24a5b7f0a",
+      "name": "Loop Each Employee"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ==========================================\n// INDIAN MOBILE NUMBER FORMATTER & VALIDATOR\n// ==========================================\n// Based on Indian phone number standards:\n// - Must be 10 digits long\n// - Must start with 6, 7, 8, or 9\n// - Format: 919876543210 (91 + 10 digits)\n// ==========================================\n\nconst rawPhone = $json.Phone || '';\n\nconsole.log(`📱 Processing phone: \"${rawPhone}\"`);\n\n// STEP 1: Remove all spaces, hyphens, dots, parentheses\nlet cleaned = rawPhone.toString().replace(/[\\s\\-\\.\\(\\)]/g, '');\nconsole.log(`   Step 1 - Removed spaces/symbols: \"${cleaned}\"`);\n\n// STEP 2: Remove plus sign if present\ncleaned = cleaned.replace(/^\\+/, '');\nconsole.log(`   Step 2 - Removed plus sign: \"${cleaned}\"`);\n\n// STEP 3: Remove leading zeros (common in local format)\ncleaned = cleaned.replace(/^0+/, '');\nconsole.log(`   Step 3 - Removed leading zeros: \"${cleaned}\"`);\n\n// STEP 4: Extract only digits (remove any remaining non-numeric chars)\ncleaned = cleaned.replace(/\\D/g, '');\nconsole.log(`   Step 4 - Only digits: \"${cleaned}\"`);\n\n// STEP 5: Handle country code variations\nif (cleaned.startsWith('91') && cleaned.length === 12) {\n  // Already has 91 prefix with 10 digit number\n  cleaned = cleaned;\n  console.log(`   Step 5 - Already has 91 prefix: \"${cleaned}\"`);\n} else if (cleaned.length === 10) {\n  // Just 10 digit number, needs 91 prefix\n  cleaned = '91' + cleaned;\n  console.log(`   Step 5 - Added 91 prefix: \"${cleaned}\"`);\n} else if (cleaned.length > 12 && cleaned.startsWith('91')) {\n  // Has 91 but too many digits, take last 10 digits after 91\n  cleaned = '91' + cleaned.slice(-10);\n  console.log(`   Step 5 - Trimmed to 91 + last 10 digits: \"${cleaned}\"`);\n} else if (cleaned.length > 10) {\n  // More than 10 but no 91, take last 10 digits\n  cleaned = '91' + cleaned.slice(-10);\n  console.log(`   Step 5 - Took last 10 digits + added 91: \"${cleaned}\"`);\n}\n\n// STEP 6: Final validation\nconst isValid = cleaned.length === 12 && \n                cleaned.startsWith('91') && \n                /^91[6-9]\\d{9}$/.test(cleaned);\n\nif (!isValid) {\n  console.error(`❌ INVALID: \"${rawPhone}\" → \"${cleaned}\"`);\n  \n  // Detailed error message\n  let errorMsg = '';\n  if (cleaned.length !== 12) {\n    errorMsg = `Wrong length: ${cleaned.length} digits (expected 12)`;\n  } else if (!cleaned.startsWith('91')) {\n    errorMsg = 'Does not start with country code 91';\n  } else if (!/^91[6-9]/.test(cleaned)) {\n    errorMsg = `Invalid start digit: ${cleaned.charAt(2)} (must be 6, 7, 8, or 9)`;\n  } else {\n    errorMsg = 'Invalid format';\n  }\n  \n  return [{\n    json: {\n      ...$json,\n      formattedPhone: null,\n      isValid: false,\n      errorMessage: `Invalid phone number: ${errorMsg}`,\n      originalPhone: rawPhone\n    }\n  }];\n}\n\nconsole.log(`✅ VALID: \"${rawPhone}\" → \"${cleaned}\"`);\n\nreturn [{\n  json: {\n    ...$json,\n    formattedPhone: cleaned,\n    isValid: true,\n    originalPhone: rawPhone\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        16
+      ],
+      "id": "36f65117-65ac-426a-92c1-6ae83748336a",
+      "name": "Format Phone",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isValid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        16
+      ],
+      "id": "e255dec2-632d-405e-b31a-bd040a3421f5",
+      "name": "Format Valid?"
+    },
+    {
+      "parameters": {
+        "instanceName": "=demochatbot",
+        "token": "={{ $json.employeePhone }}",
+        "number": "=This is your new order:\nOrder ID - {{ $json.orderID }}\nOrder Date - {{ $json.orderDate }}\nOrder Name -{{ $json.orderName }}\nContact Number -{{ $json.orderContactNumber }}\nAddress- {{ $json.orderAddress }}\nOrder Quantity - {{ $json.orderQty }}\nMaterials - {{ $json.orderMaterial }}\nOrder Size - {{ $json.orderSize }}",
+        "options_Create_instance": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c81e9cd3-eb97-4513-a71b-cda7614f3e58",
+      "name": "Send WhatsApp",
+      "credentials": {},
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const log = {\n  timestamp: new Date().toISOString(),\n  status: 'FORMAT_ERROR',\n  employee: $json.employeeName,\n  phone: $json.employeePhone,\n  orderID: $json.orderID,\n  error: $json.errorMessage\n};\n\nconsole.error('❌ Format error:', log);\n\nreturn [{ json: log }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        240
+      ],
+      "id": "1c182a39-9779-4bda-803f-085b08cc45f4",
+      "name": "⚠️ Format Error"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        256
+      ],
+      "id": "6d097004-54cb-493b-a5f0-3a2fadcb1523",
+      "name": "ℹ️ No Employees1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check_loop_complete",
+              "leftValue": "={{ $node[\"Loop Each Employee\"].context.noItemsLeft }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8e311c7a-20b3-4395-bf23-153ea0757e5c",
+      "name": "All Employees Processed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "notes": "Check if all customers have been processed"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eVlYfFC_FXi2hcQdn7t4yZjd6G1IbK31fQurr5hDpBs",
+          "mode": "list",
+          "cachedResultName": "Vi tech Ai"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 889582151,
+          "mode": "list",
+          "cachedResultName": "Sales Team"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Name",
+              "lookupValue": "={{ $json.employeeName }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -784,
+        32
+      ],
+      "id": "c2cadb58-6864-4fbc-9ab7-6597725e0406",
+      "name": "Lookup Employee Phone",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the employee data from the loop\nconst employeeData = $('Loop Each Employee').item.json;\n\n// Get the phone from the Google Sheets lookup\nconst phone = $input.first().json.formattedPhone;\n\n// Merge them together\nreturn [{\n  json: {\n    employeeName: employeeData.employeeName,\n    employeeRole: employeeData.employeeRole,\n    orderName: employeeData.orderName,\n    orderContactNumber: employeeData.orderContactNumber,\n    orderAddress: employeeData.orderAddress,\n    orderID: employeeData.orderID,\n    orderDate: employeeData.orderDate,\n    orderQty: employeeData.orderQty,\n    orderMaterial: employeeData.orderMaterial,\n    orderSize: employeeData.orderSize,\n    employeePhone: phone,\n    matchFound: true\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d9319f7b-c3db-410a-878d-dbb889b96d1c",
+      "name": "Merge Employee Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.Phone }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        32
+      ],
+      "id": "97cac0aa-accb-49e5-900f-b84a29fb8879",
+      "name": "Phone Found?"
+    }
+  ],
+  "connections": {
+    "New Order Rows": {
+      "main": [
+        [
+          {
+            "node": "Extract All Employees",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract All Employees": {
+      "main": [
+        [
+          {
+            "node": "Has Employees?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Employees?": {
+      "main": [
+        [
+          {
+            "node": "Loop Each Employee",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ℹ️ No Employees1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Each Employee": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Lookup Employee Phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Phone": {
+      "main": [
+        [
+          {
+            "node": "Format Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Valid?": {
+      "main": [
+        [
+          {
+            "node": "Merge Employee Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "All Employees Processed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Employees Processed?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Loop Each Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Employee Phone": {
+      "main": [
+        [
+          {
+            "node": "Phone Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Employee Data": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Phone Found?": {
+      "main": [
+        [
+          {
+            "node": "Format Phone",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "247b22d8-d8b4-432f-8464-9de547dd37ab",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-07T08:23:09.742Z",
+      "createdAt": "2026-03-07T08:23:09.742Z",
+      "role": "workflow:owner",
+      "workflowId": "v3qwRn0velntPBqV",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
