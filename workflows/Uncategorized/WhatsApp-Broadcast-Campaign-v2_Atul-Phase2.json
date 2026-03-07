@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-07T05:08:56.061Z",
+  "updatedAt": "2026-03-07T05:39:31.420Z",
   "createdAt": "2026-02-25T06:31:50.585Z",
   "id": "azLpJltAkU-ySgBhRllqJ",
   "name": "WhatsApp-Broadcast-Campaign-v2 Atul-Phase2",
@@ -706,13 +706,7 @@
   "connections": {
     "Webhook - Campaign Trigger": {
       "main": [
-        [
-          {
-            "node": "Fetch Campaign Details",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Fetch Campaign Details": {
@@ -853,13 +847,7 @@
     },
     "Schedule Trigger": {
       "main": [
-        [
-          {
-            "node": "Fetch Campaign Details",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -910,8 +898,8 @@
       }
     ]
   },
-  "versionId": "5e2b20bc-6658-479c-9695-49f54db74738",
-  "activeVersionId": "5e2b20bc-6658-479c-9695-49f54db74738",
+  "versionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
+  "activeVersionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
   "triggerCount": 2,
   "shared": [
     {
@@ -923,9 +911,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-07T05:09:08.000Z",
-    "createdAt": "2026-03-07T05:08:56.062Z",
-    "versionId": "5e2b20bc-6658-479c-9695-49f54db74738",
+    "updatedAt": "2026-03-07T05:39:33.000Z",
+    "createdAt": "2026-03-07T05:39:31.422Z",
+    "versionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
     "workflowId": "azLpJltAkU-ySgBhRllqJ",
     "nodes": [
       {
@@ -1628,13 +1616,7 @@
     "connections": {
       "Webhook - Campaign Trigger": {
         "main": [
-          [
-            {
-              "node": "Fetch Campaign Details",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Fetch Campaign Details": {
@@ -1775,18 +1757,12 @@
       },
       "Schedule Trigger": {
         "main": [
-          [
-            {
-              "node": "Fetch Campaign Details",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 5e2b20bc",
+    "name": "Version 1f61fba2",
     "description": "",
     "autosaved": true
   },
