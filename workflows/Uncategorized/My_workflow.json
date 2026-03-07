@@ -1,0 +1,49 @@
+{
+  "updatedAt": "2026-03-07T12:49:57.094Z",
+  "createdAt": "2026-03-07T12:49:13.552Z",
+  "id": "GfQW8sH1Mr88U6xx",
+  "name": "My workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatsocial-message-status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3050ea8b-a97a-4be5-8796-83786922ec85",
+      "name": "Webhook",
+      "webhookId": "af45d0f6-1103-4d7e-888c-c7802bdcbde2"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "38dc6a75-d050-4cc3-b2a6-12096abe97fa",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-07T12:49:13.554Z",
+      "createdAt": "2026-03-07T12:49:13.554Z",
+      "role": "workflow:owner",
+      "workflowId": "GfQW8sH1Mr88U6xx",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
