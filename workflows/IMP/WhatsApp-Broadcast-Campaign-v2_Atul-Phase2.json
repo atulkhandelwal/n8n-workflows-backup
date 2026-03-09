@@ -1,9 +1,9 @@
 {
-  "updatedAt": "2026-02-26T11:22:37.113Z",
+  "updatedAt": "2026-03-09T11:17:08.283Z",
   "createdAt": "2026-02-25T06:31:50.585Z",
   "id": "azLpJltAkU-ySgBhRllqJ",
   "name": "WhatsApp-Broadcast-Campaign-v2 Atul-Phase2",
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -190,10 +190,10 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
           "mode": "list",
-          "cachedResultName": "Business-1-Customer-Service",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -209,7 +209,12 @@
             "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
             "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
             "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
-            "Status": "Accepted"
+            "Status": "Accepted",
+            "WAMID": "={{ $('Send WhatsApp Template Message').item.json.messages[0].id }}",
+            "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+            "Delivery_Status": "accepted",
+            "re_broadcast_flag": "NO",
+            "Last_Updated": "={{ $now }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -266,6 +271,86 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -344,19 +429,256 @@
         "operation": "update",
         "documentId": {
           "__rl": true,
-          "value": "={{ $node[\"Resolve Business Sheet ID\"].json.sheet_id }}",
-          "mode": "id"
+          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "mode": "list",
+          "cachedResultName": "Business-1-Customer-Service",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "Campaigns",
-          "mode": "name"
+          "value": 1922137201,
+          "mode": "list",
+          "cachedResultName": "Campaigns",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
         },
         "columns": {
           "mappingMode": "defineBelow",
-          "value": {},
-          "matchingColumns": [],
-          "schema": [],
+          "value": {
+            "Campaign_ID": "={{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}"
+          },
+          "matchingColumns": [
+            "Campaign_ID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Campaign_Name",
+              "displayName": "Campaign_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campaign_Type",
+              "displayName": "Campaign_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message_Text",
+              "displayName": "Message_Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image_Filename",
+              "displayName": "Image_Filename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Target_Audience",
+              "displayName": "Target_Audience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Scheduled_Date",
+              "displayName": "Scheduled_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_Recipients",
+              "displayName": "Total_Recipients",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Messages_Sent",
+              "displayName": "Messages_Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Messages_Failed",
+              "displayName": "Messages_Failed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Opt_Outs_Received",
+              "displayName": "Opt_Outs_Received",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created_Date",
+              "displayName": "Created_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created_By",
+              "displayName": "Created_By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WhatsApp_Template_Name",
+              "displayName": "WhatsApp_Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image_URL",
+              "displayName": "Image_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_1",
+              "displayName": "Template_Var_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_2",
+              "displayName": "Template_Var_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_3",
+              "displayName": "Template_Var_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_4",
+              "displayName": "Template_Var_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_5",
+              "displayName": "Template_Var_5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_6",
+              "displayName": "Template_Var_6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_7",
+              "displayName": "Template_Var_7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_8",
+              "displayName": "Template_Var_8",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -367,8 +689,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.4,
       "position": [
-        272,
-        160
+        464,
+        192
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -389,8 +711,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        496,
-        160
+        656,
+        336
       ],
       "notes": "Returns success response with statistics"
     },
@@ -442,19 +764,34 @@
         -624,
         272
       ],
+      "retryOnFail": true,
       "notes": "Sends via WAHA API:\n- Image from Windows path\n- Message with personalization\n- Opt-out footer included"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 30,
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2208,
+        128
+      ],
+      "id": "59cc7a79-c8aa-470e-829b-b020dbb131d5",
+      "name": "Schedule Trigger"
     }
   ],
   "connections": {
     "Webhook - Campaign Trigger": {
       "main": [
-        [
-          {
-            "node": "Fetch Campaign Details",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Fetch Campaign Details": {
@@ -592,6 +929,11 @@
           }
         ]
       ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
@@ -601,7 +943,13 @@
     "timezone": "Asia/Kolkata",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "staticData": null,
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        67
+      ]
+    }
+  },
   "meta": {
     "templateCredsSetupCompleted": true
   },
@@ -637,9 +985,9 @@
       }
     ]
   },
-  "versionId": "887fc516-12a3-4dfc-a899-6c21a7a74724",
-  "activeVersionId": null,
-  "triggerCount": 0,
+  "versionId": "965e9452-c384-4226-b9fb-12a0866e1b5b",
+  "activeVersionId": "965e9452-c384-4226-b9fb-12a0866e1b5b",
+  "triggerCount": 2,
   "shared": [
     {
       "updatedAt": "2026-02-25T06:31:50.599Z",
@@ -649,7 +997,947 @@
       "projectId": "iAhlMQ43wIQPVv31"
     }
   ],
-  "activeVersion": null,
+  "activeVersion": {
+    "updatedAt": "2026-03-09T11:17:16.000Z",
+    "createdAt": "2026-03-09T10:28:56.035Z",
+    "versionId": "965e9452-c384-4226-b9fb-12a0866e1b5b",
+    "workflowId": "azLpJltAkU-ySgBhRllqJ",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "85cbd6f8-246f-4a1a-a644-0ac4fd4dbf0a",
+          "responseMode": "responseNode",
+          "options": {
+            "rawBody": true
+          }
+        },
+        "id": "95ecf20e-10c0-482e-85a4-73f862e353b3",
+        "name": "Webhook - Campaign Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          -2224,
+          368
+        ],
+        "webhookId": "85cbd6f8-246f-4a1a-a644-0ac4fd4dbf0a",
+        "notes": "Curently Fetches Al the rows in Campaigns Google Sheet Tab and checks for the ones with Status \"Draft\" in \"Check Campaign Status = Draft\" node.\n\nTrigger URL: http://localhost:5678/webhook/broadcast-campaign\nPOST Body: {\"campaign_id\": \"CAMP-001\",\"business_id\": \"1\"}"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "mode": "list",
+            "cachedResultName": "Business-1-Customer-Service",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1922137201,
+            "mode": "list",
+            "cachedResultName": "Campaigns",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+          },
+          "options": {}
+        },
+        "id": "9fa7eaf7-01c7-4fde-9905-f16dddae671d",
+        "name": "Fetch Campaign Details",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -1952,
+          368
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        },
+        "notes": "Reads campaign from Campaigns tab (Columns A-N)\nLookup by Campaign_ID (Column A)"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "campaign_status_check",
+                "leftValue": "={{ $json.Status }}",
+                "rightValue": "Draft",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "283cac3d-85ee-4f8a-9f36-a06a284d75c1",
+        "name": "Check Campaign Status = Draft",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1728,
+          368
+        ],
+        "notes": "Only proceed if Campaign Status (Column G) = 'Draft'"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1055588506,
+            "mode": "list",
+            "cachedResultName": "Customer Profiles",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1055588506"
+          },
+          "options": {}
+        },
+        "id": "40a3b07c-3a27-47ce-a5b2-1e4f965f89b9",
+        "name": "Fetch All Customers",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -1504,
+          272
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        },
+        "notes": "Reads all customers from Customer Profiles tab (Columns A-V)"
+      },
+      {
+        "parameters": {
+          "jsCode": "// ============================================================================\n// CORRECTED: Filter Opted-In Customers Node Code\n// ============================================================================\n// Purpose: Filter customers who have NOT opted out + apply target audience\n// Issue Fixed: Original code was not filtering - just passing through all data\n// ============================================================================\n\n// ✅ CORRECT: Get campaign that actually passed the Draft status check\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// Get all customers from input\nconst customers = $input.all();\n\nconsole.log(`Total customers from sheet: ${customers.length}`);\n\n// STEP 1: Filter customers who have NOT opted out\n// Opt_Out_Promotional can be: false, \"FALSE\", \"\", null, undefined\nlet optedInCustomers = customers.filter(customer => {\n  const optOutValue = customer.json[\"Opt_Out_Promotional\"];\n\n  // Consider opted-in if:\n  // - false (boolean)\n  // - \"FALSE\" (string)\n  // - \"\" (empty string)\n  // - null\n  // - undefined\n  const isOptedIn = (\n    optOutValue === false || \n    optOutValue === \"FALSE\" || \n    optOutValue === \"\" || \n    optOutValue === null || \n    optOutValue === undefined\n  );\n\n  return isOptedIn;\n});\n\nconsole.log(`Customers opted-in (Opt_Out_Promotional = false): ${optedInCustomers.length}`);\n\n// STEP 2: Apply target audience filter from campaign\nconst targetAudience = campaign[\"Target_Audience\"];\nconsole.log(`Target Audience: ${targetAudience}`);\n\nlet filteredCustomers = optedInCustomers;\n\nif (targetAudience === \"VIP\") {\n  // Filter where Customer Tier = \"VIP\"\n  filteredCustomers = optedInCustomers.filter(c => \n    c.json[\"Customer Tier\"] === \"VIP\"\n  );\n  console.log(`Filtered to VIP customers: ${filteredCustomers.length}`);\n\n} else if (targetAudience === \"Recent Buyers\") {\n  // Filter customers who ordered in last 30 days\n  // Last Order Date is Excel date serial number\n  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);\n  const excelThirtyDaysAgo = (thirtyDaysAgo / 86400000) + 25569; // Convert to Excel date\n\n  filteredCustomers = optedInCustomers.filter(c => {\n    const lastOrderDate = parseFloat(c.json[\"Last Order Date\"]);\n    return !isNaN(lastOrderDate) && lastOrderDate > 0 && lastOrderDate >= excelThirtyDaysAgo;\n  });\n  console.log(`Filtered to Recent Buyers (last 30 days): ${filteredCustomers.length}`);\n\n} else {\n  // \"All\" or any other value - use all opted-in customers\n  console.log(`Using all opted-in customers: ${filteredCustomers.length}`);\n}\n\n// STEP 3: Return filtered customers with necessary fields for next nodes\nreturn filteredCustomers.map(customer => ({\n  json: {\n    campaign_id: campaign[\"Campaign_ID\"],\n    campaign_name: campaign[\"Campaign_Name\"],\n    customer_phone: customer.json[\"Customer Phone\"], \n    customer_name: customer.json[\"Customer Name\"] || \"Valued Customer\",\n    customer_city: customer.json[\"Customer City\"] || \"\",\n    customer_tier: customer.json[\"Customer Tier\"] || \"Regular\",\n    message_template: campaign[\"Message_Text\"],\n    image_filename: campaign[\"Image_Filename\"],\n    target_audience: campaign[\"Target_Audience\"]\n  }\n}));"
+        },
+        "id": "b7553fd3-f8d6-495e-89fd-1ef797f7bca6",
+        "name": "Filter Opted-In Customers",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1280,
+          272
+        ],
+        "notes": "Filters customers:\n1. Column V (Opt_Out_Promotional) = FALSE\n2. Apply Target_Audience filter (Column F)\n   - All: Send to everyone\n   - VIP: Column M = VIP\n   - Recent Buyers: Column J within 30 days"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "ba69e6bb-e2df-49db-986e-bf9f46f75594",
+        "name": "Loop Over Customers",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1072,
+          272
+        ],
+        "notes": "Process one customer at a time"
+      },
+      {
+        "parameters": {
+          "jsCode": "// ═══════════════════════════════════════════════════════════════════════════\n// Prepare WhatsApp Template Message - WITH CLOUDINARY IMAGE SUPPORT\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst customer = $input.first().json;\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 1: Get template information from campaign\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateName = campaign.WhatsApp_Template_Name;\nconst phoneNumberId = '934770033042697';\n\nconsole.log(`📤 [Prepare Template] Template: ${templateName} for ${customer.customer_phone}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 2: Build template parameters array (Body parameters)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateParams = [];\n\n// Extract all Template_Var_X columns\nfor (let i = 1; i <= 10; i++) {\n  const varKey = `Template_Var_${i}`;\n  const varValue = campaign[varKey];\n  \n  if (varValue === null || varValue === undefined || varValue === \"\") {\n    continue;\n  }\n  \n  let value = String(varValue);\n  \n  // Replace placeholders\n  value = value.replace(/\\{\\{customer_name\\}\\}/g, customer.customer_name || 'Valued Customer');\n  value = value.replace(/\\{\\{customer_city\\}\\}/g, customer.customer_city || '');\n  \n  templateParams.push({\n    type: \"text\",\n    text: value\n  });\n  \n  console.log(`📋 [Prepare Template] Param ${i}: ${value}`);\n}\n\nconsole.log(`📋 [Prepare Template] Body parameters: ${templateParams.length}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 3: Build components array (Header + Body)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst components = [];\n\n// Check if campaign has image URL (from Cloudinary or any HTTPS source)\nconst imageUrl = campaign.Image_URL; // Column S in Google Sheets\n\nif (imageUrl && imageUrl !== \"\" && imageUrl.startsWith(\"https://\")) {\n  // Add header component with image\n  components.push({\n    type: \"header\",\n    parameters: [\n      {\n        type: \"image\",\n        image: {\n          link: imageUrl  // Direct Cloudinary URL\n        }\n      }\n    ]\n  });\n  \n  console.log(`📸 [Prepare Template] Header image URL: ${imageUrl}`);\n} else {\n  console.log(`⚠️ [Prepare Template] No valid image URL found. Skipping header.`);\n}\n\n// Add body component\ncomponents.push({\n  type: \"body\",\n  parameters: templateParams\n});\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 4: Build WhatsApp Official API payload\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst whatsappUrl = `https://graph.facebook.com/v24.0/${phoneNumberId}/messages`;\nconst cleanPhone = String(customer.customer_phone).replace('@c.us', '');\n\nconst whatsappBody = {\n  messaging_product: \"whatsapp\",\n  to: cleanPhone,\n  type: \"template\",\n  template: {\n    name: templateName,\n    language: {\n      code: \"en\"\n    },\n    components: components\n  }\n};\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 5: Return prepared data\n// ═══════════════════════════════════════════════════════════════════════════\n\nconsole.log(`✅ [Prepare Template] Message ready for ${cleanPhone}`);\nconsole.log(`📦 [Prepare Template] Components: ${components.length} (Header: ${imageUrl ? 'Yes' : 'No'}, Body: Yes)`);\n\nreturn {\n  campaign_id: customer.campaign_id,\n  customer_phone: cleanPhone,\n  customer_name: customer.customer_name,\n  template_name: templateName,\n  whatsappUrl: whatsappUrl,\n  whatsappBody: whatsappBody,\n  sent_at: new Date().toISOString(),\n  \n  _metadata: {\n    template_params_count: templateParams.length,\n    phone_number_id: phoneNumberId,\n    has_image: !!imageUrl,\n    image_url: imageUrl || null,\n    components_count: components.length\n  }\n};"
+        },
+        "id": "96d2325b-d776-43e2-a577-a7a20f0bdfa9",
+        "name": "Prepare Personalized Message",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -848,
+          272
+        ],
+        "notes": "Personalizes message:\n1. Replace {customer_name}, {business_name}, {business_phone}, {city}\n2. Add opt-out footer\n3. Set image path: C:\\Whatsapp_AI_Agent_Latest\\campaign_images\\business_1\\{filename}"
+      },
+      {
+        "parameters": {
+          "amount": 2
+        },
+        "id": "a25c2d66-cdd7-4afd-b6dc-e8a2c0a83662",
+        "name": "Wait 2 Seconds (Rate Limiting)",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -400,
+          272
+        ],
+        "webhookId": "67ffebce-4c02-4f1e-a268-bbe2e95f1ee1",
+        "notes": "WhatsApp rate limiting:\n- Max 15 msg/sec (safe: 10/sec)\n- 2 sec delay = ~0.5 msg/sec"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "list",
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Campaign_ID": "={{ $node[\"Prepare Personalized Message\"].json.campaign_id }}",
+              "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
+              "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
+              "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
+              "Status": "Accepted",
+              "WAMID": "={{ $('Send WhatsApp Template Message').item.json.messages[0].id }}",
+              "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+              "Delivery_Status": "accepted",
+              "re_broadcast_flag": "NO",
+              "Last_Updated": "={{ $now }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "ce88ca87-8dea-470d-9cd3-b33e9d283074",
+        "name": "Log to Campaign_Delivery",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -192,
+          272
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        },
+        "notes": "Appends to Campaign_Delivery tab (Columns A-F):\n- Campaign_ID (A)\n- Customer_Phone (B)\n- Customer_Name (C)\n- Status (D) = 'Sent'\n- Sent_At (E)\n- Error_Message (F) = empty"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "check_loop_complete",
+                "leftValue": "={{ $node[\"Loop Over Customers\"].context.noItemsLeft }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "064aa0a6-8333-4683-a225-cb77e78a9069",
+        "name": "All Customers Processed?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          48,
+          272
+        ],
+        "notes": "Check if all customers have been processed"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Calculate campaign statistics from Campaign_Delivery items\n\nconst campaignId = $node[\"Fetch Campaign Details\"].json.Campaign_ID;\n\n// All rows that were just written to Campaign_Delivery in this run\nconst deliveryLogs = $node[\"Log to Campaign_Delivery\"].outputItems || [];\n\nconst totalRecipients = deliveryLogs.length;\nconst messagesSent = deliveryLogs.filter(i => i.json.Status === \"Sent\").length;\nconst messagesFailed = deliveryLogs.filter(i => i.json.Status === \"Failed\").length;\n\nreturn {\n  campaign_id: campaignId,\n  total_recipients: totalRecipients,\n  messages_sent: messagesSent,\n  messages_failed: messagesFailed,\n  status: \"Sent\"\n};"
+        },
+        "id": "3e0cdf41-d6ca-4206-b8d1-ab511133f0a3",
+        "name": "Calculate Campaign Statistics",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          304,
+          352
+        ],
+        "notes": "Counts:\n- Total Recipients (Column I)\n- Messages Sent (Column J)\n- Messages Failed (Column K)"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "mode": "list",
+            "cachedResultName": "Business-1-Customer-Service",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1922137201,
+            "mode": "list",
+            "cachedResultName": "Campaigns",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Campaign_ID": "={{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}"
+            },
+            "matchingColumns": [
+              "Campaign_ID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Campaign_Name",
+                "displayName": "Campaign_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Campaign_Type",
+                "displayName": "Campaign_Type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message_Text",
+                "displayName": "Message_Text",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image_Filename",
+                "displayName": "Image_Filename",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Target_Audience",
+                "displayName": "Target_Audience",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Scheduled_Date",
+                "displayName": "Scheduled_Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Total_Recipients",
+                "displayName": "Total_Recipients",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Messages_Sent",
+                "displayName": "Messages_Sent",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Messages_Failed",
+                "displayName": "Messages_Failed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Opt_Outs_Received",
+                "displayName": "Opt_Outs_Received",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Created_Date",
+                "displayName": "Created_Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Created_By",
+                "displayName": "Created_By",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "WhatsApp_Template_Name",
+                "displayName": "WhatsApp_Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image_URL",
+                "displayName": "Image_URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_1",
+                "displayName": "Template_Var_1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_2",
+                "displayName": "Template_Var_2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_3",
+                "displayName": "Template_Var_3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_4",
+                "displayName": "Template_Var_4",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_5",
+                "displayName": "Template_Var_5",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_6",
+                "displayName": "Template_Var_6",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_7",
+                "displayName": "Template_Var_7",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_8",
+                "displayName": "Template_Var_8",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "d73ef221-339b-4e68-b6e1-0a76c127f7b2",
+        "name": "Update Campaign Statistics",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          464,
+          192
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        },
+        "notes": "Updates Campaigns tab:\n- Total_Recipients (Column I)\n- Messages_Sent (Column J)\n- Messages_Failed (Column K)\n- Status (Column G) = 'Sent'"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": true,\n  \"message\": \"Campaign broadcast completed\",\n  \"campaign_id\": \"{{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}\",\n  \"total_recipients\": {{ $json.total_recipients }},\n  \"messages_sent\": {{ $json.messages_sent }},\n  \"messages_failed\": {{ $json.messages_failed }}\n}",
+          "options": {}
+        },
+        "id": "6cd38a52-d523-4bed-9c02-1c9e0149fea3",
+        "name": "Respond - Success",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          656,
+          336
+        ],
+        "notes": "Returns success response with statistics"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": false,\n  \"message\": \"Campaign status must be 'Draft' to send\",\n  \"current_status\": \"{{ $node[\"Fetch Campaign Details\"].json.Status }}\"\n}",
+          "options": {}
+        },
+        "id": "346d6a64-e519-4f9d-bca0-68418a4cc176",
+        "name": "Respond - Wrong Status",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -1504,
+          464
+        ],
+        "notes": "Returns error if campaign status is not 'Draft'"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $json.whatsappUrl }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer EAATGHDjCPo0BPyWQO2exIyeV964lMjxBgUkTIVgkVEQc5ZB6LnAbctV8n9elo5DNpTm1D6rGJotW6ZBadHYcu30BRnGWrEWkn3GmIZC8INPM13UZBZBMXPrXGaljytQo1OaQT8BL8b7ZCZBypyJ2LuzhPfwhSZAAQZCZAspYEuJ9cJcoogYNvG8nDxoJ2RZCN97udTlZAwZDZD"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.whatsappBody) }}",
+          "options": {
+            "timeout": 30000
+          }
+        },
+        "id": "32761548-4983-43f6-82cb-05a73242c810",
+        "name": "Send WhatsApp Template Message",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -624,
+          272
+        ],
+        "retryOnFail": true,
+        "notes": "Sends via WAHA API:\n- Image from Windows path\n- Message with personalization\n- Opt-out footer included"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "daysInterval": 30,
+                "triggerAtHour": 11
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -2208,
+          128
+        ],
+        "id": "59cc7a79-c8aa-470e-829b-b020dbb131d5",
+        "name": "Schedule Trigger"
+      }
+    ],
+    "connections": {
+      "Webhook - Campaign Trigger": {
+        "main": [
+          []
+        ]
+      },
+      "Fetch Campaign Details": {
+        "main": [
+          [
+            {
+              "node": "Check Campaign Status = Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Campaign Status = Draft": {
+        "main": [
+          [
+            {
+              "node": "Fetch All Customers",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - Wrong Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch All Customers": {
+        "main": [
+          [
+            {
+              "node": "Filter Opted-In Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Opted-In Customers": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Customers": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Prepare Personalized Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Personalized Message": {
+        "main": [
+          [
+            {
+              "node": "Send WhatsApp Template Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 2 Seconds (Rate Limiting)": {
+        "main": [
+          [
+            {
+              "node": "Log to Campaign_Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log to Campaign_Delivery": {
+        "main": [
+          [
+            {
+              "node": "All Customers Processed?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "All Customers Processed?": {
+        "main": [
+          [
+            {
+              "node": "Calculate Campaign Statistics",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Campaign Statistics": {
+        "main": [
+          [
+            {
+              "node": "Respond - Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send WhatsApp Template Message": {
+        "main": [
+          [
+            {
+              "node": "Wait 2 Seconds (Rate Limiting)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version 965e9452",
+    "description": "",
+    "autosaved": true
+  },
   "tags": [
     {
       "updatedAt": "2026-02-17T11:30:03.267Z",
@@ -658,10 +1946,10 @@
       "name": "IMP"
     },
     {
-      "updatedAt": "2026-02-17T11:20:34.192Z",
-      "createdAt": "2026-02-17T11:20:34.192Z",
-      "id": "iW6ViPixahklMxHL",
-      "name": "Prod"
+      "updatedAt": "2026-03-09T07:53:25.602Z",
+      "createdAt": "2026-03-09T07:53:25.602Z",
+      "id": "jmhCcvCm9KG8w6yj",
+      "name": "Broadcast"
     }
   ]
 }
