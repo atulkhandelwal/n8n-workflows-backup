@@ -1,0 +1,961 @@
+{
+  "updatedAt": "2026-03-09T14:42:05.703Z",
+  "createdAt": "2026-03-09T13:39:02.424Z",
+  "id": "VXdOsqXNtvXrXEpY",
+  "name": "rebroadcast_failed_undelivered",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "id": "8a937ac2-0704-4796-87aa-0c6bce805c6c",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -624,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=426066763"
+        },
+        "options": {}
+      },
+      "id": "0ac2d2d3-c5e6-4b28-8888-4078bba53295",
+      "name": "Sheets - Read All Campaign Delivery",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -384,
+        -32
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Phase 1: Flag undelivered messages older than 2 hours ─────────────────\nconst MAX_RETRIES = 2;\nconst TWO_HRS_MS  = 2 * 60 * 60 * 1000;\nconst twoHrsAgo   = new Date(Date.now() - TWO_HRS_MS);\n\nconst matched = $input.all().filter(item => {\n  const row        = item.json;\n  const status     = (row.Delivery_Status || '').toLowerCase().trim();\n  const flag       = (row.re_broadcast_flag || '').toUpperCase().trim();\n  const sentAt     = new Date(row.Sent_At);\n  const retryCount = parseInt(row.Retry_Count || '0', 10);\n\n  // Only process rows that have a WAMID — rows without it were never sent via Meta API\n  const hasWamid        = typeof row.WAMID === 'string' && row.WAMID.trim() !== '';\n\n  const isUndelivered   = status === '' || status === 'accepted';\n  const notYetFlagged   = flag !== 'YES' && flag !== 'RETRIED';\n  const olderThan2hrs   = !isNaN(sentAt.getTime()) && sentAt < twoHrsAgo;\n  const underRetryLimit = retryCount < MAX_RETRIES;\n\n  return hasWamid && isUndelivered && notYetFlagged && olderThan2hrs && underRetryLimit;\n});\n\nif (matched.length === 0) {\n  // Return a single marker so the IF node can route FALSE to Phase 2\n  return [{ json: { has_rows: false, _phase: 'phase1_empty' } }];\n}\n\nreturn matched.map(item => ({ json: { ...item.json, has_rows: true } }));"
+      },
+      "id": "246dc0d2-3242-407c-93eb-c0101952d231",
+      "name": "Code - Filter Undelivered Over 2hrs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-p1-hasrows",
+              "leftValue": "={{ $json.has_rows }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0b0e2934-110a-4628-8acb-4ec4ffeebfde",
+      "name": "IF - Phase1 Has Rows",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        64,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e5528214-4561-4c81-8b8c-49e5ce32e389",
+      "name": "Loop - Undelivered Rows",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        336,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $json.WAMID }}",
+            "re_broadcast_flag": "Yes",
+            "Last_Updated": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2b8a29bd-5ddb-4128-8d56-00157540d125",
+      "name": "Sheets - Set Flag YES",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        592,
+        -64
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=426066763"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "re_broadcast_flag",
+              "lookupValue": "Yes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e21218fa-f53a-4b98-9f2f-0768a22cd0c8",
+      "name": "Sheets - Get All Flagged Rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        -336
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const MAX_RETRIES = 2;\n\nconst eligible = $input.all().filter(item => {\n  const retryCount = parseInt(item.json.Retry_Count || '0', 10);\n  const flag = (item.json.re_broadcast_flag || '').toUpperCase().trim();\n  return retryCount < MAX_RETRIES && flag === 'YES';\n});\n\nreturn eligible;"
+      },
+      "id": "aeefd064-2360-4f56-b5b8-297f7a9b6b8e",
+      "name": "Code - Filter by Retry Limit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "2d70ab3c-8476-4640-8a7f-5f6083634bfb",
+      "name": "Loop - Flagged Contacts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1922137201,
+          "mode": "list",
+          "cachedResultName": "Campaigns",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1922137201"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Campaign_ID",
+              "lookupValue": "={{ $json.Campaign_ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b0ea50e3-bbdd-494b-80e3-17082c147c1d",
+      "name": "Sheets - Fetch Campaign Details",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1280,
+        -336
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Prepare resend template payload ─────────────────────────────────────────\n// Contact data  → from Loop - Flagged Contacts (previous loop item)\n// Campaign data → from Sheets - Fetch Campaign Details (current $input)\n\nconst contactRow  = $('Loop - Flagged Contacts').item.json;\nconst campaignRow = $input.first().json;\n\nconst phoneNumberId = '934770033042697';\nconst cleanPhone    = String(contactRow.Customer_Phone)\n                        .replace('@c.us', '').replace('+', '').trim();\n\nconst templateName  = campaignRow.WhatsApp_Template_Name;\n\n// Build body parameters from Template_Var_1 to Template_Var_8\nconst templateParams = [];\nfor (let i = 1; i <= 8; i++) {\n  const val = campaignRow[`Template_Var_${i}`];\n  if (val === null || val === undefined || val === '') continue;\n  let text = String(val)\n    .replace(/\\{\\{customer_name\\}\\}/g, contactRow.Customer_Name || 'Valued Customer');\n  templateParams.push({ type: 'text', text });\n}\n\n// Build components array\nconst components = [];\nconst imageUrl = campaignRow.Image_URL;\nif (imageUrl && imageUrl.startsWith('https://')) {\n  components.push({\n    type: 'header',\n    parameters: [{ type: 'image', image: { link: imageUrl } }]\n  });\n}\ncomponents.push({ type: 'body', parameters: templateParams });\n\nconst whatsappBody = {\n  messaging_product: 'whatsapp',\n  to: cleanPhone,\n  type: 'template',\n  template: { name: templateName, language: { code: 'en' }, components }\n};\n\nreturn [{\n  json: {\n    campaign_id:      contactRow.Campaign_ID,\n    customer_phone:   cleanPhone,\n    customer_name:    contactRow.Customer_Name,\n    template_name:    templateName,\n    original_wamid:   contactRow.WAMID,\n    new_retry_count:  parseInt(contactRow.Retry_Count || '0', 10) + 1,\n    whatsappUrl:      `https://graph.facebook.com/v24.0/${phoneNumberId}/messages`,\n    whatsappBody,\n    sent_at:          new Date().toISOString()\n  }\n}];"
+      },
+      "id": "98a496e5-d963-45b5-a72c-dfbe5b8c6f77",
+      "name": "Code - Prepare Resend Template",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "76c4cd01-5df6-415d-8645-0cd01a1f4314",
+      "name": "Wait - 2 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1760,
+        -336
+      ],
+      "webhookId": "wf3-wait-resend-001"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.whatsappUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer EAATGHDjCPo0BPyWQO2exIyeV964lMjxBgUkTIVgkVEQc5ZB6LnAbctV8n9elo5DNpTm1D6rGJotW6ZBadHYcu30BRnGWrEWkn3GmIZC8INPM13UZBZBMXPrXGaljytQo1OaQT8BL8b7ZCZBypyJ2LuzhPfwhSZAAQZCZAspYEuJ9cJcoogYNvG8nDxoJ2RZCN97udTlZAwZDZD"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.whatsappBody) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "b192293c-bb28-4f64-b514-f90e76dbd3d9",
+      "name": "Send WhatsApp Template",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        -336
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Campaign_ID": "={{ $('Code - Prepare Resend Template').item.json.campaign_id }}",
+            "Customer_Phone": "={{ $('Code - Prepare Resend Template').item.json.customer_phone }}",
+            "Customer_Name": "={{ $('Code - Prepare Resend Template').item.json.customer_name }}",
+            "Status": "Accepted",
+            "Sent_At": "={{ $('Code - Prepare Resend Template').item.json.sent_at }}",
+            "WAMID": "={{ $json.messages[0].id }}",
+            "Template_Name": "={{ $('Code - Prepare Resend Template').item.json.template_name }}",
+            "Delivery_Status": "accepted",
+            "re_broadcast_flag": "NO",
+            "Last_Updated": "={{ $now }}",
+            "Retry_Count": "={{ $('Code - Prepare Resend Template').item.json.new_retry_count }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Retry_Count",
+              "displayName": "Retry_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0288eeb7-b877-4037-8f06-17d9f5a25f5c",
+      "name": "Sheets - Log New Resend Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2240,
+        -336
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $('Code - Prepare Resend Template').item.json.original_wamid }}",
+            "re_broadcast_flag": "RETRIED",
+            "Last_Updated": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Retry_Count",
+              "displayName": "Retry_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "92deb0a9-23b5-4d71-ace8-81672370f5a2",
+      "name": "Sheets - Mark Old Row RETRIED",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2480,
+        -336
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Read All Campaign Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Read All Campaign Delivery": {
+      "main": [
+        [
+          {
+            "node": "Code - Filter Undelivered Over 2hrs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filter Undelivered Over 2hrs": {
+      "main": [
+        [
+          {
+            "node": "IF - Phase1 Has Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Phase1 Has Rows": {
+      "main": [
+        [
+          {
+            "node": "Loop - Undelivered Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - Get All Flagged Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop - Undelivered Rows": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Get All Flagged Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets - Set Flag YES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Set Flag YES": {
+      "main": [
+        [
+          {
+            "node": "Loop - Undelivered Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Get All Flagged Rows": {
+      "main": [
+        [
+          {
+            "node": "Code - Filter by Retry Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Filter by Retry Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop - Flagged Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop - Flagged Contacts": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Fetch Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Fetch Campaign Details": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepare Resend Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepare Resend Template": {
+      "main": [
+        [
+          {
+            "node": "Wait - 2 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - 2 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp Template": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Log New Resend Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Log New Resend Row": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Mark Old Row RETRIED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Mark Old Row RETRIED": {
+      "main": [
+        [
+          {
+            "node": "Loop - Flagged Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "0eaf1895-1442-4267-904d-0c340d8b0709",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-09T13:39:02.431Z",
+      "createdAt": "2026-03-09T13:39:02.431Z",
+      "role": "workflow:owner",
+      "workflowId": "VXdOsqXNtvXrXEpY",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
