@@ -1,0 +1,2873 @@
+{
+  "updatedAt": "2026-03-09T11:27:18.974Z",
+  "createdAt": "2026-03-07T12:49:13.552Z",
+  "id": "GfQW8sH1Mr88U6xx",
+  "name": "ChatSocialAI -Broadcast Status Tracker v1",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatsocial-message-status",
+        "options": {}
+      },
+      "id": "e734590d-236b-4487-9dc3-044c918403a6",
+      "name": "Webhook Receiver",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        208,
+        640
+      ],
+      "webhookId": "chatsocial-status-wh-wf2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-event-type",
+              "leftValue": "={{ $json.body.event }}",
+              "rightValue": "message_updated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "cond-msg-type",
+              "leftValue": "={{ $json.body.message_type }}",
+              "rightValue": "outgoing",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2db6f7e7-ad51-42c7-92d9-e0e73ed50510",
+      "name": "IF - Valid Outgoing Event",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        448,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-source-id-notempty",
+              "leftValue": "={{ $json.body.source_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "34b8c784-f851-41ed-ac6a-05f7844bfb28",
+      "name": "IF - Has WAMID",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        688,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Extract delivery status from Chatwoot message_updated webhook ──────────\nconst body = $json.body;\nconst sourceId = body.source_id;\n\nif (!sourceId) return [];\n\n// Find the specific message in the messages array that matches this source_id\nconst messages = body?.conversation?.messages || [];\nconst targetMsg = messages.find(m => m.source_id === sourceId);\n\nif (!targetMsg) return [];\n\nconst deliveryStatus = targetMsg.status;\n\n// Only proceed for real WhatsApp delivery status events\nconst validStatuses = ['sent', 'delivered', 'read', 'failed'];\nif (!validStatuses.includes(deliveryStatus)) return [];\n\n// Phone without + prefix — matches your Customer Profiles sheet format\nconst phoneWithPlus = body?.conversation?.meta?.sender?.phone_number || '';\nconst phoneRaw = phoneWithPlus.replace('+', '');\n\nreturn [{\n  json: {\n    wamid: sourceId,\n    delivery_status: deliveryStatus,\n    phone_raw: phoneRaw,\n    chatwoot_msg_id: body.id || null\n  }\n}];"
+      },
+      "id": "a15c042c-d518-4ad3-ba99-4a6ac848d889",
+      "name": "Code - Extract and Validate Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=426066763"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "WAMID",
+              "lookupValue": "={{ $json.wamid }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a9dc3361-b09d-4b44-b1fc-079f72784d9c",
+      "name": "Sheets - Find WAMID Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1168,
+        640
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "sw-sent",
+                    "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                    "rightValue": "sent",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "sent"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "sw-delivered",
+                    "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                    "rightValue": "delivered",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "delivered"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "sw-read",
+                    "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                    "rightValue": "read",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "read"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "sw-failed",
+                    "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                    "rightValue": "failed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "failed"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "9fc162eb-133c-4212-81fa-f374eb6eb923",
+      "name": "Switch - Delivery Status",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        1408,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wf2-n07-set-sent-wamid",
+              "name": "WAMID",
+              "value": "={{ $json.WAMID }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n07-set-sent-dstatus",
+              "name": "Delivery_Status",
+              "value": "sent",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n07-set-sent-lupdate",
+              "name": "Last_Updated",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1cf6500c-f870-4827-a8fa-847390cd843e",
+      "name": "Set - SENT",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wf2-n08-set-delivered-wamid",
+              "name": "WAMID",
+              "value": "={{ $json.WAMID }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n08-set-delivered-dstatus",
+              "name": "Delivery_Status",
+              "value": "delivered",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n08-set-delivered-lupdate",
+              "name": "Last_Updated",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n08-set-delivered-delivered_at",
+              "name": "Delivered_At",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1ba12e25-141b-48f6-a99a-568068e44f41",
+      "name": "Set - DELIVERED",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wf2-n09-set-read-wamid",
+              "name": "WAMID",
+              "value": "={{ $json.WAMID }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n09-set-read-dstatus",
+              "name": "Delivery_Status",
+              "value": "read",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n09-set-read-lupdate",
+              "name": "Last_Updated",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n09-set-read-read_at",
+              "name": "Read_At",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "55cf3baf-fa33-483d-9f0b-735c9b0f6542",
+      "name": "Set - READ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "wf2-n10-set-failed-wamid",
+              "name": "WAMID",
+              "value": "={{ $json.WAMID }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n10-set-failed-dstatus",
+              "name": "Delivery_Status",
+              "value": "failed",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n10-set-failed-lupdate",
+              "name": "Last_Updated",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n10-set-failed-failed_at",
+              "name": "Failed_At",
+              "value": "={{ $now }}",
+              "type": "string"
+            },
+            {
+              "id": "wf2-n10-set-failed-re_broadcast_flag",
+              "name": "re_broadcast_flag",
+              "value": "YES",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d6cee9e9-751b-4a58-bc03-824074dd560a",
+      "name": "Set - FAILED",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "list",
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $json.WAMID }}",
+            "Delivery_Status": "={{ $json.Delivery_Status }}",
+            "Last_Updated": "={{ $json.Last_Updated }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d5d26720-c86b-4b65-b1a8-4354a68acdd3",
+      "name": "Sheets - Update SENT",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        448
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $json.WAMID }}",
+            "Delivery_Status": "={{ $json.Delivery_Status }}",
+            "Delivered_At": "={{ $json.Delivered_At }}",
+            "Last_Updated": "={{ $json.Last_Updated }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "4af116ed-c5c3-4276-b4c7-d1f3749d7b30",
+      "name": "Sheets - Update DELIVERED",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        608
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $json.WAMID }}",
+            "Delivery_Status": "={{ $json.Delivery_Status }}",
+            "Read_At": "={{ $json.Read_At }}",
+            "Last_Updated": "={{ $json.Last_Updated }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "60c3cd8d-a004-4b8f-91f5-58c3e194b419",
+      "name": "Sheets - Update READ",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        768
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WAMID": "={{ $json.WAMID }}",
+            "Delivery_Status": "={{ $json.Delivery_Status }}",
+            "Failed_At": "={{ $json.Failed_At }}",
+            "re_broadcast_flag": "={{ $json.re_broadcast_flag }}",
+            "Last_Updated": "={{ $json.Last_Updated }}"
+          },
+          "matchingColumns": [
+            "WAMID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "095541cd-e608-49f3-b244-31f15f452a69",
+      "name": "Sheets - Update FAILED",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1888,
+        928
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Receiver": {
+      "main": [
+        [
+          {
+            "node": "IF - Valid Outgoing Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Valid Outgoing Event": {
+      "main": [
+        [
+          {
+            "node": "IF - Has WAMID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Has WAMID": {
+      "main": [
+        [
+          {
+            "node": "Code - Extract and Validate Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Extract and Validate Status": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Find WAMID Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets - Find WAMID Row": {
+      "main": [
+        [
+          {
+            "node": "Switch - Delivery Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Delivery Status": {
+      "main": [
+        [
+          {
+            "node": "Set - SENT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - DELIVERED",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - READ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - FAILED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - SENT": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Update SENT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - DELIVERED": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Update DELIVERED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - READ": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Update READ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - FAILED": {
+      "main": [
+        [
+          {
+            "node": "Sheets - Update FAILED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Receiver": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "rest-client/2.1.0 (linux-musl x86_64) ruby/3.4.4p34",
+            "content-length": "4496",
+            "accept": "application/json",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "82.112.238.115",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9d98f7436da6e59f-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "82.112.238.115, 162.158.235.207",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "162.158.235.207"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "account": {
+              "id": 1,
+              "name": "ChatSocialAI"
+            },
+            "additional_attributes": {},
+            "content_attributes": {},
+            "content_type": "text",
+            "content": "_Roz subah se raat tak WhatsApp pe price, photo aur availability ke 20-100 messages — aur manually har ek ka jawab dena padta hai_. 😓\n\nJaipur ke saree aur lehenga shops ke liye humne ek WhatsApp AI Sales Assistant banaya hai jo aapki jagah kaam karta hai —\n_live 24/7_, bina kisi staff ke.\n\nYe kya karta hai:\n📸 Catalog photos aur pricing — 10 seconds mein auto-reply\n🛍️ Orders aur bookings directly WhatsApp pe confirm karta hai\n🗣️ Hindi aur Hinglish mein baat karta hai, bilkul natural\n🚀 Sales 50% tak badhegi  \n\n_Pehle 7 din bilkul FREE — uske baad sirf ₹3,000 for first month._\nKoi setup cost nahi. Koi contract nahi.\n👉 Reply karein DEMO — hum aapke shop ke liye ek live demo dikhayenge, seedha aapke WhatsApp pe.",
+            "conversation": {
+              "additional_attributes": {},
+              "can_reply": true,
+              "channel": "Channel::Whatsapp",
+              "contact_inbox": {
+                "id": 1,
+                "contact_id": 1,
+                "inbox_id": 1,
+                "source_id": "918239909115",
+                "created_at": "2026-03-04T06:13:38.714Z",
+                "updated_at": "2026-03-04T06:13:38.714Z",
+                "hmac_verified": false,
+                "pubsub_token": "anBPvTPFnTwL3g1rNkoNL6Yk"
+              },
+              "id": 3,
+              "inbox_id": 1,
+              "messages": [
+                {
+                  "id": 42,
+                  "content": "*Roz subah se raat tak WhatsApp pe price, photo aur availability ke 20-100 messages — aur manually har ek ka jawab dena padta hai*. 😓\n\nJaipur ke saree aur lehenga shops ke liye humne ek WhatsApp AI Sales Assistant banaya hai jo aapki jagah kaam karta hai —\n*live 24/7*, bina kisi staff ke.\n\nYe kya karta hai:\n📸 Catalog photos aur pricing — 10 seconds mein auto-reply  \n🛍️ Orders aur bookings directly WhatsApp pe confirm karta hai  \n🗣️ Hindi aur Hinglish mein baat karta hai, bilkul natural  \n🚀 Sales 50% tak badhegi  \n\n*Pehle 7 din bilkul FREE — uske baad sirf ₹3,000 for first month.*  \nKoi setup cost nahi. Koi contract nahi.  \n👉 Reply karein DEMO — hum aapke shop ke liye ek live demo dikhayenge, seedha aapke WhatsApp pe.",
+                  "account_id": 1,
+                  "inbox_id": 1,
+                  "conversation_id": 3,
+                  "message_type": 1,
+                  "created_at": 1773047625,
+                  "updated_at": "2026-03-09T09:13:49.143Z",
+                  "private": false,
+                  "status": "read",
+                  "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAERgSN0RGMTg1MEU3Mzg4OURCMzI3AA==",
+                  "content_type": "text",
+                  "content_attributes": {},
+                  "sender_type": "AgentBot",
+                  "sender_id": 1,
+                  "external_source_ids": {},
+                  "additional_attributes": {},
+                  "processed_message_content": "*Roz subah se raat tak WhatsApp pe price, photo aur availability ke 20-100 messages — aur manually har ek ka jawab dena padta hai*. 😓\n\nJaipur ke saree aur lehenga shops ke liye humne ek WhatsApp AI Sales Assistant banaya hai jo aapki jagah kaam karta hai —\n*live 24/7*, bina kisi staff ke.\n\nYe kya karta hai:\n📸 Catalog photos aur pricing — 10 seconds mein auto-reply  \n🛍️ Orders aur bookings directly WhatsApp pe confirm karta hai  \n🗣️ Hindi aur Hinglish mein baat karta hai, bilkul natural  \n🚀 Sales 50% tak badhegi  \n\n*Pehle 7 din bilkul FREE — uske baad sirf ₹3,000 for first month.*  \nKoi setup cost nahi. Koi contract nahi.  \n👉 Reply karein DEMO — hum aapke shop ke liye ek live demo dikhayenge, seedha aapke WhatsApp pe.",
+                  "sentiment": {},
+                  "conversation": {
+                    "assignee_id": 1,
+                    "unread_count": 1,
+                    "last_activity_at": 1773047625,
+                    "contact_inbox": {
+                      "source_id": "918239909115"
+                    }
+                  },
+                  "sender": {
+                    "id": 1,
+                    "name": "ChatSocialBot",
+                    "avatar_url": "",
+                    "type": "agent_bot"
+                  }
+                }
+              ],
+              "labels": [],
+              "meta": {
+                "sender": {
+                  "additional_attributes": {},
+                  "custom_attributes": {},
+                  "email": null,
+                  "id": 1,
+                  "identifier": null,
+                  "name": "Atul Khandelwal",
+                  "phone_number": "+918239909115",
+                  "thumbnail": "",
+                  "blocked": false,
+                  "type": "contact"
+                },
+                "assignee": {
+                  "id": 1,
+                  "name": "Atul Khandelwal",
+                  "available_name": "Atul Khandelwal",
+                  "avatar_url": "",
+                  "type": "user",
+                  "availability_status": null,
+                  "thumbnail": ""
+                },
+                "assignee_type": "User",
+                "team": null,
+                "hmac_verified": false
+              },
+              "status": "pending",
+              "custom_attributes": {},
+              "snoozed_until": null,
+              "unread_count": 1,
+              "first_reply_created_at": "2026-03-05T13:02:32.892Z",
+              "priority": null,
+              "waiting_since": 1772793414,
+              "agent_last_seen_at": 1773045715,
+              "contact_last_seen_at": 0,
+              "last_activity_at": 1773047625,
+              "timestamp": 1773047625,
+              "created_at": 1772715752,
+              "updated_at": 1773047629.1451032
+            },
+            "created_at": "2026-03-09T09:13:45.610Z",
+            "id": 42,
+            "inbox": {
+              "id": 1,
+              "name": "ChatSocialAI"
+            },
+            "message_type": "outgoing",
+            "private": false,
+            "sender": {
+              "id": 1,
+              "name": "ChatSocialBot",
+              "type": "agent_bot"
+            },
+            "source_id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAERgSN0RGMTg1MEU3Mzg4OURCMzI3AA==",
+            "event": "message_updated"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/chatsocial-message-status",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "faad2953-8622-4943-b197-926f2135bf9a",
+  "activeVersionId": "faad2953-8622-4943-b197-926f2135bf9a",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-07T12:49:13.554Z",
+      "createdAt": "2026-03-07T12:49:13.554Z",
+      "role": "workflow:owner",
+      "workflowId": "GfQW8sH1Mr88U6xx",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-09T11:27:33.000Z",
+    "createdAt": "2026-03-09T10:55:50.478Z",
+    "versionId": "faad2953-8622-4943-b197-926f2135bf9a",
+    "workflowId": "GfQW8sH1Mr88U6xx",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "chatsocial-message-status",
+          "options": {}
+        },
+        "id": "e734590d-236b-4487-9dc3-044c918403a6",
+        "name": "Webhook Receiver",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          208,
+          640
+        ],
+        "webhookId": "chatsocial-status-wh-wf2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond-event-type",
+                "leftValue": "={{ $json.body.event }}",
+                "rightValue": "message_updated",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "cond-msg-type",
+                "leftValue": "={{ $json.body.message_type }}",
+                "rightValue": "outgoing",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "2db6f7e7-ad51-42c7-92d9-e0e73ed50510",
+        "name": "IF - Valid Outgoing Event",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          448,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond-source-id-notempty",
+                "leftValue": "={{ $json.body.source_id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "34b8c784-f851-41ed-ac6a-05f7844bfb28",
+        "name": "IF - Has WAMID",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          688,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// ── Extract delivery status from Chatwoot message_updated webhook ──────────\nconst body = $json.body;\nconst sourceId = body.source_id;\n\nif (!sourceId) return [];\n\n// Find the specific message in the messages array that matches this source_id\nconst messages = body?.conversation?.messages || [];\nconst targetMsg = messages.find(m => m.source_id === sourceId);\n\nif (!targetMsg) return [];\n\nconst deliveryStatus = targetMsg.status;\n\n// Only proceed for real WhatsApp delivery status events\nconst validStatuses = ['sent', 'delivered', 'read', 'failed'];\nif (!validStatuses.includes(deliveryStatus)) return [];\n\n// Phone without + prefix — matches your Customer Profiles sheet format\nconst phoneWithPlus = body?.conversation?.meta?.sender?.phone_number || '';\nconst phoneRaw = phoneWithPlus.replace('+', '');\n\nreturn [{\n  json: {\n    wamid: sourceId,\n    delivery_status: deliveryStatus,\n    phone_raw: phoneRaw,\n    chatwoot_msg_id: body.id || null\n  }\n}];"
+        },
+        "id": "a15c042c-d518-4ad3-ba99-4a6ac848d889",
+        "name": "Code - Extract and Validate Status",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          928,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=426066763"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "WAMID",
+                "lookupValue": "={{ $json.wamid }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a9dc3361-b09d-4b44-b1fc-079f72784d9c",
+        "name": "Sheets - Find WAMID Row",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1168,
+          640
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "sw-sent",
+                      "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                      "rightValue": "sent",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "sent"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "sw-delivered",
+                      "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                      "rightValue": "delivered",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "delivered"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "sw-read",
+                      "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                      "rightValue": "read",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "read"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "id": "sw-failed",
+                      "leftValue": "={{ $('Code - Extract and Validate Status').item.json.delivery_status }}",
+                      "rightValue": "failed",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "failed"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "none"
+          }
+        },
+        "id": "9fc162eb-133c-4212-81fa-f374eb6eb923",
+        "name": "Switch - Delivery Status",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3,
+        "position": [
+          1408,
+          640
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "wf2-n07-set-sent-wamid",
+                "name": "WAMID",
+                "value": "={{ $json.WAMID }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n07-set-sent-dstatus",
+                "name": "Delivery_Status",
+                "value": "sent",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n07-set-sent-lupdate",
+                "name": "Last_Updated",
+                "value": "={{ $now }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1cf6500c-f870-4827-a8fa-847390cd843e",
+        "name": "Set - SENT",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1648,
+          448
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "wf2-n08-set-delivered-wamid",
+                "name": "WAMID",
+                "value": "={{ $json.WAMID }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n08-set-delivered-dstatus",
+                "name": "Delivery_Status",
+                "value": "delivered",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n08-set-delivered-lupdate",
+                "name": "Last_Updated",
+                "value": "={{ $now }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n08-set-delivered-delivered_at",
+                "name": "Delivered_At",
+                "value": "={{ $now }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1ba12e25-141b-48f6-a99a-568068e44f41",
+        "name": "Set - DELIVERED",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1648,
+          608
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "wf2-n09-set-read-wamid",
+                "name": "WAMID",
+                "value": "={{ $json.WAMID }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n09-set-read-dstatus",
+                "name": "Delivery_Status",
+                "value": "read",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n09-set-read-lupdate",
+                "name": "Last_Updated",
+                "value": "={{ $now }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n09-set-read-read_at",
+                "name": "Read_At",
+                "value": "={{ $now }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "55cf3baf-fa33-483d-9f0b-735c9b0f6542",
+        "name": "Set - READ",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1648,
+          768
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "wf2-n10-set-failed-wamid",
+                "name": "WAMID",
+                "value": "={{ $json.WAMID }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n10-set-failed-dstatus",
+                "name": "Delivery_Status",
+                "value": "failed",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n10-set-failed-lupdate",
+                "name": "Last_Updated",
+                "value": "={{ $now }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n10-set-failed-failed_at",
+                "name": "Failed_At",
+                "value": "={{ $now }}",
+                "type": "string"
+              },
+              {
+                "id": "wf2-n10-set-failed-re_broadcast_flag",
+                "name": "re_broadcast_flag",
+                "value": "YES",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d6cee9e9-751b-4a58-bc03-824074dd560a",
+        "name": "Set - FAILED",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1648,
+          928
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "list",
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "WAMID": "={{ $json.WAMID }}",
+              "Delivery_Status": "={{ $json.Delivery_Status }}",
+              "Last_Updated": "={{ $json.Last_Updated }}"
+            },
+            "matchingColumns": [
+              "WAMID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "d5d26720-c86b-4b65-b1a8-4354a68acdd3",
+        "name": "Sheets - Update SENT",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1888,
+          448
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "WAMID": "={{ $json.WAMID }}",
+              "Delivery_Status": "={{ $json.Delivery_Status }}",
+              "Delivered_At": "={{ $json.Delivered_At }}",
+              "Last_Updated": "={{ $json.Last_Updated }}"
+            },
+            "matchingColumns": [
+              "WAMID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "4af116ed-c5c3-4276-b4c7-d1f3749d7b30",
+        "name": "Sheets - Update DELIVERED",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1888,
+          608
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "WAMID": "={{ $json.WAMID }}",
+              "Delivery_Status": "={{ $json.Delivery_Status }}",
+              "Read_At": "={{ $json.Read_At }}",
+              "Last_Updated": "={{ $json.Last_Updated }}"
+            },
+            "matchingColumns": [
+              "WAMID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "60c3cd8d-a004-4b8f-91f5-58c3e194b419",
+        "name": "Sheets - Update READ",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1888,
+          768
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "WAMID": "={{ $json.WAMID }}",
+              "Delivery_Status": "={{ $json.Delivery_Status }}",
+              "Failed_At": "={{ $json.Failed_At }}",
+              "re_broadcast_flag": "={{ $json.re_broadcast_flag }}",
+              "Last_Updated": "={{ $json.Last_Updated }}"
+            },
+            "matchingColumns": [
+              "WAMID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "095541cd-e608-49f3-b244-31f15f452a69",
+        "name": "Sheets - Update FAILED",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1888,
+          928
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Webhook Receiver": {
+        "main": [
+          [
+            {
+              "node": "IF - Valid Outgoing Event",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF - Valid Outgoing Event": {
+        "main": [
+          [
+            {
+              "node": "IF - Has WAMID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF - Has WAMID": {
+        "main": [
+          [
+            {
+              "node": "Code - Extract and Validate Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - Extract and Validate Status": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Find WAMID Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheets - Find WAMID Row": {
+        "main": [
+          [
+            {
+              "node": "Switch - Delivery Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch - Delivery Status": {
+        "main": [
+          [
+            {
+              "node": "Set - SENT",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set - DELIVERED",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set - READ",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set - FAILED",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set - SENT": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Update SENT",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set - DELIVERED": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Update DELIVERED",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set - READ": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Update READ",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set - FAILED": {
+        "main": [
+          [
+            {
+              "node": "Sheets - Update FAILED",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version faad2953",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
