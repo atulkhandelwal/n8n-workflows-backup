@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-07T05:39:31.420Z",
+  "updatedAt": "2026-03-10T10:03:56.041Z",
   "createdAt": "2026-02-25T06:31:50.585Z",
   "id": "azLpJltAkU-ySgBhRllqJ",
   "name": "WhatsApp-Broadcast-Campaign-v2 Atul-Phase2",
@@ -28,19 +28,20 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
           "mode": "list",
-          "cachedResultName": "Business-1-Customer-Service",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": 1922137201,
           "mode": "list",
           "cachedResultName": "Campaigns",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1922137201"
         },
         "options": {}
       },
@@ -54,9 +55,9 @@
       ],
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       },
       "notes": "Reads campaign from Campaigns tab (Columns A-N)\nLookup by Campaign_ID (Column A)"
@@ -97,9 +98,10 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
           "mode": "id"
         },
         "sheetName": {
@@ -107,7 +109,7 @@
           "value": 1055588506,
           "mode": "list",
           "cachedResultName": "Customer Profiles",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1055588506"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1055588506"
         },
         "options": {}
       },
@@ -121,9 +123,9 @@
       ],
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       },
       "notes": "Reads all customers from Customer Profiles tab (Columns A-V)"
@@ -187,13 +189,14 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
           "mode": "list",
-          "cachedResultName": "Business-1-Customer-Service",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
@@ -209,7 +212,12 @@
             "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
             "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
             "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
-            "Status": "Accepted"
+            "Status": "Accepted",
+            "WAMID": "={{ $('Send WhatsApp Template Message').item.json.messages[0].id }}",
+            "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+            "Delivery_Status": "accepted",
+            "re_broadcast_flag": "NO",
+            "Last_Updated": "={{ $now }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -266,6 +274,96 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Retry_Count",
+              "displayName": "Retry_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -283,9 +381,9 @@
       ],
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       },
       "notes": "Appends to Campaign_Delivery tab (Columns A-F):\n- Campaign_ID (A)\n- Customer_Phone (B)\n- Customer_Name (C)\n- Status (D) = 'Sent'\n- Sent_At (E)\n- Error_Message (F) = empty"
@@ -900,8 +998,8 @@
       }
     ]
   },
-  "versionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
-  "activeVersionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
+  "versionId": "cd1a3508-b650-4428-b580-a1f7d5b3b4b2",
+  "activeVersionId": "cd1a3508-b650-4428-b580-a1f7d5b3b4b2",
   "triggerCount": 2,
   "shared": [
     {
@@ -913,9 +1011,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-07T05:39:33.000Z",
-    "createdAt": "2026-03-07T05:39:31.422Z",
-    "versionId": "1f61fba2-5f42-475b-ad02-6ff5ae5b48b9",
+    "updatedAt": "2026-03-10T10:04:11.000Z",
+    "createdAt": "2026-03-10T10:03:56.042Z",
+    "versionId": "cd1a3508-b650-4428-b580-a1f7d5b3b4b2",
     "workflowId": "azLpJltAkU-ySgBhRllqJ",
     "nodes": [
       {
@@ -940,19 +1038,20 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
-            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
             "mode": "list",
-            "cachedResultName": "Business-1-Customer-Service",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
             "value": 1922137201,
             "mode": "list",
             "cachedResultName": "Campaigns",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1922137201"
           },
           "options": {}
         },
@@ -966,9 +1065,9 @@
         ],
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         },
         "notes": "Reads campaign from Campaigns tab (Columns A-N)\nLookup by Campaign_ID (Column A)"
@@ -1009,9 +1108,10 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
-            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
             "mode": "id"
           },
           "sheetName": {
@@ -1019,7 +1119,7 @@
             "value": 1055588506,
             "mode": "list",
             "cachedResultName": "Customer Profiles",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1055588506"
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1055588506"
           },
           "options": {}
         },
@@ -1033,9 +1133,9 @@
         ],
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         },
         "notes": "Reads all customers from Customer Profiles tab (Columns A-V)"
@@ -1099,13 +1199,14 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "append",
           "documentId": {
             "__rl": true,
-            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
             "mode": "list",
-            "cachedResultName": "Business-1-Customer-Service",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
@@ -1121,7 +1222,12 @@
               "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
               "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
               "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
-              "Status": "Accepted"
+              "Status": "Accepted",
+              "WAMID": "={{ $('Send WhatsApp Template Message').item.json.messages[0].id }}",
+              "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+              "Delivery_Status": "accepted",
+              "re_broadcast_flag": "NO",
+              "Last_Updated": "={{ $now }}"
             },
             "matchingColumns": [],
             "schema": [
@@ -1178,6 +1284,96 @@
                 "display": true,
                 "type": "string",
                 "canBeUsedToMatch": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Retry_Count",
+                "displayName": "Retry_Count",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
               }
             ],
             "attemptToConvertTypes": false,
@@ -1195,9 +1391,9 @@
         ],
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         },
         "notes": "Appends to Campaign_Delivery tab (Columns A-F):\n- Campaign_ID (A)\n- Customer_Phone (B)\n- Customer_Name (C)\n- Status (D) = 'Sent'\n- Sent_At (E)\n- Error_Message (F) = empty"
@@ -1764,7 +1960,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 1f61fba2",
+    "name": "Version cd1a3508",
     "description": "",
     "autosaved": true
   },
