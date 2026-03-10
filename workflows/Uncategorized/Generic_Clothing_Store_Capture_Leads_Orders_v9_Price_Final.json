@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-06T03:14:31.335Z",
+  "updatedAt": "2026-03-10T11:56:44.629Z",
   "createdAt": "2026-03-05T06:37:00.153Z",
   "id": "GiAIYRyljOEaLbXK",
   "name": "Generic Clothing Store Capture Leads Orders v9 Price Final",
@@ -22,7 +22,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1952,
+        2160,
         176
       ],
       "id": "5b79bbec-ad8f-4f0d-935b-60f6b809b995",
@@ -169,6 +169,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -298,9 +299,9 @@
       "id": "e4c3d7fb-7abb-4420-bfd4-7b5808e04999",
       "name": "Roopam_Sarees_Lead",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -320,6 +321,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -345,9 +347,9 @@
       "id": "37ca2791-e23a-47f3-9433-de4a258bd181",
       "name": "Get _Product_link",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -397,6 +399,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -432,9 +435,9 @@
       "alwaysOutputData": true,
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -579,6 +582,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -612,9 +616,9 @@
       "id": "451215a8-8938-43e4-83ba-843a33ef6433",
       "name": "Get_Lead_Details",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -623,7 +627,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2336,
+        2544,
         512
       ],
       "id": "cdfa44dd-e591-4d00-8dca-9ab083a46438",
@@ -643,7 +647,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2608,
+        2816,
         480
       ],
       "id": "833cd8ec-026a-47b1-9174-496cbffcec88",
@@ -666,7 +670,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2592,
+        2800,
         288
       ],
       "id": "8e84c8c8-37b1-44ff-8f31-8436e51e6159",
@@ -735,7 +739,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2144,
+        2352,
         384
       ],
       "id": "2af76dff-ebc2-4d56-ac53-9fc1e56215ab",
@@ -743,6 +747,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -770,20 +775,21 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        2336,
+        2544,
         288
       ],
       "id": "9ed7f376-6085-4fd8-86ef-cdae5fdcda50",
       "name": "Extract Issue Details",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -818,9 +824,9 @@
       "name": "Fetch_Customer_Status",
       "alwaysOutputData": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -874,7 +880,7 @@
                 }
               },
               "renameOutput": true,
-              "outputKey": "PP Price Inquiry"
+              "outputKey": "Price Please"
             }
           ]
         },
@@ -939,7 +945,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2960,
+        3168,
         288
       ],
       "id": "c2ce7613-6917-43f6-9986-3bc69862e32b",
@@ -977,7 +983,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1936,
+        2144,
         384
       ],
       "id": "84d3bd8e-e2ea-4d91-907d-9dec837360b6",
@@ -986,6 +992,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "append",
         "documentId": {
           "__rl": true,
@@ -1122,9 +1129,9 @@
       "id": "464deb69-d862-411f-a319-7acd0382a1eb",
       "name": "Roopam_Order_Tool",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       },
       "notes": "Node Name: Roopam_Order_Tool\n\nDescription: \nSaves customer order to Orders sheet after customer confirms with \"FINAL\" keyword.\n\nWHEN TO CALL:\n- Only after customer types \"FINAL\", \"final\", or \"yes\" to confirm order\n- After collecting: Item_Code, Additional_Details, Delivery_Date\n\nREQUIRED BEFORE CALLING:\n- Name (already fetched from Get_Lead_Details, in memory)\n- City (already fetched from Get_Lead_Details, in memory)\n- Item_Code (customer provided, exact text)\n- Additional_Details (customer description)\n- Delivery_Date (customer provided, flexible format)\n\nALWAYS PASS:\n- Item_Quantity: 1\n- Order_Status: New\n\nDO NOT CALL without \"FINAL\" confirmation.\n\nOperation: Append\n  ⚠️ IMPORTANT: Select \"Append\" NOT \"Append Or Update\"\n  Reason: Each order is a new row, even if same customer\n\nCredential: Google Sheets account (select existing)\n\nDocument:\n  - By: ID\n\nSheet:\n  - By: Name\n  - Sheet Name: Orders"
@@ -1210,6 +1217,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -1269,14 +1277,15 @@
       "id": "1c95c0d4-59c7-42ed-91bb-334974b42a98",
       "name": "START Conversation",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -1337,9 +1346,9 @@
       "name": "STOP Conversation",
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -1772,6 +1781,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -1799,20 +1809,21 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        2800,
+        3008,
         464
       ],
       "id": "e13a9ca5-71aa-482f-b1c4-c9e8359c4a46",
       "name": "Get_Lead_Details_to_Send",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -1840,20 +1851,21 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        2704,
+        2912,
         656
       ],
       "id": "673d0ca4-b0cc-4956-80e4-1ea5fc3b65d5",
       "name": "Get_Order_Details",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -1887,14 +1899,15 @@
       "id": "82161853-3546-42e6-9eb6-cf8ec6c8c664",
       "name": "Get_Item_Price",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -2019,13 +2032,13 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        544,
-        160
+        592,
+        -64
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     }
@@ -2612,8 +2625,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "7055267d-88c4-4644-a47d-7006121c231c",
-  "activeVersionId": "7055267d-88c4-4644-a47d-7006121c231c",
+  "versionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
+  "activeVersionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
   "triggerCount": 0,
   "shared": [
     {
@@ -2625,9 +2638,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-06T03:14:35.000Z",
-    "createdAt": "2026-03-06T03:14:31.338Z",
-    "versionId": "7055267d-88c4-4644-a47d-7006121c231c",
+    "updatedAt": "2026-03-10T11:56:47.000Z",
+    "createdAt": "2026-03-10T11:56:44.632Z",
+    "versionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
     "workflowId": "GiAIYRyljOEaLbXK",
     "nodes": [
       {
@@ -2646,7 +2659,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          1952,
+          2160,
           176
         ],
         "id": "5b79bbec-ad8f-4f0d-935b-60f6b809b995",
@@ -2793,6 +2806,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -2922,9 +2936,9 @@
         "id": "e4c3d7fb-7abb-4420-bfd4-7b5808e04999",
         "name": "Roopam_Sarees_Lead",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -2944,6 +2958,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -2969,9 +2984,9 @@
         "id": "37ca2791-e23a-47f3-9433-de4a258bd181",
         "name": "Get _Product_link",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -3021,6 +3036,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -3056,9 +3072,9 @@
         "alwaysOutputData": true,
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -3203,6 +3219,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -3236,9 +3253,9 @@
         "id": "451215a8-8938-43e4-83ba-843a33ef6433",
         "name": "Get_Lead_Details",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -3247,7 +3264,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          2336,
+          2544,
           512
         ],
         "id": "cdfa44dd-e591-4d00-8dca-9ab083a46438",
@@ -3267,7 +3284,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          2608,
+          2816,
           480
         ],
         "id": "833cd8ec-026a-47b1-9174-496cbffcec88",
@@ -3290,7 +3307,7 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3.1,
         "position": [
-          2592,
+          2800,
           288
         ],
         "id": "8e84c8c8-37b1-44ff-8f31-8436e51e6159",
@@ -3359,7 +3376,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2144,
+          2352,
           384
         ],
         "id": "2af76dff-ebc2-4d56-ac53-9fc1e56215ab",
@@ -3367,6 +3384,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -3394,20 +3412,21 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          2336,
+          2544,
           288
         ],
         "id": "9ed7f376-6085-4fd8-86ef-cdae5fdcda50",
         "name": "Extract Issue Details",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -3442,9 +3461,9 @@
         "name": "Fetch_Customer_Status",
         "alwaysOutputData": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -3498,7 +3517,7 @@
                   }
                 },
                 "renameOutput": true,
-                "outputKey": "PP Price Inquiry"
+                "outputKey": "Price Please"
               }
             ]
           },
@@ -3563,7 +3582,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          2960,
+          3168,
           288
         ],
         "id": "c2ce7613-6917-43f6-9986-3bc69862e32b",
@@ -3601,7 +3620,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          1936,
+          2144,
           384
         ],
         "id": "84d3bd8e-e2ea-4d91-907d-9dec837360b6",
@@ -3610,6 +3629,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "append",
           "documentId": {
             "__rl": true,
@@ -3746,9 +3766,9 @@
         "id": "464deb69-d862-411f-a319-7acd0382a1eb",
         "name": "Roopam_Order_Tool",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         },
         "notes": "Node Name: Roopam_Order_Tool\n\nDescription: \nSaves customer order to Orders sheet after customer confirms with \"FINAL\" keyword.\n\nWHEN TO CALL:\n- Only after customer types \"FINAL\", \"final\", or \"yes\" to confirm order\n- After collecting: Item_Code, Additional_Details, Delivery_Date\n\nREQUIRED BEFORE CALLING:\n- Name (already fetched from Get_Lead_Details, in memory)\n- City (already fetched from Get_Lead_Details, in memory)\n- Item_Code (customer provided, exact text)\n- Additional_Details (customer description)\n- Delivery_Date (customer provided, flexible format)\n\nALWAYS PASS:\n- Item_Quantity: 1\n- Order_Status: New\n\nDO NOT CALL without \"FINAL\" confirmation.\n\nOperation: Append\n  ⚠️ IMPORTANT: Select \"Append\" NOT \"Append Or Update\"\n  Reason: Each order is a new row, even if same customer\n\nCredential: Google Sheets account (select existing)\n\nDocument:\n  - By: ID\n\nSheet:\n  - By: Name\n  - Sheet Name: Orders"
@@ -3834,6 +3854,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -3893,14 +3914,15 @@
         "id": "1c95c0d4-59c7-42ed-91bb-334974b42a98",
         "name": "START Conversation",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -3961,9 +3983,9 @@
         "name": "STOP Conversation",
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -4396,6 +4418,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -4423,20 +4446,21 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          2800,
+          3008,
           464
         ],
         "id": "e13a9ca5-71aa-482f-b1c4-c9e8359c4a46",
         "name": "Get_Lead_Details_to_Send",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -4464,20 +4488,21 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          2704,
+          2912,
           656
         ],
         "id": "673d0ca4-b0cc-4956-80e4-1ea5fc3b65d5",
         "name": "Get_Order_Details",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
@@ -4511,14 +4536,15 @@
         "id": "82161853-3546-42e6-9eb6-cf8ec6c8c664",
         "name": "Get_Item_Price",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -4643,13 +4669,13 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          544,
-          160
+          592,
+          -64
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       }
@@ -5225,7 +5251,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 7055267d",
+    "name": "Version a58c35cd",
     "description": "",
     "autosaved": true
   },
