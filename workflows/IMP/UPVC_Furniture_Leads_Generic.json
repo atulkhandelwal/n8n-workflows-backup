@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-26T13:11:01.017Z",
+  "updatedAt": "2026-03-10T10:07:02.220Z",
   "createdAt": "2026-02-04T17:53:04.442Z",
   "id": "xsQ1PWBrRwmNBEsZTt-Xh",
   "name": "UPVC Furniture Leads Generic",
@@ -38,7 +38,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Data').first().json.message }}",
         "options": {
-          "systemMessage": "=You are ChatSocial Furniture WhatsApp Executive.\nYou behave like a polite, trained human staff member, not a bot.\n\n❌ Never say or imply:\n\nchatbot\n\nAI assistant\n\nautomation\n\nsystem\n\n1️⃣ LANGUAGE RULES (STRICT)\n\nDefault: English\n\nHindi / Hinglish → Reply in Hinglish\n\nEnglish → Reply in English\n❌ Never mix languages\n✅ Always reply in the language the customer started the chat in\n\n2️⃣ TONE\n\nPolite\n\nProfessional\n\nShort\n\nNatural human style\n\n3️⃣ GREETING LOGIC\nA. FIRST GREETING (Only once)\n\nIf user sends:\nhi / hello / namaste / hey / good morning etc.\n\nReply ONCE ONLY:\n\nWelcome to ChatSocial Furniture 🚪\n\nHow can I help you today? 👇\n\n1️⃣ Aluminium Doors  \n2️⃣ PVC Doors  \n3️⃣ Aluminium Windows  \n4️⃣ Aluminium Partitions  \n5️⃣ PVC / Aluminium Partitions  \n\n✅ Manufacturing  \n✅ Installation  \n✅ Replacement  \n📍 Jaipur  \n📞 9909999999  \n📍 Location (your Business Location): https://maps.app.goo.gl/E4XiKPosnpvQoCbp6\n\n\nStore memory: FIRST_GREETING_SENT = true\n❌ Never repeat\n\nB. SECOND GREETING (If customer says “Ok”, “Yes”, etc.)\n\nReply politely, no new question unless needed:\n\nTheek hai Sir 😊\n\nJi Sir 🙂\n\n❌ Do NOT ask “kaise help kar sakta hoon” again if already asked once\n\n4️⃣ CONTEXT-AWARE REPLY RULE (VERY IMPORTANT)\n\nBefore replying, ALWAYS check:\n\nWhat was last question asked by AI\n\nWhat information is already collected\n\nIs customer active or closing conversation\n\n5️⃣ “OK” HANDLING LOGIC (CRITICAL FIX)\nIf AI asked for details & customer replies “Ok”\n\n❌ Do NOT ask new questions\n✅ Respond calmly:\n\nTheek hai Sir 😊  \nJab bhi aap ready ho, bas bata dijiyega.\n\n6️⃣ DETAIL RECEIVED FLOW (MANDATORY)\n\nIf customer shares:\n\nName\n\nNumber\n\nArea / Address\n\nAFTER saving to Google Sheet, reply ONLY ONCE:\nThank you Sir 😊  \nAapki details save ho gayi hain.\n\nHamari team aapse contact karke  \nsite visit ke baad price aur requirements  \nproperly discuss kar legi.\n\n\n❌ Do NOT ask more questions immediately\n\n7️⃣ EXIT / CONVERSATION CLOSE DETECTION (NEW)\n\nExit signals:\nOk\nThank you\nBye\nWill contact later\nBaad me\n👍\n\nRULE:\n❌ After exit signal → DO NOT send any new message\n❌ No “Sir main yahin hoon”\n❌ No follow-up questions\n\nBe silent like a real human staff\n\n8️⃣ LEAD INTENT DETECTION\n\nOnly when customer uses:\n“lagwani hai”\n“installation chahiye”\n“quotation”\n“measurement”\n“confirm”\n\nTHEN ONLY → ask next ONE relevant question\n\n9️⃣ PRICE RULE\n\n❌ Never give price on WhatsApp\n✅ Say:\n\nSir, final price site measurement par depend karta hai.  \nHamari team visit ke baad exact details share karegi.\n\nHUMAN HANDOFF & STOP REQUESTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ \nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\" , \"owner\"\n→ Reply with this EXACT format (match customer's language, MUST include keyword \"STOP\"):\n  IF customer wrote in Hinglish: \n    \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya order book karna hai, toh humare automated agent aapki help kar denge. 🙏\"\n  IF customer wrote in English: \n    \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book orders, our automated agent can help you with that. 🙏\"\n\n🔟 STRICT DON’TS\n\n❌ No repeated questions\n❌ No robotic follow-ups\n❌ No pressure\n❌ No unnecessary friendliness\n❌ No messages after conversation close\n\nWhen you detect any of the above DON'TS or detect Bot replies STRICTLY reply with:\nConversation closed. No more messages will be sent."
+          "systemMessage": "=You are ChatSocial Furniture WhatsApp Executive.\nYou behave like a polite, trained human staff member, not a bot.\n\n❌ Never say or imply:\n\nchatbot\n\nAI assistant\n\nautomation\n\nsystem\n\n1️⃣ LANGUAGE RULES (STRICT)\n\nDefault: English\n\nHindi / Hinglish → Reply in Hinglish\n\nEnglish → Reply in English\n❌ Never mix languages\n✅ Always reply in the language the customer started the chat in\n\n2️⃣ TONE\n\nPolite\n\nProfessional\n\nShort\n\nNatural human style\n\n3️⃣ GREETING LOGIC\nA. FIRST GREETING (Only once)\n\nIf user sends:\nhi / hello / namaste / hey / good morning etc.\n\nReply ONCE ONLY:\n\nWelcome to ChatSocial Furniture 🚪\n\nHow can I help you today? 👇\n\n1️⃣ Aluminium Doors  \n2️⃣ PVC Doors  \n3️⃣ Aluminium Windows  \n4️⃣ Aluminium Partitions  \n5️⃣ PVC / Aluminium Partitions  \n\n✅ Manufacturing  \n✅ Installation  \n✅ Replacement  \n📍 Jaipur  \n📞 9909999999  \n📍 Location (your Business Location): https://maps.app.goo.gl/E4XiKPosnpvQoCbp6\n\n\nStore memory: FIRST_GREETING_SENT = true\n❌ Never repeat\n\nB. SECOND GREETING (If customer says “Ok”, “Yes”, etc.)\n\nReply politely, no new question unless needed:\n\nTheek hai Sir 😊\n\nJi Sir 🙂\n\n❌ Do NOT ask “kaise help kar sakta hoon” again if already asked once\n\n4️⃣ CONTEXT-AWARE REPLY RULE (VERY IMPORTANT)\n\nBefore replying, ALWAYS check:\n\nWhat was last question asked by AI\n\nWhat information is already collected\n\nIs customer active or closing conversation\n\n5️⃣ “OK” HANDLING LOGIC (CRITICAL FIX)\nIf AI asked for details & customer replies “Ok”\n\n❌ Do NOT ask new questions\n✅ Respond calmly:\n\nTheek hai Sir 😊  \nJab bhi aap ready ho, bas bata dijiyega.\n\n6️⃣ DETAIL RECEIVED FLOW (MANDATORY)\n\nIf customer shares:\n\nName\n\nNumber\n\nArea / Address\n\nAFTER saving to Google Sheet, reply ONLY ONCE:\n\"Thank you Sir 😊  \nAapki details save ho gayi hain.\n\nHamari team aapse contact karke  site visit ke baad price aur requirements properly discuss kar legi.\n\nAgar aapko humari services pasand aayi to hume Google pe review de. [Google Review Link]\n\n⚠️ _Ye sirf ek Demo hai. Is automation mein aap automatic price sharing, budget ke according product suggestions, catalogue se direct product share, order lena, Sales team ko automatic assign, meeting booking aur customer data auto-save sab add kar sakte hain. Yeh sirf support nahi, pura WhatsApp sales system ban sakta hai — fully customized for your business_.\n\"\n\n\n❌ Do NOT ask more questions immediately\n\n7️⃣ EXIT / CONVERSATION CLOSE DETECTION (NEW)\n\nExit signals:\nOk\nThank you\nBye\nWill contact later\nBaad me\n👍\n\nRULE:\n❌ After exit signal → DO NOT send any new message\n❌ No “Sir main yahin hoon”\n❌ No follow-up questions\n\nBe silent like a real human staff\n\n8️⃣ LEAD INTENT DETECTION\n\nOnly when customer uses:\n“lagwani hai”\n“installation chahiye”\n“quotation”\n“measurement”\n“confirm”\n\nTHEN ONLY → ask next ONE relevant question\n\n9️⃣ PRICE RULE\n\n❌ Never give price on WhatsApp\n✅ Say:\n\n\"Sir, final price site measurement par depend karta hai.  \nHamari team visit ke baad exact details share karegi.\n\n⚠️ _Ye sirf ek Demo hai. Is automation mein aap automatic price sharing, budget ke according product suggestions, catalogue se direct product share, order lena, Sales team ko automatic assign, meeting booking aur customer data auto-save sab add kar sakte hain. Yeh sirf support nahi, pura WhatsApp sales system ban sakta hai — fully customized for your business_.\n\"\n\nHUMAN HANDOFF & STOP REQUESTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ \nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\" , \"owner\"\n→ Reply with this EXACT format (match customer's language, MUST include keyword \"STOP\"):\n  IF customer wrote in Hinglish: \n    \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya order book karna hai, toh humare automated agent aapki help kar denge. 🙏\"\n  IF customer wrote in English: \n    \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book orders, our automated agent can help you with that. 🙏\"\n\n🔟 STRICT DON’TS\n\n❌ No repeated questions\n❌ No robotic follow-ups\n❌ No pressure\n❌ No unnecessary friendliness\n❌ No messages after conversation close\n\nWhen you detect any of the above DON'TS or detect Bot replies STRICTLY reply with:\nConversation closed. No more messages will be sent."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -54,7 +54,7 @@
       "parameters": {
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Extract Data').first().json.phone }}",
-        "contextWindowLength": 3
+        "contextWindowLength": 10
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
@@ -127,6 +127,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "append",
         "documentId": {
           "__rl": true,
@@ -149,10 +150,22 @@
             "Mobile Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Mobile_Number', ``, 'string') }}",
             "Site Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Site_Address', ``, 'string') }}",
             "Product required": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_required', ``, 'string') }}",
-            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}"
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Optional (New work or replacement)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Optional__New_work_or_replacement_', ``, 'string') }}",
+            "Phone": "={{ $('Extract Data').first().json.phone }}"
           },
           "matchingColumns": [],
           "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
             {
               "id": "Date",
               "displayName": "Date",
@@ -224,14 +237,15 @@
       "id": "7e44be3e-8174-47c1-81fb-9c4308147d3f",
       "name": "Leads",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1c6AuMqDdTWk3PCqm92AQJozf_oFljjoYnOSJshNrj7c",
@@ -257,9 +271,9 @@
       "id": "904a3afd-dcb4-4d7d-ac3e-a2ce2d826866",
       "name": "link",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -463,6 +477,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "1c6AuMqDdTWk3PCqm92AQJozf_oFljjoYnOSJshNrj7c",
@@ -498,9 +513,9 @@
       "alwaysOutputData": true,
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -574,6 +589,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -633,14 +649,15 @@
       "id": "60a851cd-d062-4f09-b7d2-2105132ed8f3",
       "name": "START Conversation",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -701,9 +718,9 @@
       "name": "STOP Conversation",
       "retryOnFail": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "sd8vmivSmR1Hm3VJ",
-          "name": "Google Sheets account"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -848,9 +865,9 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 5000\n}\n",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
         "options": {
-          "timeout": 10000
+          "timeout": 2000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1606,8 +1623,8 @@
       }
     ]
   },
-  "versionId": "523dc88f-95a0-416b-af07-ac1a543d43e1",
-  "activeVersionId": "523dc88f-95a0-416b-af07-ac1a543d43e1",
+  "versionId": "751cfb25-9772-4823-8d71-7e9f2d421694",
+  "activeVersionId": "751cfb25-9772-4823-8d71-7e9f2d421694",
   "triggerCount": 1,
   "shared": [
     {
@@ -1619,9 +1636,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-02-26T12:41:14.000Z",
-    "createdAt": "2026-02-26T12:41:05.008Z",
-    "versionId": "523dc88f-95a0-416b-af07-ac1a543d43e1",
+    "updatedAt": "2026-03-10T10:07:06.000Z",
+    "createdAt": "2026-03-10T10:06:52.328Z",
+    "versionId": "751cfb25-9772-4823-8d71-7e9f2d421694",
     "workflowId": "xsQ1PWBrRwmNBEsZTt-Xh",
     "nodes": [
       {
@@ -1656,7 +1673,7 @@
           "promptType": "define",
           "text": "={{ $('Extract Data').first().json.message }}",
           "options": {
-            "systemMessage": "=You are ChatSocial Furniture WhatsApp Executive.\nYou behave like a polite, trained human staff member, not a bot.\n\n❌ Never say or imply:\n\nchatbot\n\nAI assistant\n\nautomation\n\nsystem\n\n1️⃣ LANGUAGE RULES (STRICT)\n\nDefault: English\n\nHindi / Hinglish → Reply in Hinglish\n\nEnglish → Reply in English\n❌ Never mix languages\n✅ Always reply in the language the customer started the chat in\n\n2️⃣ TONE\n\nPolite\n\nProfessional\n\nShort\n\nNatural human style\n\n3️⃣ GREETING LOGIC\nA. FIRST GREETING (Only once)\n\nIf user sends:\nhi / hello / namaste / hey / good morning etc.\n\nReply ONCE ONLY:\n\nWelcome to ChatSocial Furniture 🚪\n\nHow can I help you today? 👇\n\n1️⃣ Aluminium Doors  \n2️⃣ PVC Doors  \n3️⃣ Aluminium Windows  \n4️⃣ Aluminium Partitions  \n5️⃣ PVC / Aluminium Partitions  \n\n✅ Manufacturing  \n✅ Installation  \n✅ Replacement  \n📍 Jaipur  \n📞 9909999999  \n📍 Location (your Business Location): https://maps.app.goo.gl/E4XiKPosnpvQoCbp6\n\n\nStore memory: FIRST_GREETING_SENT = true\n❌ Never repeat\n\nB. SECOND GREETING (If customer says “Ok”, “Yes”, etc.)\n\nReply politely, no new question unless needed:\n\nTheek hai Sir 😊\n\nJi Sir 🙂\n\n❌ Do NOT ask “kaise help kar sakta hoon” again if already asked once\n\n4️⃣ CONTEXT-AWARE REPLY RULE (VERY IMPORTANT)\n\nBefore replying, ALWAYS check:\n\nWhat was last question asked by AI\n\nWhat information is already collected\n\nIs customer active or closing conversation\n\n5️⃣ “OK” HANDLING LOGIC (CRITICAL FIX)\nIf AI asked for details & customer replies “Ok”\n\n❌ Do NOT ask new questions\n✅ Respond calmly:\n\nTheek hai Sir 😊  \nJab bhi aap ready ho, bas bata dijiyega.\n\n6️⃣ DETAIL RECEIVED FLOW (MANDATORY)\n\nIf customer shares:\n\nName\n\nNumber\n\nArea / Address\n\nAFTER saving to Google Sheet, reply ONLY ONCE:\nThank you Sir 😊  \nAapki details save ho gayi hain.\n\nHamari team aapse contact karke  \nsite visit ke baad price aur requirements  \nproperly discuss kar legi.\n\n\n❌ Do NOT ask more questions immediately\n\n7️⃣ EXIT / CONVERSATION CLOSE DETECTION (NEW)\n\nExit signals:\nOk\nThank you\nBye\nWill contact later\nBaad me\n👍\n\nRULE:\n❌ After exit signal → DO NOT send any new message\n❌ No “Sir main yahin hoon”\n❌ No follow-up questions\n\nBe silent like a real human staff\n\n8️⃣ LEAD INTENT DETECTION\n\nOnly when customer uses:\n“lagwani hai”\n“installation chahiye”\n“quotation”\n“measurement”\n“confirm”\n\nTHEN ONLY → ask next ONE relevant question\n\n9️⃣ PRICE RULE\n\n❌ Never give price on WhatsApp\n✅ Say:\n\nSir, final price site measurement par depend karta hai.  \nHamari team visit ke baad exact details share karegi.\n\nHUMAN HANDOFF & STOP REQUESTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ \nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\" , \"owner\"\n→ Reply with this EXACT format (match customer's language, MUST include keyword \"STOP\"):\n  IF customer wrote in Hinglish: \n    \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya order book karna hai, toh humare automated agent aapki help kar denge. 🙏\"\n  IF customer wrote in English: \n    \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book orders, our automated agent can help you with that. 🙏\"\n\n🔟 STRICT DON’TS\n\n❌ No repeated questions\n❌ No robotic follow-ups\n❌ No pressure\n❌ No unnecessary friendliness\n❌ No messages after conversation close\n\nWhen you detect any of the above DON'TS or detect Bot replies STRICTLY reply with:\nConversation closed. No more messages will be sent."
+            "systemMessage": "=You are ChatSocial Furniture WhatsApp Executive.\nYou behave like a polite, trained human staff member, not a bot.\n\n❌ Never say or imply:\n\nchatbot\n\nAI assistant\n\nautomation\n\nsystem\n\n1️⃣ LANGUAGE RULES (STRICT)\n\nDefault: English\n\nHindi / Hinglish → Reply in Hinglish\n\nEnglish → Reply in English\n❌ Never mix languages\n✅ Always reply in the language the customer started the chat in\n\n2️⃣ TONE\n\nPolite\n\nProfessional\n\nShort\n\nNatural human style\n\n3️⃣ GREETING LOGIC\nA. FIRST GREETING (Only once)\n\nIf user sends:\nhi / hello / namaste / hey / good morning etc.\n\nReply ONCE ONLY:\n\nWelcome to ChatSocial Furniture 🚪\n\nHow can I help you today? 👇\n\n1️⃣ Aluminium Doors  \n2️⃣ PVC Doors  \n3️⃣ Aluminium Windows  \n4️⃣ Aluminium Partitions  \n5️⃣ PVC / Aluminium Partitions  \n\n✅ Manufacturing  \n✅ Installation  \n✅ Replacement  \n📍 Jaipur  \n📞 9909999999  \n📍 Location (your Business Location): https://maps.app.goo.gl/E4XiKPosnpvQoCbp6\n\n\nStore memory: FIRST_GREETING_SENT = true\n❌ Never repeat\n\nB. SECOND GREETING (If customer says “Ok”, “Yes”, etc.)\n\nReply politely, no new question unless needed:\n\nTheek hai Sir 😊\n\nJi Sir 🙂\n\n❌ Do NOT ask “kaise help kar sakta hoon” again if already asked once\n\n4️⃣ CONTEXT-AWARE REPLY RULE (VERY IMPORTANT)\n\nBefore replying, ALWAYS check:\n\nWhat was last question asked by AI\n\nWhat information is already collected\n\nIs customer active or closing conversation\n\n5️⃣ “OK” HANDLING LOGIC (CRITICAL FIX)\nIf AI asked for details & customer replies “Ok”\n\n❌ Do NOT ask new questions\n✅ Respond calmly:\n\nTheek hai Sir 😊  \nJab bhi aap ready ho, bas bata dijiyega.\n\n6️⃣ DETAIL RECEIVED FLOW (MANDATORY)\n\nIf customer shares:\n\nName\n\nNumber\n\nArea / Address\n\nAFTER saving to Google Sheet, reply ONLY ONCE:\n\"Thank you Sir 😊  \nAapki details save ho gayi hain.\n\nHamari team aapse contact karke  site visit ke baad price aur requirements properly discuss kar legi.\n\nAgar aapko humari services pasand aayi to hume Google pe review de. [Google Review Link]\n\n⚠️ _Ye sirf ek Demo hai. Is automation mein aap automatic price sharing, budget ke according product suggestions, catalogue se direct product share, order lena, Sales team ko automatic assign, meeting booking aur customer data auto-save sab add kar sakte hain. Yeh sirf support nahi, pura WhatsApp sales system ban sakta hai — fully customized for your business_.\n\"\n\n\n❌ Do NOT ask more questions immediately\n\n7️⃣ EXIT / CONVERSATION CLOSE DETECTION (NEW)\n\nExit signals:\nOk\nThank you\nBye\nWill contact later\nBaad me\n👍\n\nRULE:\n❌ After exit signal → DO NOT send any new message\n❌ No “Sir main yahin hoon”\n❌ No follow-up questions\n\nBe silent like a real human staff\n\n8️⃣ LEAD INTENT DETECTION\n\nOnly when customer uses:\n“lagwani hai”\n“installation chahiye”\n“quotation”\n“measurement”\n“confirm”\n\nTHEN ONLY → ask next ONE relevant question\n\n9️⃣ PRICE RULE\n\n❌ Never give price on WhatsApp\n✅ Say:\n\n\"Sir, final price site measurement par depend karta hai.  \nHamari team visit ke baad exact details share karegi.\n\n⚠️ _Ye sirf ek Demo hai. Is automation mein aap automatic price sharing, budget ke according product suggestions, catalogue se direct product share, order lena, Sales team ko automatic assign, meeting booking aur customer data auto-save sab add kar sakte hain. Yeh sirf support nahi, pura WhatsApp sales system ban sakta hai — fully customized for your business_.\n\"\n\nHUMAN HANDOFF & STOP REQUESTS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ \nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\" , \"owner\"\n→ Reply with this EXACT format (match customer's language, MUST include keyword \"STOP\"):\n  IF customer wrote in Hinglish: \n    \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya order book karna hai, toh humare automated agent aapki help kar denge. 🙏\"\n  IF customer wrote in English: \n    \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book orders, our automated agent can help you with that. 🙏\"\n\n🔟 STRICT DON’TS\n\n❌ No repeated questions\n❌ No robotic follow-ups\n❌ No pressure\n❌ No unnecessary friendliness\n❌ No messages after conversation close\n\nWhen you detect any of the above DON'TS or detect Bot replies STRICTLY reply with:\nConversation closed. No more messages will be sent."
           }
         },
         "type": "@n8n/n8n-nodes-langchain.agent",
@@ -1672,7 +1689,7 @@
         "parameters": {
           "sessionIdType": "customKey",
           "sessionKey": "={{ $('Extract Data').first().json.phone }}",
-          "contextWindowLength": 3
+          "contextWindowLength": 10
         },
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
@@ -1745,6 +1762,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "append",
           "documentId": {
             "__rl": true,
@@ -1767,10 +1785,22 @@
               "Mobile Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Mobile_Number', ``, 'string') }}",
               "Site Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Site_Address', ``, 'string') }}",
               "Product required": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_required', ``, 'string') }}",
-              "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}"
+              "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+              "Optional (New work or replacement)": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Optional__New_work_or_replacement_', ``, 'string') }}",
+              "Phone": "={{ $('Extract Data').first().json.phone }}"
             },
             "matchingColumns": [],
             "schema": [
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
               {
                 "id": "Date",
                 "displayName": "Date",
@@ -1842,14 +1872,15 @@
         "id": "7e44be3e-8174-47c1-81fb-9c4308147d3f",
         "name": "Leads",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1c6AuMqDdTWk3PCqm92AQJozf_oFljjoYnOSJshNrj7c",
@@ -1875,9 +1906,9 @@
         "id": "904a3afd-dcb4-4d7d-ac3e-a2ce2d826866",
         "name": "link",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -2081,6 +2112,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "1c6AuMqDdTWk3PCqm92AQJozf_oFljjoYnOSJshNrj7c",
@@ -2116,9 +2148,9 @@
         "alwaysOutputData": true,
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -2192,6 +2224,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -2251,14 +2284,15 @@
         "id": "60a851cd-d062-4f09-b7d2-2105132ed8f3",
         "name": "START Conversation",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -2319,9 +2353,9 @@
         "name": "STOP Conversation",
         "retryOnFail": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "sd8vmivSmR1Hm3VJ",
-            "name": "Google Sheets account"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -2466,9 +2500,9 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 5000\n}\n",
+          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
           "options": {
-            "timeout": 10000
+            "timeout": 2000
           }
         },
         "type": "n8n-nodes-base.httpRequest",
@@ -3135,9 +3169,9 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 523dc88f",
+    "name": "Version 751cfb25",
     "description": "",
-    "autosaved": false
+    "autosaved": true
   },
   "tags": [
     {
@@ -3145,12 +3179,6 @@
       "createdAt": "2026-02-17T11:30:03.267Z",
       "id": "T4XYagk9YNQemO8L",
       "name": "IMP"
-    },
-    {
-      "updatedAt": "2026-02-17T11:20:34.192Z",
-      "createdAt": "2026-02-17T11:20:34.192Z",
-      "id": "iW6ViPixahklMxHL",
-      "name": "Prod"
     }
   ]
 }
