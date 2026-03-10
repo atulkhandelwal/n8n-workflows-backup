@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-09T11:27:18.974Z",
+  "updatedAt": "2026-03-10T10:01:55.498Z",
   "createdAt": "2026-03-07T12:49:13.552Z",
   "id": "GfQW8sH1Mr88U6xx",
   "name": "ChatSocialAI -Broadcast Status Tracker v1",
@@ -113,6 +113,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
@@ -144,9 +145,9 @@
         640
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -431,6 +432,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "update",
         "documentId": {
           "__rl": true,
@@ -620,14 +622,15 @@
         448
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "update",
         "documentId": {
           "__rl": true,
@@ -815,14 +818,15 @@
         608
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "update",
         "documentId": {
           "__rl": true,
@@ -1010,14 +1014,15 @@
         768
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "update",
         "documentId": {
           "__rl": true,
@@ -1205,9 +1210,9 @@
         928
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     }
@@ -1507,8 +1512,8 @@
       }
     ]
   },
-  "versionId": "faad2953-8622-4943-b197-926f2135bf9a",
-  "activeVersionId": "faad2953-8622-4943-b197-926f2135bf9a",
+  "versionId": "d009cb07-4403-4fe2-be8f-87e00e8bfeb4",
+  "activeVersionId": "d009cb07-4403-4fe2-be8f-87e00e8bfeb4",
   "triggerCount": 1,
   "shared": [
     {
@@ -1520,9 +1525,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-09T11:27:33.000Z",
-    "createdAt": "2026-03-09T10:55:50.478Z",
-    "versionId": "faad2953-8622-4943-b197-926f2135bf9a",
+    "updatedAt": "2026-03-10T10:01:58.000Z",
+    "createdAt": "2026-03-10T10:01:55.499Z",
+    "versionId": "d009cb07-4403-4fe2-be8f-87e00e8bfeb4",
     "workflowId": "GfQW8sH1Mr88U6xx",
     "nodes": [
       {
@@ -1632,6 +1637,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
@@ -1663,9 +1669,9 @@
           640
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -1950,6 +1956,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "update",
           "documentId": {
             "__rl": true,
@@ -2139,14 +2146,15 @@
           448
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "update",
           "documentId": {
             "__rl": true,
@@ -2334,14 +2342,15 @@
           608
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "update",
           "documentId": {
             "__rl": true,
@@ -2529,14 +2538,15 @@
           768
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "update",
           "documentId": {
             "__rl": true,
@@ -2724,9 +2734,9 @@
           928
         ],
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       }
@@ -2865,7 +2875,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version faad2953",
+    "name": "Version d009cb07",
     "description": "",
     "autosaved": true
   },
