@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-13T15:07:22.673Z",
+  "updatedAt": "2026-03-14T10:54:20.094Z",
   "createdAt": "2026-03-13T13:49:18.763Z",
   "id": "JXHgQ7zpYXHWoLME",
   "name": "Generic Clothing Store Capture Leads Orders v10 Make COM Price Temp",
@@ -101,22 +101,13 @@
           },
           "conditions": [
             {
-              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
-              "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.fromMe }}",
-              "rightValue": "919352922959@s.whatsapp.net",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            },
-            {
               "id": "9071c1b7-4cec-42d5-9712-c29bdf5c4ba1",
-              "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.remoteJid }}",
+              "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.message.group_id }}",
               "rightValue": "@g.us",
               "operator": {
                 "type": "string",
-                "operation": "contains"
+                "operation": "exists",
+                "singleValue": true
               }
             },
             {
@@ -155,7 +146,7 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "={\n  \"phone\": \"{{ $json.webhookData.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.webhookData.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
+        "jsonOutput": "={\n  \"phone\": \"{{ $json.phone }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.messageId }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
@@ -955,25 +946,16 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
-            }
-          ]
-        },
+        "url": "https://hook.eu1.make.com/n8isx9o9b7fvfxfjymdkqzy8lr47hy1f",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
             {
-              "name": "number",
+              "name": "to",
               "value": "={{ $('Extract Data').first().json.phone }}"
             },
             {
-              "name": "text",
+              "name": "reply_message",
               "value": "={{ $('Merge Agent Output').item.json.output }}"
             }
           ]
@@ -983,8 +965,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2144,
-        384
+        1984,
+        400
       ],
       "id": "68fe38dc-f265-4aea-a172-f122ac113e29",
       "name": "Reply to Customer",
@@ -1476,40 +1458,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
-        "options": {
-          "timeout": 2000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        48,
-        400
-      ],
-      "id": "45f8147b-2283-4f38-b343-d35611f5e677",
-      "name": "Send Typing Indicator",
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL CONTEXT INTERPRETATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. WORK TYPES = PRODUCT AVAILABILITY\nWhen context mentions any work/embroidery type, it means sarees/lehengas WITH that work ARE AVAILABLE:\n\n✓ \"Gotta Patti work\" = Gotta Patti sarees/lehengas are available\n✓ \"Mothda work\" = Mothda sarees/lehengas are available\n✓ \"Zari work\" = Zari work sarees/lehengas are available\n✓ \"Leheriya\" = Leheriya sarees are available\n✓ \"Chunri\" = Chunri sarees are available\n✓ \"Stone work\" = Stone work sarees/lehengas are available\n✓ \"Sequin\" = Sequin sarees/lehengas are available\n✓ \"Mirror/Abhla work\" = Mirror work sarees/lehengas are available\n✓ \"Thread embroidery\" = Thread embroidered sarees/lehengas are available\n✓ \"Pearl work\" = Pearl work sarees/lehengas are available\n✓ \"Block print\" = Block printed sarees are available\n✓ \"Digital print\" = Digital printed sarees are available\n✓ \"Hand painted\" = Hand painted sarees are available\n✓ \"Lace work\" = Lace sarees are available\n\n2. FABRIC MENTIONS = PRODUCT AVAILABILITY\nWhen fabrics are listed, products are available in those materials:\n\n✓ Silk, Georgette, Chiffon, Cotton, Art Silk, Pure Silk, Raw Silk, Velvet, Brocade, Satin, Net, Organza, Taffeta, Cotton-Silk blend, Chanderi\n\n3. SPECIFIC PRODUCT CATEGORIES (CONFIRM THESE ARE AVAILABLE)\n\nSAREES:\n✓ Rajasthani Bandhani sarees (specialty product)\n✓ Banarasi sarees\n✓ Tussar sarees\n✓ Kanjivaram sarees\n✓ Gaji sarees\n✓ Pure Silk sarees\n✓ Art Silk sarees\n✓ Bridal sarees\n✓ Designer collection sarees\n✓ Festival collection sarees (Diwali, Karwa Chauth, Teej, Holi, Navratri, Raksha Bandhan)\n✓ Daily & Office wear cotton sarees\n✓ Party wear sarees (Georgette, sequin, heavy border)\n\nLEHENGAS:\n✓ Bridal lehengas (custom-stitched)\n✓ Wedding function lehengas (Sangeet, Mehendi, Haldi, Engagement, Reception)\n✓ Wedding guest lehengas\n✓ Girlish lehengas (ages 5-30)\n✓ Party wear lehengas (Cocktail, Birthday, Anniversary)\n✓ Festival lehengas (Navratri Chaniya Choli in all 9 colors, Diwali, Karwa Chauth, Teej)\n\nBLOUSES:\n✓ Unstitched blouse pieces (included with sarees)\n✓ Custom blouse stitching available\n✓ Ready-made blouses\n\n4. OCCASIONS SERVED (PRODUCTS AVAILABLE FOR)\n✓ Weddings (Bride, Pre-wedding functions, Reception, Guest)\n✓ Festivals (Diwali, Karwa Chauth, Teej, Navratri, Holi, Raksha Bandhan)\n✓ Parties & Social events (Birthday, Anniversary, Cocktail)\n✓ Professional/Office wear\n✓ Daily & Casual wear\n✓ Religious occasions (Temple visits, Pujas)\n\n5. SERVICES AVAILABLE\n✓ Custom stitching (lehengas, blouses)\n✓ Design customization\n✓ Color customization\n✓ Size customization (XS to XXL)\n✓ Professional measurements\n✓ Alteration services\n✓ Free home delivery in Jaipur\n✓ Outstation delivery (all India)\n✓ International shipping (USA, UK, Australia, Canada, Middle East, Europe)\n✓ WhatsApp shopping with photos/videos\n✓ Video call product viewing\n\n6. STORE INFORMATION\nLocation: Shop No. 12345, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur\nPhone/WhatsApp: 09999999999\nTimings: Mon-Sat 11AM-9PM | Sun 11AM-7PM\nEstablished: 1990 (30+ years)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nRESPONSE LOGIC (FOLLOW STRICTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks about ANY item listed above:\n→ Answer: \"YES, [product] is available\" + provide relevant details from context\n\nIF customer asks about specific price/exact stock:\n→ Answer: \"For specific pricing and stock availability, please contact us on WhatsApp: 09999999999 or visit our store.\"\n\nIF customer asks about product NOT mentioned anywhere in context:\n→ Answer: \"I don't have specific information about [product]. Please contact our team on WhatsApp 09999999999 for details.\"\n\nNEVER say \"I don't know\" if the product category, work type, or fabric is mentioned in retrieved context.\n\nNEVER make up information not present in context.\n\nALWAYS provide store contact (09999999999) when detailed information is requested."
       },
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
@@ -1520,251 +1468,6 @@
       ],
       "id": "29d698f8-12a7-4456-9f94-99e52703a29d",
       "name": "clothing-store-kb"
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "366a5bc3-0ed2-49cc-b1f7-7367e2e98f1c",
-                    "leftValue": "={{ $json.body.data.messageType }}",
-                    "rightValue": "audioMessage",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Audio Message"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "f1297157-7c7d-48be-aad0-3ae551f39e1b",
-                    "leftValue": "={{ $json.body.data.messageType }}",
-                    "rightValue": "imageMessage",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Image Message"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "d1f72847-14d7-4a7f-afca-2018aff49002",
-                    "leftValue": "={{ $json.body.data.messageType }}",
-                    "rightValue": "videoMessage",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Video Message"
-            }
-          ]
-        },
-        "options": {
-          "fallbackOutput": "extra",
-          "renameFallbackOutput": "Text Message"
-        }
-      },
-      "id": "d5c9d6e4-12ad-438c-8944-721b0d61fca1",
-      "name": "Detect Message Type",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        -1824,
-        368
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "a937a5ba-cb4c-45dc-885e-fd93114ffbdf",
-              "name": "=message",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            },
-            {
-              "id": "7d10fa1e-0080-49a0-acfb-63734f6e0da9",
-              "name": "messageType",
-              "value": "audio",
-              "type": "string"
-            },
-            {
-              "id": "45230021-d9b9-485e-b819-1827164b2fa1",
-              "name": "webhookData",
-              "value": "={{ $('Execute Workflow Trigger').item.json }}",
-              "type": "object"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "d55d008c-af48-471e-8973-082a1abac29c",
-      "name": "Set Audio Message Data",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1072,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "c39453d9-20f5-4c50-b18e-739b2dfea68b",
-              "name": "=message",
-              "value": "={{ $json.body.data.message.conversation }}",
-              "type": "string"
-            },
-            {
-              "id": "03000028-1362-46db-a310-5a2f09a9e483",
-              "name": "messageType",
-              "value": "text",
-              "type": "string"
-            },
-            {
-              "id": "92821c3d-54db-440a-a351-d37a038ba76e",
-              "name": "=webhookData",
-              "value": "={{ $('Execute Workflow Trigger').item.json }}",
-              "type": "object"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "e5c889f6-ade7-4f2d-bfdd-caebaa1a7fcd",
-      "name": "Set Text Message Data",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1376,
-        400
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "f34b491f-b95c-4821-8a10-b9f6582cda55",
-      "name": "No Operation (Image)",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -1440,
-        624
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "3bd417a1-609a-4554-bfa6-1eae68181c3b",
-      "name": "No Operation (Video)",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -1440,
-        800
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Convert Evolution API base64 response to binary file for Whisper\nconst items = $input.all();\nconst outputItems = [];\n\nfor (const item of items) {\n  try {\n    // Evolution API returns: { base64: \"...\", mimetype: \"audio/ogg; codecs=opus\" }\n    const base64Data = item.json.base64;\n    const mimeType = item.json.mimetype || 'audio/ogg; codecs=opus';\n    \n    if (!base64Data) {\n      throw new Error('No base64 data returned from Evolution API');\n    }\n    \n    // Determine file extension from mimetype\n    let fileExtension = 'ogg';\n    if (mimeType.includes('mp3')) fileExtension = 'mp3';\n    else if (mimeType.includes('m4a')) fileExtension = 'm4a';\n    else if (mimeType.includes('wav')) fileExtension = 'wav';\n    else if (mimeType.includes('webm')) fileExtension = 'webm';\n    \n    // Convert base64 to binary\n    const binaryData = Buffer.from(base64Data, 'base64');\n    \n    // Create binary data object for n8n\n    item.binary = {\n      data: {\n        data: binaryData.toString('base64'),\n        mimeType: mimeType,\n        fileName: `audio.${fileExtension}`,\n        fileExtension: fileExtension\n      }\n    };\n    \n    outputItems.push(item);\n  } catch (error) {\n    throw new Error(`Base64 conversion failed: ${error.message}`);\n  }\n}\n\nreturn outputItems;"
-      },
-      "id": "a7c0da97-eef3-43c0-8323-d2750bed1789",
-      "name": "Convert Base64 to File1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -1440,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $json.body.server_url }}/chat/getBase64FromMediaMessage/{{ $json.body.instance }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $json.body.apikey }}"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $json.body.data.key.id }}\"\n    }\n  }\n}",
-        "options": {}
-      },
-      "id": "b19a0890-f54d-4afb-a716-260941f4e785",
-      "name": "Download Audio2",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -1600,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {}
-      },
-      "id": "e2706c34-771f-4de7-8f44-4955d439fdb7",
-      "name": "Transcribe Audio2",
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.7,
-      "position": [
-        -1264,
-        192
-      ],
-      "credentials": {
-        "openAiApi": {
-          "id": "II0GP4luEE7DdARW",
-          "name": "OpenAi account"
-        }
-      }
     },
     {
       "parameters": {
@@ -2031,19 +1734,16 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "chatsocial-make",
-        "options": {}
+        "inputSource": "passthrough"
       },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
       "position": [
-        -2080,
-        400
+        -1088,
+        368
       ],
-      "id": "23dd98c3-4579-4f11-944c-964c5bc8b652",
-      "name": "Webhook",
-      "webhookId": "0a82dfc7-6a88-4514-b30f-f36d311ef825"
+      "id": "d4ef241d-c90d-4633-9a3c-c5d690c543ce",
+      "name": "Execute Workflow Trigger"
     }
   ],
   "connections": {
@@ -2162,7 +1862,7 @@
         ],
         [
           {
-            "node": "Send Typing Indicator",
+            "node": "Fetch_Customer_Status",
             "type": "main",
             "index": 0
           }
@@ -2436,17 +2136,6 @@
         ]
       ]
     },
-    "Send Typing Indicator": {
-      "main": [
-        [
-          {
-            "node": "Fetch_Customer_Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "clothing-store-kb": {
       "ai_tool": [
         [
@@ -2458,93 +2147,6 @@
           {
             "node": "Order_Booking_Agent",
             "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Detect Message Type": {
-      "main": [
-        [
-          {
-            "node": "Download Audio2",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "No Operation (Image)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "No Operation (Video)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Set Text Message Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Set Audio Message Data": {
-      "main": [
-        [
-          {
-            "node": "Extract Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Set Text Message Data": {
-      "main": [
-        [
-          {
-            "node": "Extract Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert Base64 to File1": {
-      "main": [
-        [
-          {
-            "node": "Transcribe Audio2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download Audio2": {
-      "main": [
-        [
-          {
-            "node": "Convert Base64 to File1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Transcribe Audio2": {
-      "main": [
-        [
-          {
-            "node": "Set Audio Message Data",
-            "type": "main",
             "index": 0
           }
         ]
@@ -2604,11 +2206,11 @@
         ]
       ]
     },
-    "Webhook": {
+    "Execute Workflow Trigger": {
       "main": [
         [
           {
-            "node": "Detect Message Type",
+            "node": "Extract Data",
             "type": "main",
             "index": 0
           }
@@ -2628,33 +2230,33 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Webhook": [
+    "Execute Workflow Trigger": [
       {
         "json": {
           "headers": {
             "host": "n8n-vps.chatsocialai.in",
             "user-agent": "Make/production",
-            "content-length": "420",
+            "content-length": "405",
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, br",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "54.75.157.176",
+            "cf-connecting-ip": "52.18.144.195",
             "cf-ipcountry": "IE",
-            "cf-ray": "9dbbebd0fd0abf4a-DUB",
+            "cf-ray": "9dc2af11ce638a58-DUB",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "content-type": "application/json",
-            "traceparent": "00-69b42712000000007d24a661efef3c6b-7d24a661efef3c6b-01",
-            "tracestate": "dd=t.dm:-0;t.tid:69b4271200000000;s:1;p:7d24a661efef3c6b",
-            "x-datadog-parent-id": "9017515293470047339",
-            "x-datadog-sampling-priority": "1",
-            "x-datadog-tags": "_dd.p.tid=69b4271200000000,_dd.p.dm=-0",
-            "x-datadog-trace-id": "9017515293470047339",
-            "x-forwarded-for": "54.75.157.176, 162.158.6.89",
+            "traceparent": "00-69b53c12000000004b4d83905febc26a-4b4d83905febc26a-00",
+            "tracestate": "dd=t.tid:69b53c1200000000;t.dm:-1;s:0;p:4b4d83905febc26a",
+            "x-datadog-parent-id": "5426137782159131242",
+            "x-datadog-sampling-priority": "0",
+            "x-datadog-tags": "_dd.p.tid=69b53c1200000000",
+            "x-datadog-trace-id": "5426137782159131242",
+            "x-forwarded-for": "52.18.144.195, 162.158.230.34",
             "x-forwarded-host": "n8n-vps.chatsocialai.in",
             "x-forwarded-port": "443",
             "x-forwarded-proto": "https",
             "x-forwarded-server": "5ea393ddef79",
-            "x-real-ip": "162.158.6.89",
+            "x-real-ip": "162.158.230.34",
             "x-source": "make-whatsapp"
           },
           "params": {},
@@ -2662,14 +2264,14 @@
           "body": {
             "contact": {
               "wa_id": "918239909115",
-              "profile_name": "{\"name\":\"Atul Khandelwal\"}"
+              "profile_name": "Atul Khandelwal"
             },
             "message": {
-              "id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0E4MDlGNTgxNzg5OEM2NjVBMDIA",
+              "id": "wamid.HBgMOTE4MjM5OTA5MTE1FQIAEhgUM0FDNkM2MTdCNjU1ODAzNTNFN0QA",
               "from": "918239909115",
               "text": "Hi",
               "type": "text",
-              "timestamp": "2026-03-13T15:02:40.000Z"
+              "timestamp": "2026-03-14T10:44:33.000Z"
             },
             "metadata": {
               "phone_number_id": "972000286003689",
@@ -2687,9 +2289,9 @@
       }
     ]
   },
-  "versionId": "53cc882f-4ab4-4046-bb82-156ad1ea79c9",
-  "activeVersionId": "53cc882f-4ab4-4046-bb82-156ad1ea79c9",
-  "triggerCount": 1,
+  "versionId": "4e0546f1-cc34-4b91-8cf0-94c4807595b3",
+  "activeVersionId": "4e0546f1-cc34-4b91-8cf0-94c4807595b3",
+  "triggerCount": 0,
   "shared": [
     {
       "updatedAt": "2026-03-13T13:49:18.767Z",
@@ -2700,9 +2302,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-13T18:25:11.000Z",
-    "createdAt": "2026-03-13T15:07:22.675Z",
-    "versionId": "53cc882f-4ab4-4046-bb82-156ad1ea79c9",
+    "updatedAt": "2026-03-14T10:54:22.000Z",
+    "createdAt": "2026-03-14T10:54:20.097Z",
+    "versionId": "4e0546f1-cc34-4b91-8cf0-94c4807595b3",
     "workflowId": "JXHgQ7zpYXHWoLME",
     "nodes": [
       {
@@ -2800,22 +2402,13 @@
             },
             "conditions": [
               {
-                "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
-                "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.fromMe }}",
-                "rightValue": "919352922959@s.whatsapp.net",
-                "operator": {
-                  "type": "boolean",
-                  "operation": "true",
-                  "singleValue": true
-                }
-              },
-              {
                 "id": "9071c1b7-4cec-42d5-9712-c29bdf5c4ba1",
-                "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.remoteJid }}",
+                "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.message.group_id }}",
                 "rightValue": "@g.us",
                 "operator": {
                   "type": "string",
-                  "operation": "contains"
+                  "operation": "exists",
+                  "singleValue": true
                 }
               },
               {
@@ -2854,7 +2447,7 @@
       {
         "parameters": {
           "mode": "raw",
-          "jsonOutput": "={\n  \"phone\": \"{{ $json.webhookData.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.webhookData.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
+          "jsonOutput": "={\n  \"phone\": \"{{ $json.phone }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.messageId }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
           "options": {}
         },
         "type": "n8n-nodes-base.set",
@@ -3654,25 +3247,16 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
-              }
-            ]
-          },
+          "url": "https://hook.eu1.make.com/n8isx9o9b7fvfxfjymdkqzy8lr47hy1f",
           "sendBody": true,
           "bodyParameters": {
             "parameters": [
               {
-                "name": "number",
+                "name": "to",
                 "value": "={{ $('Extract Data').first().json.phone }}"
               },
               {
-                "name": "text",
+                "name": "reply_message",
                 "value": "={{ $('Merge Agent Output').item.json.output }}"
               }
             ]
@@ -3682,8 +3266,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          2144,
-          384
+          1984,
+          400
         ],
         "id": "68fe38dc-f265-4aea-a172-f122ac113e29",
         "name": "Reply to Customer",
@@ -4175,40 +3759,6 @@
       },
       {
         "parameters": {
-          "method": "POST",
-          "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
-          "options": {
-            "timeout": 2000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.3,
-        "position": [
-          48,
-          400
-        ],
-        "id": "45f8147b-2283-4f38-b343-d35611f5e677",
-        "name": "Send Typing Indicator",
-        "onError": "continueRegularOutput"
-      },
-      {
-        "parameters": {
           "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL CONTEXT INTERPRETATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. WORK TYPES = PRODUCT AVAILABILITY\nWhen context mentions any work/embroidery type, it means sarees/lehengas WITH that work ARE AVAILABLE:\n\n✓ \"Gotta Patti work\" = Gotta Patti sarees/lehengas are available\n✓ \"Mothda work\" = Mothda sarees/lehengas are available\n✓ \"Zari work\" = Zari work sarees/lehengas are available\n✓ \"Leheriya\" = Leheriya sarees are available\n✓ \"Chunri\" = Chunri sarees are available\n✓ \"Stone work\" = Stone work sarees/lehengas are available\n✓ \"Sequin\" = Sequin sarees/lehengas are available\n✓ \"Mirror/Abhla work\" = Mirror work sarees/lehengas are available\n✓ \"Thread embroidery\" = Thread embroidered sarees/lehengas are available\n✓ \"Pearl work\" = Pearl work sarees/lehengas are available\n✓ \"Block print\" = Block printed sarees are available\n✓ \"Digital print\" = Digital printed sarees are available\n✓ \"Hand painted\" = Hand painted sarees are available\n✓ \"Lace work\" = Lace sarees are available\n\n2. FABRIC MENTIONS = PRODUCT AVAILABILITY\nWhen fabrics are listed, products are available in those materials:\n\n✓ Silk, Georgette, Chiffon, Cotton, Art Silk, Pure Silk, Raw Silk, Velvet, Brocade, Satin, Net, Organza, Taffeta, Cotton-Silk blend, Chanderi\n\n3. SPECIFIC PRODUCT CATEGORIES (CONFIRM THESE ARE AVAILABLE)\n\nSAREES:\n✓ Rajasthani Bandhani sarees (specialty product)\n✓ Banarasi sarees\n✓ Tussar sarees\n✓ Kanjivaram sarees\n✓ Gaji sarees\n✓ Pure Silk sarees\n✓ Art Silk sarees\n✓ Bridal sarees\n✓ Designer collection sarees\n✓ Festival collection sarees (Diwali, Karwa Chauth, Teej, Holi, Navratri, Raksha Bandhan)\n✓ Daily & Office wear cotton sarees\n✓ Party wear sarees (Georgette, sequin, heavy border)\n\nLEHENGAS:\n✓ Bridal lehengas (custom-stitched)\n✓ Wedding function lehengas (Sangeet, Mehendi, Haldi, Engagement, Reception)\n✓ Wedding guest lehengas\n✓ Girlish lehengas (ages 5-30)\n✓ Party wear lehengas (Cocktail, Birthday, Anniversary)\n✓ Festival lehengas (Navratri Chaniya Choli in all 9 colors, Diwali, Karwa Chauth, Teej)\n\nBLOUSES:\n✓ Unstitched blouse pieces (included with sarees)\n✓ Custom blouse stitching available\n✓ Ready-made blouses\n\n4. OCCASIONS SERVED (PRODUCTS AVAILABLE FOR)\n✓ Weddings (Bride, Pre-wedding functions, Reception, Guest)\n✓ Festivals (Diwali, Karwa Chauth, Teej, Navratri, Holi, Raksha Bandhan)\n✓ Parties & Social events (Birthday, Anniversary, Cocktail)\n✓ Professional/Office wear\n✓ Daily & Casual wear\n✓ Religious occasions (Temple visits, Pujas)\n\n5. SERVICES AVAILABLE\n✓ Custom stitching (lehengas, blouses)\n✓ Design customization\n✓ Color customization\n✓ Size customization (XS to XXL)\n✓ Professional measurements\n✓ Alteration services\n✓ Free home delivery in Jaipur\n✓ Outstation delivery (all India)\n✓ International shipping (USA, UK, Australia, Canada, Middle East, Europe)\n✓ WhatsApp shopping with photos/videos\n✓ Video call product viewing\n\n6. STORE INFORMATION\nLocation: Shop No. 12345, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur\nPhone/WhatsApp: 09999999999\nTimings: Mon-Sat 11AM-9PM | Sun 11AM-7PM\nEstablished: 1990 (30+ years)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nRESPONSE LOGIC (FOLLOW STRICTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks about ANY item listed above:\n→ Answer: \"YES, [product] is available\" + provide relevant details from context\n\nIF customer asks about specific price/exact stock:\n→ Answer: \"For specific pricing and stock availability, please contact us on WhatsApp: 09999999999 or visit our store.\"\n\nIF customer asks about product NOT mentioned anywhere in context:\n→ Answer: \"I don't have specific information about [product]. Please contact our team on WhatsApp 09999999999 for details.\"\n\nNEVER say \"I don't know\" if the product category, work type, or fabric is mentioned in retrieved context.\n\nNEVER make up information not present in context.\n\nALWAYS provide store contact (09999999999) when detailed information is requested."
         },
         "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
@@ -4219,251 +3769,6 @@
         ],
         "id": "29d698f8-12a7-4456-9f94-99e52703a29d",
         "name": "clothing-store-kb"
-      },
-      {
-        "parameters": {
-          "rules": {
-            "values": [
-              {
-                "conditions": {
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 3
-                  },
-                  "conditions": [
-                    {
-                      "id": "366a5bc3-0ed2-49cc-b1f7-7367e2e98f1c",
-                      "leftValue": "={{ $json.body.data.messageType }}",
-                      "rightValue": "audioMessage",
-                      "operator": {
-                        "type": "string",
-                        "operation": "equals"
-                      }
-                    }
-                  ],
-                  "combinator": "and"
-                },
-                "renameOutput": true,
-                "outputKey": "Audio Message"
-              },
-              {
-                "conditions": {
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 3
-                  },
-                  "conditions": [
-                    {
-                      "id": "f1297157-7c7d-48be-aad0-3ae551f39e1b",
-                      "leftValue": "={{ $json.body.data.messageType }}",
-                      "rightValue": "imageMessage",
-                      "operator": {
-                        "type": "string",
-                        "operation": "equals"
-                      }
-                    }
-                  ],
-                  "combinator": "and"
-                },
-                "renameOutput": true,
-                "outputKey": "Image Message"
-              },
-              {
-                "conditions": {
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 3
-                  },
-                  "conditions": [
-                    {
-                      "id": "d1f72847-14d7-4a7f-afca-2018aff49002",
-                      "leftValue": "={{ $json.body.data.messageType }}",
-                      "rightValue": "videoMessage",
-                      "operator": {
-                        "type": "string",
-                        "operation": "equals"
-                      }
-                    }
-                  ],
-                  "combinator": "and"
-                },
-                "renameOutput": true,
-                "outputKey": "Video Message"
-              }
-            ]
-          },
-          "options": {
-            "fallbackOutput": "extra",
-            "renameFallbackOutput": "Text Message"
-          }
-        },
-        "id": "d5c9d6e4-12ad-438c-8944-721b0d61fca1",
-        "name": "Detect Message Type",
-        "type": "n8n-nodes-base.switch",
-        "typeVersion": 3.4,
-        "position": [
-          -1824,
-          368
-        ]
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "a937a5ba-cb4c-45dc-885e-fd93114ffbdf",
-                "name": "=message",
-                "value": "={{ $json.text }}",
-                "type": "string"
-              },
-              {
-                "id": "7d10fa1e-0080-49a0-acfb-63734f6e0da9",
-                "name": "messageType",
-                "value": "audio",
-                "type": "string"
-              },
-              {
-                "id": "45230021-d9b9-485e-b819-1827164b2fa1",
-                "name": "webhookData",
-                "value": "={{ $('Execute Workflow Trigger').item.json }}",
-                "type": "object"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "d55d008c-af48-471e-8973-082a1abac29c",
-        "name": "Set Audio Message Data",
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          -1072,
-          192
-        ]
-      },
-      {
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "c39453d9-20f5-4c50-b18e-739b2dfea68b",
-                "name": "=message",
-                "value": "={{ $json.body.data.message.conversation }}",
-                "type": "string"
-              },
-              {
-                "id": "03000028-1362-46db-a310-5a2f09a9e483",
-                "name": "messageType",
-                "value": "text",
-                "type": "string"
-              },
-              {
-                "id": "92821c3d-54db-440a-a351-d37a038ba76e",
-                "name": "=webhookData",
-                "value": "={{ $('Execute Workflow Trigger').item.json }}",
-                "type": "object"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "e5c889f6-ade7-4f2d-bfdd-caebaa1a7fcd",
-        "name": "Set Text Message Data",
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          -1376,
-          400
-        ]
-      },
-      {
-        "parameters": {},
-        "id": "f34b491f-b95c-4821-8a10-b9f6582cda55",
-        "name": "No Operation (Image)",
-        "type": "n8n-nodes-base.noOp",
-        "typeVersion": 1,
-        "position": [
-          -1440,
-          624
-        ]
-      },
-      {
-        "parameters": {},
-        "id": "3bd417a1-609a-4554-bfa6-1eae68181c3b",
-        "name": "No Operation (Video)",
-        "type": "n8n-nodes-base.noOp",
-        "typeVersion": 1,
-        "position": [
-          -1440,
-          800
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "// Convert Evolution API base64 response to binary file for Whisper\nconst items = $input.all();\nconst outputItems = [];\n\nfor (const item of items) {\n  try {\n    // Evolution API returns: { base64: \"...\", mimetype: \"audio/ogg; codecs=opus\" }\n    const base64Data = item.json.base64;\n    const mimeType = item.json.mimetype || 'audio/ogg; codecs=opus';\n    \n    if (!base64Data) {\n      throw new Error('No base64 data returned from Evolution API');\n    }\n    \n    // Determine file extension from mimetype\n    let fileExtension = 'ogg';\n    if (mimeType.includes('mp3')) fileExtension = 'mp3';\n    else if (mimeType.includes('m4a')) fileExtension = 'm4a';\n    else if (mimeType.includes('wav')) fileExtension = 'wav';\n    else if (mimeType.includes('webm')) fileExtension = 'webm';\n    \n    // Convert base64 to binary\n    const binaryData = Buffer.from(base64Data, 'base64');\n    \n    // Create binary data object for n8n\n    item.binary = {\n      data: {\n        data: binaryData.toString('base64'),\n        mimeType: mimeType,\n        fileName: `audio.${fileExtension}`,\n        fileExtension: fileExtension\n      }\n    };\n    \n    outputItems.push(item);\n  } catch (error) {\n    throw new Error(`Base64 conversion failed: ${error.message}`);\n  }\n}\n\nreturn outputItems;"
-        },
-        "id": "a7c0da97-eef3-43c0-8323-d2750bed1789",
-        "name": "Convert Base64 to File1",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          -1440,
-          192
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "={{ $json.body.server_url }}/chat/getBase64FromMediaMessage/{{ $json.body.instance }}",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "={{ $json.body.apikey }}"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $json.body.data.key.id }}\"\n    }\n  }\n}",
-          "options": {}
-        },
-        "id": "b19a0890-f54d-4afb-a716-260941f4e785",
-        "name": "Download Audio2",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          -1600,
-          192
-        ]
-      },
-      {
-        "parameters": {
-          "resource": "audio",
-          "operation": "transcribe",
-          "options": {}
-        },
-        "id": "e2706c34-771f-4de7-8f44-4955d439fdb7",
-        "name": "Transcribe Audio2",
-        "type": "@n8n/n8n-nodes-langchain.openAi",
-        "typeVersion": 1.7,
-        "position": [
-          -1264,
-          192
-        ],
-        "credentials": {
-          "openAiApi": {
-            "id": "II0GP4luEE7DdARW",
-            "name": "OpenAi account"
-          }
-        }
       },
       {
         "parameters": {
@@ -4730,19 +4035,16 @@
       },
       {
         "parameters": {
-          "httpMethod": "POST",
-          "path": "chatsocial-make",
-          "options": {}
+          "inputSource": "passthrough"
         },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
         "position": [
-          -2080,
-          400
+          -1088,
+          368
         ],
-        "id": "23dd98c3-4579-4f11-944c-964c5bc8b652",
-        "name": "Webhook",
-        "webhookId": "0a82dfc7-6a88-4514-b30f-f36d311ef825"
+        "id": "d4ef241d-c90d-4633-9a3c-c5d690c543ce",
+        "name": "Execute Workflow Trigger"
       }
     ],
     "connections": {
@@ -4861,7 +4163,7 @@
           ],
           [
             {
-              "node": "Send Typing Indicator",
+              "node": "Fetch_Customer_Status",
               "type": "main",
               "index": 0
             }
@@ -5135,17 +4437,6 @@
           ]
         ]
       },
-      "Send Typing Indicator": {
-        "main": [
-          [
-            {
-              "node": "Fetch_Customer_Status",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "clothing-store-kb": {
         "ai_tool": [
           [
@@ -5157,93 +4448,6 @@
             {
               "node": "Order_Booking_Agent",
               "type": "ai_tool",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Detect Message Type": {
-        "main": [
-          [
-            {
-              "node": "Download Audio2",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "No Operation (Image)",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "No Operation (Video)",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          [
-            {
-              "node": "Set Text Message Data",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Set Audio Message Data": {
-        "main": [
-          [
-            {
-              "node": "Extract Data",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Set Text Message Data": {
-        "main": [
-          [
-            {
-              "node": "Extract Data",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Convert Base64 to File1": {
-        "main": [
-          [
-            {
-              "node": "Transcribe Audio2",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Download Audio2": {
-        "main": [
-          [
-            {
-              "node": "Convert Base64 to File1",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Transcribe Audio2": {
-        "main": [
-          [
-            {
-              "node": "Set Audio Message Data",
-              "type": "main",
               "index": 0
             }
           ]
@@ -5303,11 +4507,11 @@
           ]
         ]
       },
-      "Webhook": {
+      "Execute Workflow Trigger": {
         "main": [
           [
             {
-              "node": "Detect Message Type",
+              "node": "Extract Data",
               "type": "main",
               "index": 0
             }
@@ -5316,7 +4520,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 53cc882f",
+    "name": "Version 4e0546f1",
     "description": "",
     "autosaved": true
   },
