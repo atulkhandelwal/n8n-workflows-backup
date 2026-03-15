@@ -1,0 +1,1971 @@
+{
+  "updatedAt": "2026-03-15T10:58:51.359Z",
+  "createdAt": "2026-03-15T10:16:12.995Z",
+  "id": "Funl9NSRJwXIRzmh",
+  "name": "WhatsApp-Broadcast-Campaign-v3 Make.com",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "list",
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1922137201,
+          "mode": "list",
+          "cachedResultName": "Campaigns",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1922137201"
+        },
+        "options": {}
+      },
+      "id": "689cbdbf-e11a-498c-98d0-d79188103c74",
+      "name": "Fetch Campaign Details",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -1952,
+        368
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      },
+      "notes": "Reads campaign from Campaigns tab (Columns A-N)\nLookup by Campaign_ID (Column A)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "campaign_status_check",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Draft",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0a4149b1-a1e3-43b9-8537-78f26612aa1e",
+      "name": "Check Campaign Status = Draft",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        368
+      ],
+      "notes": "Only proceed if Campaign Status (Column G) = 'Draft'"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1055588506,
+          "mode": "list",
+          "cachedResultName": "Customer Profiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1055588506"
+        },
+        "options": {}
+      },
+      "id": "31a50630-65ad-4b31-bb99-e5e740f554d9",
+      "name": "Fetch All Customers",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -1504,
+        272
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      },
+      "notes": "Reads all customers from Customer Profiles tab (Columns A-V)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================================\n// CORRECTED: Filter Opted-In Customers Node Code\n// ============================================================================\n// Purpose: Filter customers who have NOT opted out + apply target audience\n// Issue Fixed: Original code was not filtering - just passing through all data\n// ============================================================================\n\n// ✅ CORRECT: Get campaign that actually passed the Draft status check\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// Get all customers from input\nconst customers = $input.all();\n\nconsole.log(`Total customers from sheet: ${customers.length}`);\n\n// STEP 1: Filter customers who have NOT opted out\n// Opt_Out_Promotional can be: false, \"FALSE\", \"\", null, undefined\nlet optedInCustomers = customers.filter(customer => {\n  const optOutValue = customer.json[\"Opt_Out_Promotional\"];\n\n  // Consider opted-in if:\n  // - false (boolean)\n  // - \"FALSE\" (string)\n  // - \"\" (empty string)\n  // - null\n  // - undefined\n  const isOptedIn = (\n    optOutValue === false || \n    optOutValue === \"FALSE\" || \n    optOutValue === \"\" || \n    optOutValue === null || \n    optOutValue === undefined\n  );\n\n  return isOptedIn;\n});\n\nconsole.log(`Customers opted-in (Opt_Out_Promotional = false): ${optedInCustomers.length}`);\n\n// STEP 2: Apply target audience filter from campaign\nconst targetAudience = campaign[\"Target_Audience\"];\nconsole.log(`Target Audience: ${targetAudience}`);\n\nlet filteredCustomers = optedInCustomers;\n\nif (targetAudience === \"VIP\") {\n  // Filter where Customer Tier = \"VIP\"\n  filteredCustomers = optedInCustomers.filter(c => \n    c.json[\"Customer Tier\"] === \"VIP\"\n  );\n  console.log(`Filtered to VIP customers: ${filteredCustomers.length}`);\n\n} else if (targetAudience === \"Recent Buyers\") {\n  // Filter customers who ordered in last 30 days\n  // Last Order Date is Excel date serial number\n  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);\n  const excelThirtyDaysAgo = (thirtyDaysAgo / 86400000) + 25569; // Convert to Excel date\n\n  filteredCustomers = optedInCustomers.filter(c => {\n    const lastOrderDate = parseFloat(c.json[\"Last Order Date\"]);\n    return !isNaN(lastOrderDate) && lastOrderDate > 0 && lastOrderDate >= excelThirtyDaysAgo;\n  });\n  console.log(`Filtered to Recent Buyers (last 30 days): ${filteredCustomers.length}`);\n\n} else {\n  // \"All\" or any other value - use all opted-in customers\n  console.log(`Using all opted-in customers: ${filteredCustomers.length}`);\n}\n\n// STEP 3: Return filtered customers with necessary fields for next nodes\nreturn filteredCustomers.map(customer => ({\n  json: {\n    campaign_id: campaign[\"Campaign_ID\"],\n    campaign_name: campaign[\"Campaign_Name\"],\n    customer_phone: customer.json[\"Customer Phone\"], \n    customer_name: customer.json[\"Customer Name\"] || \"Valued Customer\",\n    customer_city: customer.json[\"Customer City\"] || \"\",\n    customer_tier: customer.json[\"Customer Tier\"] || \"Regular\",\n    message_template: campaign[\"Message_Text\"],\n    image_filename: campaign[\"Image_Filename\"],\n    target_audience: campaign[\"Target_Audience\"]\n  }\n}));"
+      },
+      "id": "cf03e1bc-3856-4078-83a7-0748e8779c3e",
+      "name": "Filter Opted-In Customers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        272
+      ],
+      "notes": "Filters customers:\n1. Column V (Opt_Out_Promotional) = FALSE\n2. Apply Target_Audience filter (Column F)\n   - All: Send to everyone\n   - VIP: Column M = VIP\n   - Recent Buyers: Column J within 30 days"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3699b37b-79c3-4a45-a7cc-84440cf561dd",
+      "name": "Loop Over Customers",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1072,
+        272
+      ],
+      "notes": "Process one customer at a time"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ═══════════════════════════════════════════════════════════════════════════\n// Prepare WhatsApp Template Message - WITH CLOUDINARY IMAGE SUPPORT\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst customer = $input.first().json;\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 1: Get template information from campaign\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateName = campaign.WhatsApp_Template_Name;\nconst phoneNumberId = '934770033042697';\n\nconsole.log(`📤 [Prepare Template] Template: ${templateName} for ${customer.customer_phone}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 2: Build template parameters array (Body parameters)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateParams = [];\n\n// Extract all Template_Var_X columns\nfor (let i = 1; i <= 10; i++) {\n  const varKey = `Template_Var_${i}`;\n  const varValue = campaign[varKey];\n  \n  if (varValue === null || varValue === undefined || varValue === \"\") {\n    continue;\n  }\n  \n  let value = String(varValue);\n  \n  // Replace placeholders\n  value = value.replace(/\\{\\{customer_name\\}\\}/g, customer.customer_name || 'Valued Customer');\n  value = value.replace(/\\{\\{customer_city\\}\\}/g, customer.customer_city || '');\n  \n  templateParams.push({\n    type: \"text\",\n    text: value\n  });\n  \n  console.log(`📋 [Prepare Template] Param ${i}: ${value}`);\n}\n\nconsole.log(`📋 [Prepare Template] Body parameters: ${templateParams.length}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 3: Build components array (Header + Body)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst components = [];\n\n// Check if campaign has image URL (from Cloudinary or any HTTPS source)\nconst imageUrl = campaign.Image_URL; // Column S in Google Sheets\n\nif (imageUrl && imageUrl !== \"\" && imageUrl.startsWith(\"https://\")) {\n  // Add header component with image\n  components.push({\n    type: \"header\",\n    parameters: [\n      {\n        type: \"image\",\n        image: {\n          link: imageUrl  // Direct Cloudinary URL\n        }\n      }\n    ]\n  });\n  \n  console.log(`📸 [Prepare Template] Header image URL: ${imageUrl}`);\n} else {\n  console.log(`⚠️ [Prepare Template] No valid image URL found. Skipping header.`);\n}\n\n// Add body component\ncomponents.push({\n  type: \"body\",\n  parameters: templateParams\n});\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 4: Build WhatsApp Official API payload\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst whatsappUrl = `https://graph.facebook.com/v24.0/${phoneNumberId}/messages`;\nconst cleanPhone = String(customer.customer_phone).replace('@c.us', '');\n\nconst whatsappBody = {\n  messaging_product: \"whatsapp\",\n  to: cleanPhone,\n  type: \"template\",\n  template: {\n    name: templateName,\n    language: {\n      code: \"en\"\n    },\n    components: components\n  }\n};\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 5: Return prepared data\n// ═══════════════════════════════════════════════════════════════════════════\n\nconsole.log(`✅ [Prepare Template] Message ready for ${cleanPhone}`);\nconsole.log(`📦 [Prepare Template] Components: ${components.length} (Header: ${imageUrl ? 'Yes' : 'No'}, Body: Yes)`);\n\nreturn {\n  campaign_id: customer.campaign_id,\n  customer_phone: cleanPhone,\n  customer_name: customer.customer_name,\n  template_name: templateName,\n  whatsappUrl: whatsappUrl,\n  whatsappBody: whatsappBody,\n  sent_at: new Date().toISOString(),\n  \n  _metadata: {\n    template_params_count: templateParams.length,\n    phone_number_id: phoneNumberId,\n    has_image: !!imageUrl,\n    image_url: imageUrl || null,\n    components_count: components.length\n  }\n};"
+      },
+      "id": "108aefd9-fb58-4939-86dc-8b4fe22b0952",
+      "name": "Prepare Personalized Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        272
+      ],
+      "notes": "Personalizes message:\n1. Replace {customer_name}, {business_name}, {business_phone}, {city}\n2. Add opt-out footer\n3. Set image path: C:\\Whatsapp_AI_Agent_Latest\\campaign_images\\business_1\\{filename}"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "id": "554d70d0-c6ed-450e-93fe-bfde5313201b",
+      "name": "Wait 2 Seconds (Rate Limiting)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        272
+      ],
+      "webhookId": "aeae089b-2e1e-42ba-b98e-b8c14da24bb4",
+      "notes": "WhatsApp rate limiting:\n- Max 15 msg/sec (safe: 10/sec)\n- 2 sec delay = ~0.5 msg/sec"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+          "mode": "list",
+          "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 426066763,
+          "mode": "list",
+          "cachedResultName": "Campaign_Delivery",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Campaign_ID": "={{ $node[\"Prepare Personalized Message\"].json.campaign_id }}",
+            "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
+            "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
+            "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
+            "Status": "Accepted",
+            "WAMID": "={{ $('Send via Make.com').item.json.wamid }}",
+            "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+            "Delivery_Status": "accepted",
+            "re_broadcast_flag": "NO",
+            "Last_Updated": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer_Phone",
+              "displayName": "Customer_Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer_Name",
+              "displayName": "Customer_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sent_At",
+              "displayName": "Sent_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error_Message",
+              "displayName": "Error_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WAMID",
+              "displayName": "WAMID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Template_Name",
+              "displayName": "Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivery_Status",
+              "displayName": "Delivery_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delivered_At",
+              "displayName": "Delivered_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Read_At",
+              "displayName": "Read_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Failed_At",
+              "displayName": "Failed_At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "re_broadcast_flag",
+              "displayName": "re_broadcast_flag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last_Updated",
+              "displayName": "Last_Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Retry_Count",
+              "displayName": "Retry_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "25869595-922a-4023-a168-6edc22b83d17",
+      "name": "Log to Campaign_Delivery",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -192,
+        272
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      },
+      "notes": "Appends to Campaign_Delivery tab (Columns A-F):\n- Campaign_ID (A)\n- Customer_Phone (B)\n- Customer_Name (C)\n- Status (D) = 'Sent'\n- Sent_At (E)\n- Error_Message (F) = empty"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check_loop_complete",
+              "leftValue": "={{ $node[\"Loop Over Customers\"].context.noItemsLeft }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "813553f0-0820-4ed6-88ae-44c09e15aa02",
+      "name": "All Customers Processed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        48,
+        272
+      ],
+      "notes": "Check if all customers have been processed"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calculate campaign statistics from Campaign_Delivery items\n\nconst campaignId = $node[\"Fetch Campaign Details\"].json.Campaign_ID;\n\n// All rows that were just written to Campaign_Delivery in this run\nconst deliveryLogs = $node[\"Log to Campaign_Delivery\"].outputItems || [];\n\nconst totalRecipients = deliveryLogs.length;\nconst messagesSent = deliveryLogs.filter(i => i.json.Status === \"Sent\").length;\nconst messagesFailed = deliveryLogs.filter(i => i.json.Status === \"Failed\").length;\n\nreturn {\n  campaign_id: campaignId,\n  total_recipients: totalRecipients,\n  messages_sent: messagesSent,\n  messages_failed: messagesFailed,\n  status: \"Sent\"\n};"
+      },
+      "id": "61e0d8fa-1448-4c35-a87f-0fd989bc9d04",
+      "name": "Calculate Campaign Statistics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        352
+      ],
+      "notes": "Counts:\n- Total Recipients (Column I)\n- Messages Sent (Column J)\n- Messages Failed (Column K)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+          "mode": "list",
+          "cachedResultName": "Business-1-Customer-Service",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1922137201,
+          "mode": "list",
+          "cachedResultName": "Campaigns",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Campaign_ID": "={{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}"
+          },
+          "matchingColumns": [
+            "Campaign_ID"
+          ],
+          "schema": [
+            {
+              "id": "Campaign_ID",
+              "displayName": "Campaign_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Campaign_Name",
+              "displayName": "Campaign_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campaign_Type",
+              "displayName": "Campaign_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message_Text",
+              "displayName": "Message_Text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image_Filename",
+              "displayName": "Image_Filename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Target_Audience",
+              "displayName": "Target_Audience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Scheduled_Date",
+              "displayName": "Scheduled_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total_Recipients",
+              "displayName": "Total_Recipients",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Messages_Sent",
+              "displayName": "Messages_Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Messages_Failed",
+              "displayName": "Messages_Failed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Opt_Outs_Received",
+              "displayName": "Opt_Outs_Received",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created_Date",
+              "displayName": "Created_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created_By",
+              "displayName": "Created_By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WhatsApp_Template_Name",
+              "displayName": "WhatsApp_Template_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image_URL",
+              "displayName": "Image_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_1",
+              "displayName": "Template_Var_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_2",
+              "displayName": "Template_Var_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_3",
+              "displayName": "Template_Var_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_4",
+              "displayName": "Template_Var_4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_5",
+              "displayName": "Template_Var_5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_6",
+              "displayName": "Template_Var_6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_7",
+              "displayName": "Template_Var_7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Template_Var_8",
+              "displayName": "Template_Var_8",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ede13151-5823-47ed-adab-077a524729b3",
+      "name": "Update Campaign Statistics",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      },
+      "notes": "Updates Campaigns tab:\n- Total_Recipients (Column I)\n- Messages_Sent (Column J)\n- Messages_Failed (Column K)\n- Status (Column G) = 'Sent'"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Campaign broadcast completed\",\n  \"campaign_id\": \"{{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}\",\n  \"total_recipients\": {{ $json.total_recipients }},\n  \"messages_sent\": {{ $json.messages_sent }},\n  \"messages_failed\": {{ $json.messages_failed }}\n}",
+        "options": {}
+      },
+      "id": "a1dfafb4-c92e-4b3c-b540-724632d825f5",
+      "name": "Respond - Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        336
+      ],
+      "notes": "Returns success response with statistics"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"Campaign status must be 'Draft' to send\",\n  \"current_status\": \"{{ $node[\"Fetch Campaign Details\"].json.Status }}\"\n}",
+        "options": {}
+      },
+      "id": "7c9311c5-b4c3-4a52-bd96-9180f98e26fb",
+      "name": "Respond - Wrong Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1440,
+        544
+      ],
+      "notes": "Returns error if campaign status is not 'Draft'"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 30,
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2208,
+        128
+      ],
+      "id": "8c49fe81-13e7-43cb-9f45-cf77935fbed6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hook.eu1.make.com/2vgp8x3368uwnywxk5omy6qrim2nvb7o",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customer_phone",
+              "value": "={{ $json.customer_phone }}"
+            },
+            {
+              "name": "customer_name",
+              "value": "={{ $json.customer_name }}"
+            },
+            {
+              "name": "template_name",
+              "value": "={{ $json.template_name }}"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json._metadata.image_url }}"
+            },
+            {
+              "name": "var1",
+              "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[0]?.text ?? \"\" }}"
+            },
+            {
+              "name": "var2",
+              "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[1]?.text ?? \"\" }}"
+            },
+            {
+              "name": "var3",
+              "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[2]?.text ?? \"\" }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "d5054b03-e006-419a-ba06-899922654104",
+      "name": "Send via Make.com",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        272
+      ],
+      "retryOnFail": true,
+      "notes": "Sends via WAHA API:\n- Image from Windows path\n- Message with personalization\n- Opt-out footer included"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        368
+      ],
+      "id": "e245a4df-5c74-4ae2-9bd2-5c6d2bffd4cc",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {
+    "Fetch Campaign Details": {
+      "main": [
+        [
+          {
+            "node": "Check Campaign Status = Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Campaign Status = Draft": {
+      "main": [
+        [
+          {
+            "node": "Fetch All Customers",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Fetch All Customers": {
+      "main": [
+        [
+          {
+            "node": "Filter Opted-In Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Opted-In Customers": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Customers": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Prepare Personalized Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Personalized Message": {
+      "main": [
+        [
+          {
+            "node": "Send via Make.com",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Seconds (Rate Limiting)": {
+      "main": [
+        [
+          {
+            "node": "Log to Campaign_Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Campaign_Delivery": {
+      "main": [
+        [
+          {
+            "node": "All Customers Processed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Customers Processed?": {
+      "main": [
+        [
+          {
+            "node": "Calculate Campaign Statistics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Campaign Statistics": {
+      "main": [
+        [
+          {
+            "node": "Respond - Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Send via Make.com": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Seconds (Rate Limiting)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch Campaign Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        67
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e66cf25a-a957-4066-89e5-95c6a68a824b",
+  "activeVersionId": "e66cf25a-a957-4066-89e5-95c6a68a824b",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-15T10:16:12.998Z",
+      "createdAt": "2026-03-15T10:16:12.998Z",
+      "role": "workflow:owner",
+      "workflowId": "Funl9NSRJwXIRzmh",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-15T11:02:21.000Z",
+    "createdAt": "2026-03-15T10:58:51.360Z",
+    "versionId": "e66cf25a-a957-4066-89e5-95c6a68a824b",
+    "workflowId": "Funl9NSRJwXIRzmh",
+    "nodes": [
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "list",
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1922137201,
+            "mode": "list",
+            "cachedResultName": "Campaigns",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1922137201"
+          },
+          "options": {}
+        },
+        "id": "689cbdbf-e11a-498c-98d0-d79188103c74",
+        "name": "Fetch Campaign Details",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -1952,
+          368
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        },
+        "notes": "Reads campaign from Campaigns tab (Columns A-N)\nLookup by Campaign_ID (Column A)"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "campaign_status_check",
+                "leftValue": "={{ $json.Status }}",
+                "rightValue": "Draft",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "0a4149b1-a1e3-43b9-8537-78f26612aa1e",
+        "name": "Check Campaign Status = Draft",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1728,
+          368
+        ],
+        "notes": "Only proceed if Campaign Status (Column G) = 'Draft'"
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1055588506,
+            "mode": "list",
+            "cachedResultName": "Customer Profiles",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit#gid=1055588506"
+          },
+          "options": {}
+        },
+        "id": "31a50630-65ad-4b31-bb99-e5e740f554d9",
+        "name": "Fetch All Customers",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -1504,
+          272
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        },
+        "notes": "Reads all customers from Customer Profiles tab (Columns A-V)"
+      },
+      {
+        "parameters": {
+          "jsCode": "// ============================================================================\n// CORRECTED: Filter Opted-In Customers Node Code\n// ============================================================================\n// Purpose: Filter customers who have NOT opted out + apply target audience\n// Issue Fixed: Original code was not filtering - just passing through all data\n// ============================================================================\n\n// ✅ CORRECT: Get campaign that actually passed the Draft status check\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// Get all customers from input\nconst customers = $input.all();\n\nconsole.log(`Total customers from sheet: ${customers.length}`);\n\n// STEP 1: Filter customers who have NOT opted out\n// Opt_Out_Promotional can be: false, \"FALSE\", \"\", null, undefined\nlet optedInCustomers = customers.filter(customer => {\n  const optOutValue = customer.json[\"Opt_Out_Promotional\"];\n\n  // Consider opted-in if:\n  // - false (boolean)\n  // - \"FALSE\" (string)\n  // - \"\" (empty string)\n  // - null\n  // - undefined\n  const isOptedIn = (\n    optOutValue === false || \n    optOutValue === \"FALSE\" || \n    optOutValue === \"\" || \n    optOutValue === null || \n    optOutValue === undefined\n  );\n\n  return isOptedIn;\n});\n\nconsole.log(`Customers opted-in (Opt_Out_Promotional = false): ${optedInCustomers.length}`);\n\n// STEP 2: Apply target audience filter from campaign\nconst targetAudience = campaign[\"Target_Audience\"];\nconsole.log(`Target Audience: ${targetAudience}`);\n\nlet filteredCustomers = optedInCustomers;\n\nif (targetAudience === \"VIP\") {\n  // Filter where Customer Tier = \"VIP\"\n  filteredCustomers = optedInCustomers.filter(c => \n    c.json[\"Customer Tier\"] === \"VIP\"\n  );\n  console.log(`Filtered to VIP customers: ${filteredCustomers.length}`);\n\n} else if (targetAudience === \"Recent Buyers\") {\n  // Filter customers who ordered in last 30 days\n  // Last Order Date is Excel date serial number\n  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);\n  const excelThirtyDaysAgo = (thirtyDaysAgo / 86400000) + 25569; // Convert to Excel date\n\n  filteredCustomers = optedInCustomers.filter(c => {\n    const lastOrderDate = parseFloat(c.json[\"Last Order Date\"]);\n    return !isNaN(lastOrderDate) && lastOrderDate > 0 && lastOrderDate >= excelThirtyDaysAgo;\n  });\n  console.log(`Filtered to Recent Buyers (last 30 days): ${filteredCustomers.length}`);\n\n} else {\n  // \"All\" or any other value - use all opted-in customers\n  console.log(`Using all opted-in customers: ${filteredCustomers.length}`);\n}\n\n// STEP 3: Return filtered customers with necessary fields for next nodes\nreturn filteredCustomers.map(customer => ({\n  json: {\n    campaign_id: campaign[\"Campaign_ID\"],\n    campaign_name: campaign[\"Campaign_Name\"],\n    customer_phone: customer.json[\"Customer Phone\"], \n    customer_name: customer.json[\"Customer Name\"] || \"Valued Customer\",\n    customer_city: customer.json[\"Customer City\"] || \"\",\n    customer_tier: customer.json[\"Customer Tier\"] || \"Regular\",\n    message_template: campaign[\"Message_Text\"],\n    image_filename: campaign[\"Image_Filename\"],\n    target_audience: campaign[\"Target_Audience\"]\n  }\n}));"
+        },
+        "id": "cf03e1bc-3856-4078-83a7-0748e8779c3e",
+        "name": "Filter Opted-In Customers",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1280,
+          272
+        ],
+        "notes": "Filters customers:\n1. Column V (Opt_Out_Promotional) = FALSE\n2. Apply Target_Audience filter (Column F)\n   - All: Send to everyone\n   - VIP: Column M = VIP\n   - Recent Buyers: Column J within 30 days"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "3699b37b-79c3-4a45-a7cc-84440cf561dd",
+        "name": "Loop Over Customers",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1072,
+          272
+        ],
+        "notes": "Process one customer at a time"
+      },
+      {
+        "parameters": {
+          "jsCode": "// ═══════════════════════════════════════════════════════════════════════════\n// Prepare WhatsApp Template Message - WITH CLOUDINARY IMAGE SUPPORT\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst customer = $input.first().json;\nconst campaign = $node[\"Check Campaign Status = Draft\"].json;\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 1: Get template information from campaign\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateName = campaign.WhatsApp_Template_Name;\nconst phoneNumberId = '934770033042697';\n\nconsole.log(`📤 [Prepare Template] Template: ${templateName} for ${customer.customer_phone}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 2: Build template parameters array (Body parameters)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst templateParams = [];\n\n// Extract all Template_Var_X columns\nfor (let i = 1; i <= 10; i++) {\n  const varKey = `Template_Var_${i}`;\n  const varValue = campaign[varKey];\n  \n  if (varValue === null || varValue === undefined || varValue === \"\") {\n    continue;\n  }\n  \n  let value = String(varValue);\n  \n  // Replace placeholders\n  value = value.replace(/\\{\\{customer_name\\}\\}/g, customer.customer_name || 'Valued Customer');\n  value = value.replace(/\\{\\{customer_city\\}\\}/g, customer.customer_city || '');\n  \n  templateParams.push({\n    type: \"text\",\n    text: value\n  });\n  \n  console.log(`📋 [Prepare Template] Param ${i}: ${value}`);\n}\n\nconsole.log(`📋 [Prepare Template] Body parameters: ${templateParams.length}`);\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 3: Build components array (Header + Body)\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst components = [];\n\n// Check if campaign has image URL (from Cloudinary or any HTTPS source)\nconst imageUrl = campaign.Image_URL; // Column S in Google Sheets\n\nif (imageUrl && imageUrl !== \"\" && imageUrl.startsWith(\"https://\")) {\n  // Add header component with image\n  components.push({\n    type: \"header\",\n    parameters: [\n      {\n        type: \"image\",\n        image: {\n          link: imageUrl  // Direct Cloudinary URL\n        }\n      }\n    ]\n  });\n  \n  console.log(`📸 [Prepare Template] Header image URL: ${imageUrl}`);\n} else {\n  console.log(`⚠️ [Prepare Template] No valid image URL found. Skipping header.`);\n}\n\n// Add body component\ncomponents.push({\n  type: \"body\",\n  parameters: templateParams\n});\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 4: Build WhatsApp Official API payload\n// ═══════════════════════════════════════════════════════════════════════════\n\nconst whatsappUrl = `https://graph.facebook.com/v24.0/${phoneNumberId}/messages`;\nconst cleanPhone = String(customer.customer_phone).replace('@c.us', '');\n\nconst whatsappBody = {\n  messaging_product: \"whatsapp\",\n  to: cleanPhone,\n  type: \"template\",\n  template: {\n    name: templateName,\n    language: {\n      code: \"en\"\n    },\n    components: components\n  }\n};\n\n// ═══════════════════════════════════════════════════════════════════════════\n// STEP 5: Return prepared data\n// ═══════════════════════════════════════════════════════════════════════════\n\nconsole.log(`✅ [Prepare Template] Message ready for ${cleanPhone}`);\nconsole.log(`📦 [Prepare Template] Components: ${components.length} (Header: ${imageUrl ? 'Yes' : 'No'}, Body: Yes)`);\n\nreturn {\n  campaign_id: customer.campaign_id,\n  customer_phone: cleanPhone,\n  customer_name: customer.customer_name,\n  template_name: templateName,\n  whatsappUrl: whatsappUrl,\n  whatsappBody: whatsappBody,\n  sent_at: new Date().toISOString(),\n  \n  _metadata: {\n    template_params_count: templateParams.length,\n    phone_number_id: phoneNumberId,\n    has_image: !!imageUrl,\n    image_url: imageUrl || null,\n    components_count: components.length\n  }\n};"
+        },
+        "id": "108aefd9-fb58-4939-86dc-8b4fe22b0952",
+        "name": "Prepare Personalized Message",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -848,
+          272
+        ],
+        "notes": "Personalizes message:\n1. Replace {customer_name}, {business_name}, {business_phone}, {city}\n2. Add opt-out footer\n3. Set image path: C:\\Whatsapp_AI_Agent_Latest\\campaign_images\\business_1\\{filename}"
+      },
+      {
+        "parameters": {
+          "amount": 2
+        },
+        "id": "554d70d0-c6ed-450e-93fe-bfde5313201b",
+        "name": "Wait 2 Seconds (Rate Limiting)",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -400,
+          272
+        ],
+        "webhookId": "aeae089b-2e1e-42ba-b98e-b8c14da24bb4",
+        "notes": "WhatsApp rate limiting:\n- Max 15 msg/sec (safe: 10/sec)\n- 2 sec delay = ~0.5 msg/sec"
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ",
+            "mode": "list",
+            "cachedResultName": "Broadcast-Messages-ChatSocialAI",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17Fe0qKVRq7t3VjuhUulhVfIemHCZUAwmiecN0d_j1tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 426066763,
+            "mode": "list",
+            "cachedResultName": "Campaign_Delivery",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=426066763"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Campaign_ID": "={{ $node[\"Prepare Personalized Message\"].json.campaign_id }}",
+              "Customer_Phone": "={{ $node[\"Prepare Personalized Message\"].json.customer_phone }}",
+              "Customer_Name": "={{ $node[\"Prepare Personalized Message\"].json.customer_name }}",
+              "Sent_At": "={{ $node[\"Prepare Personalized Message\"].json.sent_at }}",
+              "Status": "Accepted",
+              "WAMID": "={{ $('Send via Make.com').item.json.wamid }}",
+              "Template_Name": "={{ $('Prepare Personalized Message').item.json.template_name }}",
+              "Delivery_Status": "accepted",
+              "re_broadcast_flag": "NO",
+              "Last_Updated": "={{ $now }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer_Phone",
+                "displayName": "Customer_Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer_Name",
+                "displayName": "Customer_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Sent_At",
+                "displayName": "Sent_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Error_Message",
+                "displayName": "Error_Message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "WAMID",
+                "displayName": "WAMID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Template_Name",
+                "displayName": "Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivery_Status",
+                "displayName": "Delivery_Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Delivered_At",
+                "displayName": "Delivered_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Read_At",
+                "displayName": "Read_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Failed_At",
+                "displayName": "Failed_At",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "re_broadcast_flag",
+                "displayName": "re_broadcast_flag",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Last_Updated",
+                "displayName": "Last_Updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Retry_Count",
+                "displayName": "Retry_Count",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "25869595-922a-4023-a168-6edc22b83d17",
+        "name": "Log to Campaign_Delivery",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -192,
+          272
+        ],
+        "retryOnFail": true,
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        },
+        "notes": "Appends to Campaign_Delivery tab (Columns A-F):\n- Campaign_ID (A)\n- Customer_Phone (B)\n- Customer_Name (C)\n- Status (D) = 'Sent'\n- Sent_At (E)\n- Error_Message (F) = empty"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "check_loop_complete",
+                "leftValue": "={{ $node[\"Loop Over Customers\"].context.noItemsLeft }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "813553f0-0820-4ed6-88ae-44c09e15aa02",
+        "name": "All Customers Processed?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          48,
+          272
+        ],
+        "notes": "Check if all customers have been processed"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Calculate campaign statistics from Campaign_Delivery items\n\nconst campaignId = $node[\"Fetch Campaign Details\"].json.Campaign_ID;\n\n// All rows that were just written to Campaign_Delivery in this run\nconst deliveryLogs = $node[\"Log to Campaign_Delivery\"].outputItems || [];\n\nconst totalRecipients = deliveryLogs.length;\nconst messagesSent = deliveryLogs.filter(i => i.json.Status === \"Sent\").length;\nconst messagesFailed = deliveryLogs.filter(i => i.json.Status === \"Failed\").length;\n\nreturn {\n  campaign_id: campaignId,\n  total_recipients: totalRecipients,\n  messages_sent: messagesSent,\n  messages_failed: messagesFailed,\n  status: \"Sent\"\n};"
+        },
+        "id": "61e0d8fa-1448-4c35-a87f-0fd989bc9d04",
+        "name": "Calculate Campaign Statistics",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          304,
+          352
+        ],
+        "notes": "Counts:\n- Total Recipients (Column I)\n- Messages Sent (Column J)\n- Messages Failed (Column K)"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ",
+            "mode": "list",
+            "cachedResultName": "Business-1-Customer-Service",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1922137201,
+            "mode": "list",
+            "cachedResultName": "Campaigns",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-z3M7dXLjPpQi12RQPZssn-gJtlTHZUBWlj2epJu6tQ/edit#gid=1922137201"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Campaign_ID": "={{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}"
+            },
+            "matchingColumns": [
+              "Campaign_ID"
+            ],
+            "schema": [
+              {
+                "id": "Campaign_ID",
+                "displayName": "Campaign_ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Campaign_Name",
+                "displayName": "Campaign_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Campaign_Type",
+                "displayName": "Campaign_Type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message_Text",
+                "displayName": "Message_Text",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image_Filename",
+                "displayName": "Image_Filename",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Target_Audience",
+                "displayName": "Target_Audience",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Scheduled_Date",
+                "displayName": "Scheduled_Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Total_Recipients",
+                "displayName": "Total_Recipients",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Messages_Sent",
+                "displayName": "Messages_Sent",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Messages_Failed",
+                "displayName": "Messages_Failed",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Opt_Outs_Received",
+                "displayName": "Opt_Outs_Received",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Created_Date",
+                "displayName": "Created_Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Created_By",
+                "displayName": "Created_By",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "WhatsApp_Template_Name",
+                "displayName": "WhatsApp_Template_Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Image_URL",
+                "displayName": "Image_URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_1",
+                "displayName": "Template_Var_1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_2",
+                "displayName": "Template_Var_2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_3",
+                "displayName": "Template_Var_3",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_4",
+                "displayName": "Template_Var_4",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_5",
+                "displayName": "Template_Var_5",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_6",
+                "displayName": "Template_Var_6",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_7",
+                "displayName": "Template_Var_7",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Template_Var_8",
+                "displayName": "Template_Var_8",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "ede13151-5823-47ed-adab-077a524729b3",
+        "name": "Update Campaign Statistics",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          464,
+          192
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "3DVNjxVa1srn971H",
+            "name": "Google Sheets account 2"
+          }
+        },
+        "notes": "Updates Campaigns tab:\n- Total_Recipients (Column I)\n- Messages_Sent (Column J)\n- Messages_Failed (Column K)\n- Status (Column G) = 'Sent'"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": true,\n  \"message\": \"Campaign broadcast completed\",\n  \"campaign_id\": \"{{ $node[\"Fetch Campaign Details\"].json.Campaign_ID }}\",\n  \"total_recipients\": {{ $json.total_recipients }},\n  \"messages_sent\": {{ $json.messages_sent }},\n  \"messages_failed\": {{ $json.messages_failed }}\n}",
+          "options": {}
+        },
+        "id": "a1dfafb4-c92e-4b3c-b540-724632d825f5",
+        "name": "Respond - Success",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          656,
+          336
+        ],
+        "notes": "Returns success response with statistics"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"success\": false,\n  \"message\": \"Campaign status must be 'Draft' to send\",\n  \"current_status\": \"{{ $node[\"Fetch Campaign Details\"].json.Status }}\"\n}",
+          "options": {}
+        },
+        "id": "7c9311c5-b4c3-4a52-bd96-9180f98e26fb",
+        "name": "Respond - Wrong Status",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -1440,
+          544
+        ],
+        "notes": "Returns error if campaign status is not 'Draft'"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "daysInterval": 30,
+                "triggerAtHour": 11
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -2208,
+          128
+        ],
+        "id": "8c49fe81-13e7-43cb-9f45-cf77935fbed6",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://hook.eu1.make.com/2vgp8x3368uwnywxk5omy6qrim2nvb7o",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "customer_phone",
+                "value": "={{ $json.customer_phone }}"
+              },
+              {
+                "name": "customer_name",
+                "value": "={{ $json.customer_name }}"
+              },
+              {
+                "name": "template_name",
+                "value": "={{ $json.template_name }}"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $json._metadata.image_url }}"
+              },
+              {
+                "name": "var1",
+                "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[0]?.text ?? \"\" }}"
+              },
+              {
+                "name": "var2",
+                "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[1]?.text ?? \"\" }}"
+              },
+              {
+                "name": "var3",
+                "value": "={{ $json.whatsappBody.template.components[1]?.parameters?.[2]?.text ?? \"\" }}"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 60000
+          }
+        },
+        "id": "d5054b03-e006-419a-ba06-899922654104",
+        "name": "Send via Make.com",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -624,
+          272
+        ],
+        "retryOnFail": true,
+        "notes": "Sends via WAHA API:\n- Image from Windows path\n- Message with personalization\n- Opt-out footer included"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -2176,
+          368
+        ],
+        "id": "e245a4df-5c74-4ae2-9bd2-5c6d2bffd4cc",
+        "name": "When clicking ‘Execute workflow’"
+      }
+    ],
+    "connections": {
+      "Fetch Campaign Details": {
+        "main": [
+          [
+            {
+              "node": "Check Campaign Status = Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Campaign Status = Draft": {
+        "main": [
+          [
+            {
+              "node": "Fetch All Customers",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Fetch All Customers": {
+        "main": [
+          [
+            {
+              "node": "Filter Opted-In Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Opted-In Customers": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Customers": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Prepare Personalized Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Personalized Message": {
+        "main": [
+          [
+            {
+              "node": "Send via Make.com",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 2 Seconds (Rate Limiting)": {
+        "main": [
+          [
+            {
+              "node": "Log to Campaign_Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log to Campaign_Delivery": {
+        "main": [
+          [
+            {
+              "node": "All Customers Processed?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "All Customers Processed?": {
+        "main": [
+          [
+            {
+              "node": "Calculate Campaign Statistics",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Loop Over Customers",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Campaign Statistics": {
+        "main": [
+          [
+            {
+              "node": "Respond - Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          []
+        ]
+      },
+      "Send via Make.com": {
+        "main": [
+          [
+            {
+              "node": "Wait 2 Seconds (Rate Limiting)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Fetch Campaign Details",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version e66cf25a",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
