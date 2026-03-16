@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-14T10:50:23.929Z",
+  "updatedAt": "2026-03-16T09:49:22.716Z",
   "createdAt": "2026-03-14T09:44:12.482Z",
   "id": "P299L3HDfr2kWvzM",
   "name": "Generic Demo make.com v2",
@@ -721,7 +721,7 @@
             {
               "id": "ff25dd79-33e3-4297-80de-069a7f0a2d97",
               "name": "text",
-              "value": "={{ $json.body.message.button_reply }}",
+              "value": "={{ $json.body.message.text }}",
               "type": "string"
             }
           ]
@@ -1250,8 +1250,8 @@
       }
     ]
   },
-  "versionId": "5bc9d3f8-9701-467b-8cee-3239ebfcc63d",
-  "activeVersionId": "5bc9d3f8-9701-467b-8cee-3239ebfcc63d",
+  "versionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
+  "activeVersionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
   "triggerCount": 1,
   "shared": [
     {
@@ -1263,9 +1263,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-14T10:48:31.000Z",
-    "createdAt": "2026-03-14T10:48:26.220Z",
-    "versionId": "5bc9d3f8-9701-467b-8cee-3239ebfcc63d",
+    "updatedAt": "2026-03-16T09:51:03.000Z",
+    "createdAt": "2026-03-16T09:49:22.719Z",
+    "versionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
     "workflowId": "P299L3HDfr2kWvzM",
     "nodes": [
       {
@@ -1983,7 +1983,7 @@
               {
                 "id": "ff25dd79-33e3-4297-80de-069a7f0a2d97",
                 "name": "text",
-                "value": "={{ $json.body.message.button_reply }}",
+                "value": "={{ $json.body.message.text }}",
                 "type": "string"
               }
             ]
@@ -2435,7 +2435,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 5bc9d3f8",
+    "name": "Version 7925b21d",
     "description": "",
     "autosaved": true
   },
