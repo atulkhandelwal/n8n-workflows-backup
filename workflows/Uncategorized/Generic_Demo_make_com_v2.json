@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-16T09:49:22.716Z",
+  "updatedAt": "2026-03-17T07:14:41.820Z",
   "createdAt": "2026-03-14T09:44:12.482Z",
   "id": "P299L3HDfr2kWvzM",
   "name": "Generic Demo make.com v2",
@@ -49,6 +49,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
           "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
@@ -83,9 +84,9 @@
       "typeVersion": 4.7,
       "alwaysOutputData": true,
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -323,6 +324,7 @@
     },
     {
       "parameters": {
+        "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -402,9 +404,9 @@
       "id": "d3db647f-0bf5-48e1-93ab-1f2068265033",
       "name": "Save_Domain",
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3DVNjxVa1srn971H",
-          "name": "Google Sheets account 2"
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
         }
       }
     },
@@ -1250,8 +1252,8 @@
       }
     ]
   },
-  "versionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
-  "activeVersionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
+  "versionId": "c7ccebe0-9a6d-49d1-9443-2d10d918c1a7",
+  "activeVersionId": "c7ccebe0-9a6d-49d1-9443-2d10d918c1a7",
   "triggerCount": 1,
   "shared": [
     {
@@ -1263,9 +1265,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-16T09:51:03.000Z",
-    "createdAt": "2026-03-16T09:49:22.719Z",
-    "versionId": "7925b21d-367a-47ff-8cfa-3e6459cee9a7",
+    "updatedAt": "2026-03-17T07:14:58.000Z",
+    "createdAt": "2026-03-17T07:14:41.822Z",
+    "versionId": "c7ccebe0-9a6d-49d1-9443-2d10d918c1a7",
     "workflowId": "P299L3HDfr2kWvzM",
     "nodes": [
       {
@@ -1311,6 +1313,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
             "value": "17TK07L5Llo-pbvmnVRCEDCrsx18tjUO_pefIENk5MaI",
@@ -1345,9 +1348,9 @@
         "typeVersion": 4.7,
         "alwaysOutputData": true,
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -1585,6 +1588,7 @@
       },
       {
         "parameters": {
+          "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
@@ -1664,9 +1668,9 @@
         "id": "d3db647f-0bf5-48e1-93ab-1f2068265033",
         "name": "Save_Domain",
         "credentials": {
-          "googleSheetsOAuth2Api": {
-            "id": "3DVNjxVa1srn971H",
-            "name": "Google Sheets account 2"
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
           }
         }
       },
@@ -2435,7 +2439,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 7925b21d",
+    "name": "Version c7ccebe0",
     "description": "",
     "autosaved": true
   },
