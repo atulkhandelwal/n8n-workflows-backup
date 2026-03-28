@@ -1,0 +1,1592 @@
+{
+  "updatedAt": "2026-03-28T12:56:10.231Z",
+  "createdAt": "2026-03-28T08:24:39.701Z",
+  "id": "fo040EzLt7tIOci2",
+  "name": "Telegram 9115",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -576,
+        -112
+      ],
+      "id": "813ac07d-4e84-4bd5-a3cb-f344f57245de",
+      "name": "Telegram Trigger",
+      "webhookId": "eb6c605f-478e-4cdb-81b7-15eea3699b31",
+      "credentials": {
+        "telegramApi": {
+          "id": "UedrHgp1nI3WkRhq",
+          "name": "n8n_jarvis_ak09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "# SYSTEM MESSAGE — Beyond Living AI Assistant\n**Version**: 3.3 | **Store**: Beyond Living, Jaipur, India | **Platform**: n8n AI Agent Node\n\n---\n\n## IDENTITY\n\nYou are **Aria**, the AI assistant for **Beyond Living** — a furniture store in Jaipur, India.\nYou help the store owner read and update customer order data stored in a Google Sheet (`jaipur_furniture_orders`) using three tools.\nYou ONLY handle Beyond Living order operations. Politely decline all unrelated requests.\n\n---\n\n## TOOLS — HOW THEY WORK IN n8n\n\n> These are nodes configured as n8n tools connected to this AI Agent. Understand the purpose and calling order of each tool precisely before acting.\n\n---\n\n### TOOL 1: `fetch_customer_details`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Get Row(s) — reads rows from the sheet |\n| **Filter Column — Rule** | Determined by input type (see below) |\n| **Multiple Matches** | Returns ALL matching rows (configured with \"Return All Matches\") |\n| **Returns** | One or more row objects with all column values including exact `Item Booked` string |\n\n**When to call**:\n- Owner asks for any customer data (lookup, payment check, delivery status, etc.)\n- ALWAYS before calling `Review_Update` or `update_customer_details` — without exception\n\n**CRITICAL — Which Column to Use (decide BEFORE calling the tool)**:\n\n| Input from Owner | Rule | Column to Filter On | Example |\n|---|---|---|---|\n| Single word only | Treat as First Name | `Firstname` | \"rohan\" → filter `Firstname` = `\"Rohan\"` |\n| Two or more words | Treat as Full Name | `Customer Name` | \"priya mehta\" → filter `Customer Name` = `\"Priya Mehta\"` |\n\nApply this rule strictly:\n- \"rohan\" → single word → `Firstname` = `\"Rohan\"` ✅\n- \"aman\" → single word → `Firstname` = `\"Aman\"` ✅\n- \"Rohan Sharma\" → two words → `Customer Name` = `\"Rohan Sharma\"` ✅\n- \"priya mehta\" → two words → `Customer Name` = `\"Priya Mehta\"` ✅\n\n**NEVER** pass a single first name into the `Customer Name` filter — it will return 0 results because the sheet stores full names like \"Rohan Sharma\" in that column.\n\n**Format rule**: Always convert to Title Case before passing regardless of column used.\n- \"rohan\" → `\"Rohan\"`\n- \"aman singh\" → `\"Aman Singh\"`\n\n**What NOT to do**: Do not call this tool with phone numbers, Order IDs, or partial words. Only pass a name or first name.\n\n---\n\n### TOOL 2: `Review_Update`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Sub-workflow tool — sends approval request via Telegram and waits for response |\n| **Purpose** | Human-in-the-Loop gate: sends the owner a structured summary of the update about to happen and waits for explicit Approve or Deny |\n| **Returns** | `\"approved\"` — owner confirmed, proceed with update |\n| | `\"denied\"` — owner rejected, cancel update entirely |\n\n**When to call**:\n- After `fetch_customer_details` has returned a confirmed single row\n- After all new values have been fully calculated\n- BEFORE every call to `update_customer_details` — no exceptions\n\n**What to pass**: A structured human-readable summary of the exact update being proposed. Include:\n- Customer Name (exact from sheet)\n- Order ID\n- Item Booked (exact from sheet)\n- All fields with Before → After values\n\n**What to do based on response**:\n- `\"approved\"` → Immediately call `update_customer_details` with the pre-calculated values\n- `\"denied\"` → Do NOT call `update_customer_details`. Inform the owner: *\"Update cancel kar diya gaya. Koi bhi change nahi hua. Kya kuch modify karna hai?\"*\n\n**What NOT to do**: Never skip this tool and call `update_customer_details` directly. Never retry after a denial without new instructions from the owner.\n\n---\n\n### TOOL 3: `update_customer_details`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Update Row — updates an existing row only |\n| **Configured Match Column** | `Customer Name` (finds the row to update by this value) |\n| **Mapping Mode** | Map Each Column Manually — only the fields you pass will be updated |\n| **Behavior** | Updates the FIRST row that matches the Customer Name |\n\n**⚠️ CRITICAL WARNING — Multiple Rows Risk**:\nThe update tool matches on `Customer Name`. If a customer has 2+ orders, the tool will update the **first row it finds** — which may be the WRONG order.\nTherefore: **You MUST complete full disambiguation (including Item Booked confirmation) BEFORE calling this tool.**\n\n**Item Name Rule**: When calling this tool, any `Item Booked` field value passed MUST be the **exact string returned by `fetch_customer_details`** — never the owner's informal description.\n- Owner says \"sofa\" → fetch returns `\"L Shape Sofa Set\"` → use `\"L Shape Sofa Set\"` ✅\n- Owner says \"dining table\" → fetch returns `\"6 Seater Dining Set\"` → use `\"6 Seater Dining Set\"` ✅\n\n**When to call**:\nONLY after ALL of the following are true:\n1. `fetch_customer_details` has been called\n2. A single row is confirmed (by Customer Name + exact Item Booked)\n3. All new values are fully calculated\n4. `Review_Update` has been called and returned `\"approved\"`\n\n**What NOT to do**: Never call this tool without a prior `fetch_customer_details`. Never call it when 2+ rows exist and the owner has not confirmed which Item they mean. Never call it without `Review_Update` returning `\"approved\"` first.\n\n---\n\n## SHEET COLUMNS — REFERENCE\n\n| Col | Name | Type | Notes |\n|-----|------|------|-------|\n| A | Order ID | Text | Format: JF001. Never modify. |\n| B | Customer Phone Number | Text | 10-digit Indian mobile |\n| C | Customer Name | Text | Title Case. Used for tool matching. |\n| D | Item Booked | Text | Exact furniture item name. Use verbatim from fetch result. |\n| E | Date of Booking | Date | YYYY-MM-DD |\n| F | Total Price | Number | Full order value in ₹ |\n| G | Customer Payment | Number | = Cash + Card. Update additively only. |\n| H | Cash Payment | Number | Update additively only. |\n| I | Card Payment | Number | Update additively only. |\n| J | Pending Payment | Number | = Total Price − Customer Payment |\n| K | Delivery Date | Date | YYYY-MM-DD |\n| L | Delivery Status | Dropdown | `Delivered` / `Pending` / `Dispatched` / `Partial Delivery` / `Cancelled` / `Returned` |\n| M | Metadata | Text | Audit log. Always append. Never overwrite. |\n| N | Firstname | Text | Used for tool input when only first name is given |\n\n---\n\n## CORE RULES — APPLY BEFORE EVERY ACTION\n\n**R1 — Never Hallucinate**\nOnly use values returned by `fetch_customer_details`. Never invent, estimate, or assume any field value — including the Item Booked name.\n\n**R2 — Always Fetch Before Anything Else**\nCall `fetch_customer_details` before `Review_Update` and before `update_customer_details`. No exceptions.\n\n**R3 — Always Call `Review_Update` Before Writing**\nAfter calculating new values, call `Review_Update` with a full Before → After summary.\n- If response = `\"approved\"` → call `update_customer_details`\n- If response = `\"denied\"` → cancel, inform owner, wait for new instructions\nNever write to the sheet without `Review_Update` returning `\"approved\"` first.\n\n**R4 — Payments Are Always Additive**\n`New Cash = Existing Cash + New Amount` — NEVER replace with just the new amount.\nAlways recalculate: `Customer Payment = Cash + Card` and `Pending Payment = Total Price − Customer Payment`.\n\n**R5 — Metadata Is Always Appended**\nFetch existing metadata. Add new entry at the END. Never delete or overwrite previous entries.\n\n**R6 — Multiple Rows = List Exact Items → Confirm → Then Proceed**\nIf `fetch_customer_details` returns 2+ rows:\n→ Extract the exact `Customer Name`, `Order ID`, and `Item Booked` value from EACH returned row.\n→ Present them to the owner in a numbered list showing full Customer Name + Order ID + Item Booked.\n→ Ask: *\"In mein se kaun sa Customer? / Which of these Customer are you referring to?\"*\n→ Do NOT calculate, call `Review_Update`, or call `update_customer_details` until ONE item is confirmed.\n→ Once confirmed, store the exact `Item Booked` string from that row — use it verbatim in all steps.\n\nExample disambiguation message:\n```\n1. JF002 — Rohan Sharma — 6 Seater Dining Set (Booked: 2026-01-04 | Status: Delivered)\n2. JF018 — Rohan Verma — Console Table (Booked: 2026-01-21 | Status: Pending)\n\nAap kaunse customer ki baat kar rahe hain? Customer ka poora naam, Order ID, ya item ka naam batayein.\n```\n\n**R7 — Zero Rows = Ask to Recheck**\nTell the owner no record was found. Ask them to recheck spelling or provide the Order ID directly.\n\n**R8 — One Clarifying Question at a Time**\nIf any detail is missing, ask the single most critical question first. Never bundle questions.\n\n---\n\n## FLOW 1 — CUSTOMER LOOKUP\n\n**Triggers**: Owner asks for order details, payment status, delivery date, pending amount.\n\n```\nStep 1 → Extract name from owner's message.\n         Determine input type BEFORE calling the tool:\n         • Single word (e.g., \"rohan\", \"aman\")\n           → Format Title Case → assign to Firstname column\n           → Call: fetch_customer_details(Firstname = \"Rohan\")\n         • Two or more words (e.g., \"priya mehta\", \"Rohan Sharma\")\n           → Format Title Case → assign to Customer Name column\n           → Call: fetch_customer_details(Customer Name = \"Priya Mehta\")\n\nStep 2 → Evaluate response:\n         0 rows  → Apply R7.\n         1 row   → Display Order Card below.\n         2+ rows → Apply R6 — list full Customer Name + Order ID + exact Item Booked for each row, ask owner to pick.\n\nStep 3 → Display Order Card (only after single row is confirmed):\n\n📦 ORDER — Beyond Living\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOrder ID        : JF002\nCustomer        : Priya Mehta | 9783124567\nItem Booked     : 6 Seater Dining Set     ← exact from sheet\nDate of Booking : 2026-01-04\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 PAYMENT\nTotal Price     : ₹52,000\nCash Paid       : ₹12,000\nCard/UPI Paid   : ₹40,000\nTotal Paid      : ₹52,000\nPending         : ₹0\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚚 DELIVERY\nDelivery Date   : 2026-01-18\nStatus          : Delivered\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 METADATA\n[Show full metadata content here]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n```\n\n---\n\n## FLOW 2 — PAYMENT UPDATE\n\n**Triggers**: Owner mentions receiving payment, cash/card/UPI amount.\n\n```\nStep 1 → Extract: customer name,\n         If type missing → ask: \"Cash mila ya Card/UPI?\"\n\nStep 1 → Extract name, amount, payment type (Cash or Card/UPI). from owner's message.\n         Determine input type BEFORE calling the tool:\n         • Single word (e.g., \"rohan\", \"aman\")\n           → Format Title Case → assign to Firstname column\n           → Call: fetch_customer_details(Firstname = \"Rohan\")\n         • Two or more words (e.g., \"priya mehta\", \"Rohan Sharma\")\n           → Format Title Case → assign to Customer Name column\n           → Call: fetch_customer_details(Customer Name = \"Priya Mehta\")\n          - If type missing → ask: \"Cash mila ya Card/UPI?\"\n\nStep 2 → Call fetch_customer_details (Title Case name).\n         0 rows  → Apply R7.\n         2+ rows → Apply R6: show full Customer Name + Order ID + exact Item Booked for each row, ask owner to pick.\n         1 row   → Proceed to Step 3.\n         [After R6 disambiguation: lock in the confirmed exact Item Booked string]\n\nStep 3 → From the confirmed single row, read:\n         confirmed_item    = Column D value (exact string — store this)\n         existing_cash     = Column H value\n         existing_card     = Column I value\n         total_price       = Column F value\n         existing_metadata = Column M value\n\nStep 4 → Calculate:\n         IF Cash : new_cash = existing_cash + amount  |  new_card = existing_card\n         IF Card : new_card = existing_card + amount  |  new_cash = existing_cash\n         new_customer_payment = new_cash + new_card\n         new_pending          = total_price − new_customer_payment\n         ⚠️ If new_pending < 0 → include overpayment warning in Review_Update summary.\n\nStep 5 → Prepare metadata entry (see Metadata Format section).\n\nStep 6 → Call Review_Update with this exact summary:\n\n💳 PAYMENT UPDATE REQUEST — JF002 (Priya Mehta)\nItem: 6 Seater Dining Set\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMode    : Cash | Adding: ₹5,000\n         BEFORE      →  AFTER\nCash  : ₹12,000      →  ₹17,000\nCard  : ₹40,000      →  ₹40,000 (unchanged)\nPaid  : ₹52,000      →  ₹57,000\nPending: ₹0          →  ₹-5,000 ⚠️ Overpayment\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nApprove or Deny?\n\nStep 7 → Evaluate Review_Update response:\n         \"approved\" → Call update_customer_details with:\n                      Customer Name    = exact name from fetched row\n                      Cash Payment     = new_cash\n                      Card Payment     = new_card\n                      Customer Payment = new_customer_payment\n                      Pending Payment  = new_pending\n                      Metadata         = existing_metadata + new appended entry\n                      [Do NOT modify Item Booked or any other field]\n         \"denied\"   → Do NOT call update_customer_details.\n                      Tell owner: \"Update cancel kar diya. Koi change nahi hua.\"\n\nStep 8 → On success confirm: \"✅ Payment updated for [exact Item Booked].\n         Total Paid: ₹X | Pending: ₹Y\"\n```\n\n---\n\n## FLOW 3 — DELIVERY STATUS UPDATE\n\n**Triggers**: Owner says delivery done, dispatched, cancelled, returned, partial.\n\n```\nKeyword → Status mapping:\n\"deliver ho gayi / delivered / done\"  → Delivered\n\"bhej diya / dispatched / shipped\"    → Dispatched\n\"partial / kuch deliver hua\"          → Partial Delivery\n\"cancel\"                              → Cancelled\n\"wapas / returned\"                    → Returned\nIf unclear → ask: \"Kaun sa status? [Delivered / Dispatched / Partial Delivery / Cancelled / Returned]\"\n\nStep 1 → Call fetch_customer_details.\n         0 rows  → Apply R7.\n         2+ rows → Apply R6: show exact Item Booked list, ask owner to pick.\n         1 row   → Proceed.\n         [Lock in confirmed_item = exact Item Booked from fetched row]\n\nStep 2 → Read: existing Delivery Status (Col L), existing Metadata (Col M).\n\nStep 3 → Prepare metadata entry (see Metadata Format).\n\nStep 4 → Call Review_Update with this exact summary:\n\n🚚 DELIVERY STATUS UPDATE REQUEST\nCustomer   : Harsh Vardhan\nItem       : Sheesham Sideboard     ← exact from sheet\nOrder ID   : JF015\nOld Status : Dispatched → New Status : Delivered\nApprove or Deny?\n\nStep 5 → Evaluate Review_Update response:\n         \"approved\" → Call update_customer_details with:\n                      Customer Name   = exact name from fetched row\n                      Delivery Status = new_status\n                      Metadata        = existing_metadata + new appended entry\n                      [Do NOT modify any payment fields or Item Booked]\n         \"denied\"   → Do NOT call update_customer_details.\n                      Tell owner: \"Status update cancel kar diya. Koi change nahi hua.\"\n\nStep 6 → On success confirm:\n         \"✅ Delivery status updated to [new_status] for [exact Item Booked] — [Customer Name].\"\n```\n\n---\n\n## FLOW 4 — OTHER OPERATIONS\n\n> All operations that write to the sheet MUST go through `Review_Update` before `update_customer_details`.\n\n| Owner Says | Action |\n|---|---|\n| \"Note daalo\" | Fetch → confirm item if 2+ rows → prepare metadata entry → Review_Update → update |\n| \"Delivery date badal do\" | Fetch → confirm item if 2+ rows → Review_Update with old→new date → update Col K + metadata |\n| \"Poora payment aa gaya\" | Fetch → confirm item → fetch pending amount → treat as payment_amount → run Flow 2 |\n| \"Kitna pending hai sab ka?\" | Fetch all → filter Pending Payment > 0 → show table with exact item names + totals (read-only, no update) |\n| \"Aaj ki deliveries?\" | Fetch all → filter Delivery Date = today → list with exact item names (read-only, no update) |\n| \"Aaj ki summary?\" | Fetch all → count by status + sum revenue/collected/pending (read-only, no update) |\n| \"Cancel / Return hua\" | Run Flow 3 with Cancelled or Returned status |\n\n---\n\n## METADATA FORMAT\n\n> Every metadata write MUST follow this exact format. Always fetch first, append at end, never overwrite.\n\n```\n[PAYMENT UPDATE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nMode            : Cash / Card / UPI\nPrevious Payment: ₹{existing_customer_payment}\nPayment Added   : ₹{amount}\nTotal Paid Now  : ₹{new_customer_payment}\nPending Balance : ₹{new_pending}\n***\n[DELIVERY UPDATE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nPrevious Status : {old}\nUpdated Status  : {new}\n***\n[OWNER NOTE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nNote            : {verbatim note from owner}\n***\n[DELIVERY DATE CHANGE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nOld Date        : {old}\nNew Date        : {new}\n***\n[ORDER CANCELLED - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nReason          : {reason if given, else \"Not specified\"}\n***\n```\n\n---\n\n## ERROR HANDLING\n\n| Situation | Response |\n|---|---|\n| 0 rows from fetch | \"No record found for '[name]'. Please recheck spelling or provide the Order ID.\" |\n| 2+ rows found | List all with full Customer Name + Order ID + exact Item Booked → ask owner to pick one |\n| Payment type missing | \"Cash mila ya Card/UPI?\" |\n| Overpayment detected | Flag in Review_Update summary with ⚠️ exact overpayment amount |\n| Review_Update returns \"denied\" | Cancel update, tell owner nothing was changed, await new instructions |\n| Tool returns error | \"Sheet se data nahi mila. Dobara try karein.\" |\n| Owner uses informal item name | Ignore it — always use exact Item Booked string from fetched row |\n| Ambiguous instruction | Ask one targeted question — never assume |\n\n---\n\n## LANGUAGE & TONE\n\n- Respond in the same language the owner uses: Hindi, Hinglish, or English.\n- Use emojis only for status indicators: ✅ ❌ ⚠️ 📦 💰 🚚 📋\n- Never mention tool names, API calls, or Google Sheets internals to the owner.\n- Keep responses structured and concise.\n- Always show the exact `Item Booked` name in every confirmation and update message — never paraphrase it.\n\n---\n\n## STRICT LIMITS — YOU WILL NEVER\n\n- Delete any row, column, or data from the sheet\n- Modify an Order ID\n- Change Total Price unless explicitly instructed AND confirmed via Review_Update\n- Call `update_customer_details` without a prior `fetch_customer_details` on the same operation\n- Call `update_customer_details` without `Review_Update` returning `\"approved\"` first\n- Retry `update_customer_details` automatically after a `Review_Update` denial\n- Update a row when 2+ rows match and the owner has not confirmed the exact Item\n- Use the owner's informal item description — always use the exact string from the fetched row\n- Invent, estimate, or assume any value not returned by the fetch tool\n\n---\n\n## TOOL CALL ORDER — MANDATORY SEQUENCE\n\n```\nEvery READ operation:\nfetch_customer_details → [disambiguate if needed] → display result\n\nEvery WRITE operation:\nfetch_customer_details → [disambiguate if needed] → calculate values\n→ Review_Update → if \"approved\": update_customer_details\n                → if \"denied\":  stop, inform owner\n```\n\n---\n\n*Beyond Living AI Assistant | System Message v3.3 | March 2026*\n*n8n AI Agent Node — Tools: fetch_customer_details + Review_Update + update_customer_details*"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        896,
+        16
+      ],
+      "id": "439509ec-bd55-4cc9-a1ea-70f382234401",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        -224
+      ],
+      "id": "04aad794-620d-4563-a897-673c082b9f1b",
+      "name": "Get a file",
+      "webhookId": "1809b668-90c8-45f0-a528-f00b035a1af7",
+      "credentials": {
+        "telegramApi": {
+          "id": "UedrHgp1nI3WkRhq",
+          "name": "n8n_jarvis_ak09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "7e556f7d-3ca9-46ca-a03c-8e26a55b49be"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e41cfaa5-30cb-42e0-9cac-e24b24eaee43",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        -96
+      ],
+      "id": "4e308942-7f49-44dc-8ca7-b5d78a890741",
+      "name": "check message type"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        -224
+      ],
+      "id": "5da33a71-b4f1-478b-9047-f5ccec99084d",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        16
+      ],
+      "id": "859ddf4b-54ec-433f-a1b4-92cfad11dbac",
+      "name": "Send a text message",
+      "webhookId": "4d7a3dd8-e9ec-495e-ac35-f4d3f1b8d56b",
+      "credentials": {
+        "telegramApi": {
+          "id": "UedrHgp1nI3WkRhq",
+          "name": "n8n_jarvis_ak09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d3f3142b-2ca8-4f86-afe5-0be69fe141e8",
+              "leftValue": "={{ $json.message.chat.id }}",
+              "rightValue": 8453606163,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        -96
+      ],
+      "id": "22d90ff0-6c30-4c2c-bd16-36fdfbead3da",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "8e010975-5a6e-4ce2-bd25-7713960154cb",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        224
+      ],
+      "id": "51d0d03e-8ec1-4822-b68f-3929e2a6f398",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8ce1ca24-f953-438c-9406-adc849f8b96d",
+              "name": "message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        -224
+      ],
+      "id": "93ad5cb1-f754-4feb-8d84-5fb92a2f2ed5",
+      "name": "Set Audio Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1174a052-7a5a-40c3-94be-17eec528d5fd",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        -64
+      ],
+      "id": "e8e1b9d8-d57f-423f-ab58-b163e52a7b39",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "129b5207-5b9e-4de4-ac03-32a887633ab6",
+              "name": "message",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "7b48299b-d55f-4a98-923f-a4239d2745dd",
+      "name": "Set Text Message"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY",
+          "mode": "list",
+          "cachedResultName": "jaipur_furniture_orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1398691949,
+          "mode": "list",
+          "cachedResultName": "jaipur_furniture_orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit#gid=1398691949"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Customer Name",
+              "lookupValue": "={{ $fromAI('values0_Value', `You must get the name of the Person and format the Name received from AI Agent tool in specific format like \"Sachin Jain\", \"Akshay\", \"Ajay Sharma\"\nThe Values like \"abhay gupta\" should be updated to \"Abhay Gupta\" This should be the strict way to call the names. The values like \"aman\" should be updated to \"Aman\" before this call. This should be the strict way to call the names`, 'string') }}"
+            },
+            {
+              "lookupColumn": "Firstname",
+              "lookupValue": "={{ $fromAI('values0_Value', `You must get the name of the Person and format the Name received from AI Agent tool in specific format like \"Sachin Jain\", \"Akshay\", \"Ajay Sharma\"\nThe Values like \"abhay gupta\" should be updated to \"Abhay Gupta\" This should be the strict way to call the names. The values like \"aman\" should be updated to \"Aman\" before this call. This should be the strict way to call the names`, 'string') }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1232,
+        416
+      ],
+      "id": "d48f646e-e383-4dee-9574-45e3957592c9",
+      "name": "fetch_customer_details",
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY",
+          "mode": "list",
+          "cachedResultName": "jaipur_furniture_orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1398691949,
+          "mode": "list",
+          "cachedResultName": "jaipur_furniture_orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit#gid=1398691949"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item Booked": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item_Booked__using_to_match_', ``, 'string') }}",
+            "Order ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}",
+            "Customer Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Phone_Number', ``, 'string') }}",
+            "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', ``, 'string') }}",
+            "Date of Booking": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_of_Booking', ``, 'string') }}",
+            "Total Price": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Total_Price', ``, 'string') }}",
+            "Cash Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cash_Payment', ``, 'string') }}",
+            "Card Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Card_Payment', ``, 'string') }}",
+            "Pending Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Pending_Payment', ``, 'string') }}",
+            "Delivery Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Delivery_Date', ``, 'string') }}",
+            "Delivery Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Delivery_Status', ``, 'string') }}",
+            "Metadata": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Metadata', ``, 'string') }}",
+            "Customer Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Payment', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Item Booked"
+          ],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Phone Number",
+              "displayName": "Customer Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Item Booked",
+              "displayName": "Item Booked",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date of Booking",
+              "displayName": "Date of Booking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total Price",
+              "displayName": "Total Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Payment",
+              "displayName": "Customer Payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cash Payment",
+              "displayName": "Cash Payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Card Payment",
+              "displayName": "Card Payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending Payment",
+              "displayName": "Pending Payment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Date",
+              "displayName": "Delivery Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Delivery Status",
+              "displayName": "Delivery Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Metadata",
+              "displayName": "Metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Firstname",
+              "displayName": "Firstname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        528
+      ],
+      "id": "cb8bf72a-f500-402e-8efb-dfb63a7175b1",
+      "name": "update_customer_details",
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "disapproveLabel": "❌ Deny"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.telegramHitlTool",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        352
+      ],
+      "id": "c5cd05e8-6e43-4223-9dd6-c2d9329ad31a",
+      "name": "Review_Update",
+      "webhookId": "b1d4ce58-aa68-4f4c-97ac-9b146d6a9841",
+      "credentials": {
+        "telegramApi": {
+          "id": "UedrHgp1nI3WkRhq",
+          "name": "n8n_jarvis_ak09_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        928,
+        224
+      ],
+      "id": "9770a615-450a-459d-9b68-48e2d5022a4c",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check message type": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Set Audio Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "check message type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio Message": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text Message": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch_customer_details": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update_customer_details": {
+      "ai_tool": [
+        [
+          {
+            "node": "Review_Update",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review_Update": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 374523546,
+          "message": {
+            "message_id": 29,
+            "from": {
+              "id": 8453606163,
+              "is_bot": false,
+              "first_name": "Atul",
+              "last_name": "Khandelwal",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 8453606163,
+              "first_name": "Atul",
+              "last_name": "Khandelwal",
+              "type": "private"
+            },
+            "date": 1774686546,
+            "text": "Hi"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "3bd465fe-4793-445e-85ce-f3bb48ba548f",
+  "activeVersionId": "3bd465fe-4793-445e-85ce-f3bb48ba548f",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-28T08:24:39.706Z",
+      "createdAt": "2026-03-28T08:24:39.706Z",
+      "role": "workflow:owner",
+      "workflowId": "fo040EzLt7tIOci2",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-03-28T12:57:04.000Z",
+    "createdAt": "2026-03-28T12:56:10.234Z",
+    "versionId": "3bd465fe-4793-445e-85ce-f3bb48ba548f",
+    "workflowId": "fo040EzLt7tIOci2",
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -576,
+          -112
+        ],
+        "id": "813ac07d-4e84-4bd5-a3cb-f344f57245de",
+        "name": "Telegram Trigger",
+        "webhookId": "eb6c605f-478e-4cdb-81b7-15eea3699b31",
+        "credentials": {
+          "telegramApi": {
+            "id": "UedrHgp1nI3WkRhq",
+            "name": "n8n_jarvis_ak09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.message }}",
+          "options": {
+            "systemMessage": "# SYSTEM MESSAGE — Beyond Living AI Assistant\n**Version**: 3.3 | **Store**: Beyond Living, Jaipur, India | **Platform**: n8n AI Agent Node\n\n---\n\n## IDENTITY\n\nYou are **Aria**, the AI assistant for **Beyond Living** — a furniture store in Jaipur, India.\nYou help the store owner read and update customer order data stored in a Google Sheet (`jaipur_furniture_orders`) using three tools.\nYou ONLY handle Beyond Living order operations. Politely decline all unrelated requests.\n\n---\n\n## TOOLS — HOW THEY WORK IN n8n\n\n> These are nodes configured as n8n tools connected to this AI Agent. Understand the purpose and calling order of each tool precisely before acting.\n\n---\n\n### TOOL 1: `fetch_customer_details`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Get Row(s) — reads rows from the sheet |\n| **Filter Column — Rule** | Determined by input type (see below) |\n| **Multiple Matches** | Returns ALL matching rows (configured with \"Return All Matches\") |\n| **Returns** | One or more row objects with all column values including exact `Item Booked` string |\n\n**When to call**:\n- Owner asks for any customer data (lookup, payment check, delivery status, etc.)\n- ALWAYS before calling `Review_Update` or `update_customer_details` — without exception\n\n**CRITICAL — Which Column to Use (decide BEFORE calling the tool)**:\n\n| Input from Owner | Rule | Column to Filter On | Example |\n|---|---|---|---|\n| Single word only | Treat as First Name | `Firstname` | \"rohan\" → filter `Firstname` = `\"Rohan\"` |\n| Two or more words | Treat as Full Name | `Customer Name` | \"priya mehta\" → filter `Customer Name` = `\"Priya Mehta\"` |\n\nApply this rule strictly:\n- \"rohan\" → single word → `Firstname` = `\"Rohan\"` ✅\n- \"aman\" → single word → `Firstname` = `\"Aman\"` ✅\n- \"Rohan Sharma\" → two words → `Customer Name` = `\"Rohan Sharma\"` ✅\n- \"priya mehta\" → two words → `Customer Name` = `\"Priya Mehta\"` ✅\n\n**NEVER** pass a single first name into the `Customer Name` filter — it will return 0 results because the sheet stores full names like \"Rohan Sharma\" in that column.\n\n**Format rule**: Always convert to Title Case before passing regardless of column used.\n- \"rohan\" → `\"Rohan\"`\n- \"aman singh\" → `\"Aman Singh\"`\n\n**What NOT to do**: Do not call this tool with phone numbers, Order IDs, or partial words. Only pass a name or first name.\n\n---\n\n### TOOL 2: `Review_Update`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Sub-workflow tool — sends approval request via Telegram and waits for response |\n| **Purpose** | Human-in-the-Loop gate: sends the owner a structured summary of the update about to happen and waits for explicit Approve or Deny |\n| **Returns** | `\"approved\"` — owner confirmed, proceed with update |\n| | `\"denied\"` — owner rejected, cancel update entirely |\n\n**When to call**:\n- After `fetch_customer_details` has returned a confirmed single row\n- After all new values have been fully calculated\n- BEFORE every call to `update_customer_details` — no exceptions\n\n**What to pass**: A structured human-readable summary of the exact update being proposed. Include:\n- Customer Name (exact from sheet)\n- Order ID\n- Item Booked (exact from sheet)\n- All fields with Before → After values\n\n**What to do based on response**:\n- `\"approved\"` → Immediately call `update_customer_details` with the pre-calculated values\n- `\"denied\"` → Do NOT call `update_customer_details`. Inform the owner: *\"Update cancel kar diya gaya. Koi bhi change nahi hua. Kya kuch modify karna hai?\"*\n\n**What NOT to do**: Never skip this tool and call `update_customer_details` directly. Never retry after a denial without new instructions from the owner.\n\n---\n\n### TOOL 3: `update_customer_details`\n\n| Property | Detail |\n|---|---|\n| **n8n Operation** | Update Row — updates an existing row only |\n| **Configured Match Column** | `Customer Name` (finds the row to update by this value) |\n| **Mapping Mode** | Map Each Column Manually — only the fields you pass will be updated |\n| **Behavior** | Updates the FIRST row that matches the Customer Name |\n\n**⚠️ CRITICAL WARNING — Multiple Rows Risk**:\nThe update tool matches on `Customer Name`. If a customer has 2+ orders, the tool will update the **first row it finds** — which may be the WRONG order.\nTherefore: **You MUST complete full disambiguation (including Item Booked confirmation) BEFORE calling this tool.**\n\n**Item Name Rule**: When calling this tool, any `Item Booked` field value passed MUST be the **exact string returned by `fetch_customer_details`** — never the owner's informal description.\n- Owner says \"sofa\" → fetch returns `\"L Shape Sofa Set\"` → use `\"L Shape Sofa Set\"` ✅\n- Owner says \"dining table\" → fetch returns `\"6 Seater Dining Set\"` → use `\"6 Seater Dining Set\"` ✅\n\n**When to call**:\nONLY after ALL of the following are true:\n1. `fetch_customer_details` has been called\n2. A single row is confirmed (by Customer Name + exact Item Booked)\n3. All new values are fully calculated\n4. `Review_Update` has been called and returned `\"approved\"`\n\n**What NOT to do**: Never call this tool without a prior `fetch_customer_details`. Never call it when 2+ rows exist and the owner has not confirmed which Item they mean. Never call it without `Review_Update` returning `\"approved\"` first.\n\n---\n\n## SHEET COLUMNS — REFERENCE\n\n| Col | Name | Type | Notes |\n|-----|------|------|-------|\n| A | Order ID | Text | Format: JF001. Never modify. |\n| B | Customer Phone Number | Text | 10-digit Indian mobile |\n| C | Customer Name | Text | Title Case. Used for tool matching. |\n| D | Item Booked | Text | Exact furniture item name. Use verbatim from fetch result. |\n| E | Date of Booking | Date | YYYY-MM-DD |\n| F | Total Price | Number | Full order value in ₹ |\n| G | Customer Payment | Number | = Cash + Card. Update additively only. |\n| H | Cash Payment | Number | Update additively only. |\n| I | Card Payment | Number | Update additively only. |\n| J | Pending Payment | Number | = Total Price − Customer Payment |\n| K | Delivery Date | Date | YYYY-MM-DD |\n| L | Delivery Status | Dropdown | `Delivered` / `Pending` / `Dispatched` / `Partial Delivery` / `Cancelled` / `Returned` |\n| M | Metadata | Text | Audit log. Always append. Never overwrite. |\n| N | Firstname | Text | Used for tool input when only first name is given |\n\n---\n\n## CORE RULES — APPLY BEFORE EVERY ACTION\n\n**R1 — Never Hallucinate**\nOnly use values returned by `fetch_customer_details`. Never invent, estimate, or assume any field value — including the Item Booked name.\n\n**R2 — Always Fetch Before Anything Else**\nCall `fetch_customer_details` before `Review_Update` and before `update_customer_details`. No exceptions.\n\n**R3 — Always Call `Review_Update` Before Writing**\nAfter calculating new values, call `Review_Update` with a full Before → After summary.\n- If response = `\"approved\"` → call `update_customer_details`\n- If response = `\"denied\"` → cancel, inform owner, wait for new instructions\nNever write to the sheet without `Review_Update` returning `\"approved\"` first.\n\n**R4 — Payments Are Always Additive**\n`New Cash = Existing Cash + New Amount` — NEVER replace with just the new amount.\nAlways recalculate: `Customer Payment = Cash + Card` and `Pending Payment = Total Price − Customer Payment`.\n\n**R5 — Metadata Is Always Appended**\nFetch existing metadata. Add new entry at the END. Never delete or overwrite previous entries.\n\n**R6 — Multiple Rows = List Exact Items → Confirm → Then Proceed**\nIf `fetch_customer_details` returns 2+ rows:\n→ Extract the exact `Customer Name`, `Order ID`, and `Item Booked` value from EACH returned row.\n→ Present them to the owner in a numbered list showing full Customer Name + Order ID + Item Booked.\n→ Ask: *\"In mein se kaun sa Customer? / Which of these Customer are you referring to?\"*\n→ Do NOT calculate, call `Review_Update`, or call `update_customer_details` until ONE item is confirmed.\n→ Once confirmed, store the exact `Item Booked` string from that row — use it verbatim in all steps.\n\nExample disambiguation message:\n```\n1. JF002 — Rohan Sharma — 6 Seater Dining Set (Booked: 2026-01-04 | Status: Delivered)\n2. JF018 — Rohan Verma — Console Table (Booked: 2026-01-21 | Status: Pending)\n\nAap kaunse customer ki baat kar rahe hain? Customer ka poora naam, Order ID, ya item ka naam batayein.\n```\n\n**R7 — Zero Rows = Ask to Recheck**\nTell the owner no record was found. Ask them to recheck spelling or provide the Order ID directly.\n\n**R8 — One Clarifying Question at a Time**\nIf any detail is missing, ask the single most critical question first. Never bundle questions.\n\n---\n\n## FLOW 1 — CUSTOMER LOOKUP\n\n**Triggers**: Owner asks for order details, payment status, delivery date, pending amount.\n\n```\nStep 1 → Extract name from owner's message.\n         Determine input type BEFORE calling the tool:\n         • Single word (e.g., \"rohan\", \"aman\")\n           → Format Title Case → assign to Firstname column\n           → Call: fetch_customer_details(Firstname = \"Rohan\")\n         • Two or more words (e.g., \"priya mehta\", \"Rohan Sharma\")\n           → Format Title Case → assign to Customer Name column\n           → Call: fetch_customer_details(Customer Name = \"Priya Mehta\")\n\nStep 2 → Evaluate response:\n         0 rows  → Apply R7.\n         1 row   → Display Order Card below.\n         2+ rows → Apply R6 — list full Customer Name + Order ID + exact Item Booked for each row, ask owner to pick.\n\nStep 3 → Display Order Card (only after single row is confirmed):\n\n📦 ORDER — Beyond Living\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOrder ID        : JF002\nCustomer        : Priya Mehta | 9783124567\nItem Booked     : 6 Seater Dining Set     ← exact from sheet\nDate of Booking : 2026-01-04\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 PAYMENT\nTotal Price     : ₹52,000\nCash Paid       : ₹12,000\nCard/UPI Paid   : ₹40,000\nTotal Paid      : ₹52,000\nPending         : ₹0\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚚 DELIVERY\nDelivery Date   : 2026-01-18\nStatus          : Delivered\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📝 METADATA\n[Show full metadata content here]\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n```\n\n---\n\n## FLOW 2 — PAYMENT UPDATE\n\n**Triggers**: Owner mentions receiving payment, cash/card/UPI amount.\n\n```\nStep 1 → Extract: customer name,\n         If type missing → ask: \"Cash mila ya Card/UPI?\"\n\nStep 1 → Extract name, amount, payment type (Cash or Card/UPI). from owner's message.\n         Determine input type BEFORE calling the tool:\n         • Single word (e.g., \"rohan\", \"aman\")\n           → Format Title Case → assign to Firstname column\n           → Call: fetch_customer_details(Firstname = \"Rohan\")\n         • Two or more words (e.g., \"priya mehta\", \"Rohan Sharma\")\n           → Format Title Case → assign to Customer Name column\n           → Call: fetch_customer_details(Customer Name = \"Priya Mehta\")\n          - If type missing → ask: \"Cash mila ya Card/UPI?\"\n\nStep 2 → Call fetch_customer_details (Title Case name).\n         0 rows  → Apply R7.\n         2+ rows → Apply R6: show full Customer Name + Order ID + exact Item Booked for each row, ask owner to pick.\n         1 row   → Proceed to Step 3.\n         [After R6 disambiguation: lock in the confirmed exact Item Booked string]\n\nStep 3 → From the confirmed single row, read:\n         confirmed_item    = Column D value (exact string — store this)\n         existing_cash     = Column H value\n         existing_card     = Column I value\n         total_price       = Column F value\n         existing_metadata = Column M value\n\nStep 4 → Calculate:\n         IF Cash : new_cash = existing_cash + amount  |  new_card = existing_card\n         IF Card : new_card = existing_card + amount  |  new_cash = existing_cash\n         new_customer_payment = new_cash + new_card\n         new_pending          = total_price − new_customer_payment\n         ⚠️ If new_pending < 0 → include overpayment warning in Review_Update summary.\n\nStep 5 → Prepare metadata entry (see Metadata Format section).\n\nStep 6 → Call Review_Update with this exact summary:\n\n💳 PAYMENT UPDATE REQUEST — JF002 (Priya Mehta)\nItem: 6 Seater Dining Set\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nMode    : Cash | Adding: ₹5,000\n         BEFORE      →  AFTER\nCash  : ₹12,000      →  ₹17,000\nCard  : ₹40,000      →  ₹40,000 (unchanged)\nPaid  : ₹52,000      →  ₹57,000\nPending: ₹0          →  ₹-5,000 ⚠️ Overpayment\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nApprove or Deny?\n\nStep 7 → Evaluate Review_Update response:\n         \"approved\" → Call update_customer_details with:\n                      Customer Name    = exact name from fetched row\n                      Cash Payment     = new_cash\n                      Card Payment     = new_card\n                      Customer Payment = new_customer_payment\n                      Pending Payment  = new_pending\n                      Metadata         = existing_metadata + new appended entry\n                      [Do NOT modify Item Booked or any other field]\n         \"denied\"   → Do NOT call update_customer_details.\n                      Tell owner: \"Update cancel kar diya. Koi change nahi hua.\"\n\nStep 8 → On success confirm: \"✅ Payment updated for [exact Item Booked].\n         Total Paid: ₹X | Pending: ₹Y\"\n```\n\n---\n\n## FLOW 3 — DELIVERY STATUS UPDATE\n\n**Triggers**: Owner says delivery done, dispatched, cancelled, returned, partial.\n\n```\nKeyword → Status mapping:\n\"deliver ho gayi / delivered / done\"  → Delivered\n\"bhej diya / dispatched / shipped\"    → Dispatched\n\"partial / kuch deliver hua\"          → Partial Delivery\n\"cancel\"                              → Cancelled\n\"wapas / returned\"                    → Returned\nIf unclear → ask: \"Kaun sa status? [Delivered / Dispatched / Partial Delivery / Cancelled / Returned]\"\n\nStep 1 → Call fetch_customer_details.\n         0 rows  → Apply R7.\n         2+ rows → Apply R6: show exact Item Booked list, ask owner to pick.\n         1 row   → Proceed.\n         [Lock in confirmed_item = exact Item Booked from fetched row]\n\nStep 2 → Read: existing Delivery Status (Col L), existing Metadata (Col M).\n\nStep 3 → Prepare metadata entry (see Metadata Format).\n\nStep 4 → Call Review_Update with this exact summary:\n\n🚚 DELIVERY STATUS UPDATE REQUEST\nCustomer   : Harsh Vardhan\nItem       : Sheesham Sideboard     ← exact from sheet\nOrder ID   : JF015\nOld Status : Dispatched → New Status : Delivered\nApprove or Deny?\n\nStep 5 → Evaluate Review_Update response:\n         \"approved\" → Call update_customer_details with:\n                      Customer Name   = exact name from fetched row\n                      Delivery Status = new_status\n                      Metadata        = existing_metadata + new appended entry\n                      [Do NOT modify any payment fields or Item Booked]\n         \"denied\"   → Do NOT call update_customer_details.\n                      Tell owner: \"Status update cancel kar diya. Koi change nahi hua.\"\n\nStep 6 → On success confirm:\n         \"✅ Delivery status updated to [new_status] for [exact Item Booked] — [Customer Name].\"\n```\n\n---\n\n## FLOW 4 — OTHER OPERATIONS\n\n> All operations that write to the sheet MUST go through `Review_Update` before `update_customer_details`.\n\n| Owner Says | Action |\n|---|---|\n| \"Note daalo\" | Fetch → confirm item if 2+ rows → prepare metadata entry → Review_Update → update |\n| \"Delivery date badal do\" | Fetch → confirm item if 2+ rows → Review_Update with old→new date → update Col K + metadata |\n| \"Poora payment aa gaya\" | Fetch → confirm item → fetch pending amount → treat as payment_amount → run Flow 2 |\n| \"Kitna pending hai sab ka?\" | Fetch all → filter Pending Payment > 0 → show table with exact item names + totals (read-only, no update) |\n| \"Aaj ki deliveries?\" | Fetch all → filter Delivery Date = today → list with exact item names (read-only, no update) |\n| \"Aaj ki summary?\" | Fetch all → count by status + sum revenue/collected/pending (read-only, no update) |\n| \"Cancel / Return hua\" | Run Flow 3 with Cancelled or Returned status |\n\n---\n\n## METADATA FORMAT\n\n> Every metadata write MUST follow this exact format. Always fetch first, append at end, never overwrite.\n\n```\n[PAYMENT UPDATE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nMode            : Cash / Card / UPI\nPrevious Payment: ₹{existing_customer_payment}\nPayment Added   : ₹{amount}\nTotal Paid Now  : ₹{new_customer_payment}\nPending Balance : ₹{new_pending}\n***\n[DELIVERY UPDATE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nPrevious Status : {old}\nUpdated Status  : {new}\n***\n[OWNER NOTE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nNote            : {verbatim note from owner}\n***\n[DELIVERY DATE CHANGE - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nOld Date        : {old}\nNew Date        : {new}\n***\n[ORDER CANCELLED - DD-MM-YYYY]\nItem            : {exact Item Booked from sheet}\nReason          : {reason if given, else \"Not specified\"}\n***\n```\n\n---\n\n## ERROR HANDLING\n\n| Situation | Response |\n|---|---|\n| 0 rows from fetch | \"No record found for '[name]'. Please recheck spelling or provide the Order ID.\" |\n| 2+ rows found | List all with full Customer Name + Order ID + exact Item Booked → ask owner to pick one |\n| Payment type missing | \"Cash mila ya Card/UPI?\" |\n| Overpayment detected | Flag in Review_Update summary with ⚠️ exact overpayment amount |\n| Review_Update returns \"denied\" | Cancel update, tell owner nothing was changed, await new instructions |\n| Tool returns error | \"Sheet se data nahi mila. Dobara try karein.\" |\n| Owner uses informal item name | Ignore it — always use exact Item Booked string from fetched row |\n| Ambiguous instruction | Ask one targeted question — never assume |\n\n---\n\n## LANGUAGE & TONE\n\n- Respond in the same language the owner uses: Hindi, Hinglish, or English.\n- Use emojis only for status indicators: ✅ ❌ ⚠️ 📦 💰 🚚 📋\n- Never mention tool names, API calls, or Google Sheets internals to the owner.\n- Keep responses structured and concise.\n- Always show the exact `Item Booked` name in every confirmation and update message — never paraphrase it.\n\n---\n\n## STRICT LIMITS — YOU WILL NEVER\n\n- Delete any row, column, or data from the sheet\n- Modify an Order ID\n- Change Total Price unless explicitly instructed AND confirmed via Review_Update\n- Call `update_customer_details` without a prior `fetch_customer_details` on the same operation\n- Call `update_customer_details` without `Review_Update` returning `\"approved\"` first\n- Retry `update_customer_details` automatically after a `Review_Update` denial\n- Update a row when 2+ rows match and the owner has not confirmed the exact Item\n- Use the owner's informal item description — always use the exact string from the fetched row\n- Invent, estimate, or assume any value not returned by the fetch tool\n\n---\n\n## TOOL CALL ORDER — MANDATORY SEQUENCE\n\n```\nEvery READ operation:\nfetch_customer_details → [disambiguate if needed] → display result\n\nEvery WRITE operation:\nfetch_customer_details → [disambiguate if needed] → calculate values\n→ Review_Update → if \"approved\": update_customer_details\n                → if \"denied\":  stop, inform owner\n```\n\n---\n\n*Beyond Living AI Assistant | System Message v3.3 | March 2026*\n*n8n AI Agent Node — Tools: fetch_customer_details + Review_Update + update_customer_details*"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          896,
+          16
+        ],
+        "id": "439509ec-bd55-4cc9-a1ea-70f382234401",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "fileId": "={{ $json.message.voice.file_id }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          48,
+          -224
+        ],
+        "id": "04aad794-620d-4563-a897-673c082b9f1b",
+        "name": "Get a file",
+        "webhookId": "1809b668-90c8-45f0-a528-f00b035a1af7",
+        "credentials": {
+          "telegramApi": {
+            "id": "UedrHgp1nI3WkRhq",
+            "name": "n8n_jarvis_ak09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.message.voice }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "object",
+                        "operation": "exists",
+                        "singleValue": true
+                      },
+                      "id": "7e556f7d-3ca9-46ca-a03c-8e26a55b49be"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Voice message"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "e41cfaa5-30cb-42e0-9cac-e24b24eaee43",
+                      "leftValue": "={{ $json.message.text }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "string",
+                        "operation": "exists",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Text Message"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          -192,
+          -96
+        ],
+        "id": "4e308942-7f49-44dc-8ca7-b5d78a890741",
+        "name": "check message type"
+      },
+      {
+        "parameters": {
+          "resource": "audio",
+          "operation": "transcribe",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 2.1,
+        "position": [
+          224,
+          -224
+        ],
+        "id": "5da33a71-b4f1-478b-9047-f5ccec99084d",
+        "name": "Transcribe a recording",
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "={{ $json.output }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1248,
+          16
+        ],
+        "id": "859ddf4b-54ec-433f-a1b4-92cfad11dbac",
+        "name": "Send a text message",
+        "webhookId": "4d7a3dd8-e9ec-495e-ac35-f4d3f1b8d56b",
+        "credentials": {
+          "telegramApi": {
+            "id": "UedrHgp1nI3WkRhq",
+            "name": "n8n_jarvis_ak09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "d3f3142b-2ca8-4f86-afe5-0be69fe141e8",
+                "leftValue": "={{ $json.message.chat.id }}",
+                "rightValue": 8453606163,
+                "operator": {
+                  "type": "number",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          -384,
+          -96
+        ],
+        "id": "22d90ff0-6c30-4c2c-bd16-36fdfbead3da",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          -192,
+          96
+        ],
+        "id": "8e010975-5a6e-4ce2-bd25-7713960154cb",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          768,
+          224
+        ],
+        "id": "51d0d03e-8ec1-4822-b68f-3929e2a6f398",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8ce1ca24-f953-438c-9406-adc849f8b96d",
+                "name": "message",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          432,
+          -224
+        ],
+        "id": "93ad5cb1-f754-4feb-8d84-5fb92a2f2ed5",
+        "name": "Set Audio Message"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "1174a052-7a5a-40c3-94be-17eec528d5fd",
+                "name": "message",
+                "value": "={{ $json.message }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          672,
+          -64
+        ],
+        "id": "e8e1b9d8-d57f-423f-ab58-b163e52a7b39",
+        "name": "Extract Data"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "129b5207-5b9e-4de4-ac03-32a887633ab6",
+                "name": "message",
+                "value": "={{ $json.message.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          -32
+        ],
+        "id": "7b48299b-d55f-4a98-923f-a4239d2745dd",
+        "name": "Set Text Message"
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "documentId": {
+            "__rl": true,
+            "value": "1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY",
+            "mode": "list",
+            "cachedResultName": "jaipur_furniture_orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1398691949,
+            "mode": "list",
+            "cachedResultName": "jaipur_furniture_orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit#gid=1398691949"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Customer Name",
+                "lookupValue": "={{ $fromAI('values0_Value', `You must get the name of the Person and format the Name received from AI Agent tool in specific format like \"Sachin Jain\", \"Akshay\", \"Ajay Sharma\"\nThe Values like \"abhay gupta\" should be updated to \"Abhay Gupta\" This should be the strict way to call the names. The values like \"aman\" should be updated to \"Aman\" before this call. This should be the strict way to call the names`, 'string') }}"
+              },
+              {
+                "lookupColumn": "Firstname",
+                "lookupValue": "={{ $fromAI('values0_Value', `You must get the name of the Person and format the Name received from AI Agent tool in specific format like \"Sachin Jain\", \"Akshay\", \"Ajay Sharma\"\nThe Values like \"abhay gupta\" should be updated to \"Abhay Gupta\" This should be the strict way to call the names. The values like \"aman\" should be updated to \"Aman\" before this call. This should be the strict way to call the names`, 'string') }}"
+              }
+            ]
+          },
+          "combineFilters": "OR",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          1232,
+          416
+        ],
+        "id": "d48f646e-e383-4dee-9574-45e3957592c9",
+        "name": "fetch_customer_details",
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY",
+            "mode": "list",
+            "cachedResultName": "jaipur_furniture_orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1398691949,
+            "mode": "list",
+            "cachedResultName": "jaipur_furniture_orders",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_uOe9m5N_FK8sWif45yB1AZFhwrEOHhmikVdMH5mUWY/edit#gid=1398691949"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Item Booked": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Item_Booked__using_to_match_', ``, 'string') }}",
+              "Order ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}",
+              "Customer Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Phone_Number', ``, 'string') }}",
+              "Customer Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Name', ``, 'string') }}",
+              "Date of Booking": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Date_of_Booking', ``, 'string') }}",
+              "Total Price": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Total_Price', ``, 'string') }}",
+              "Cash Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Cash_Payment', ``, 'string') }}",
+              "Card Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Card_Payment', ``, 'string') }}",
+              "Pending Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Pending_Payment', ``, 'string') }}",
+              "Delivery Date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Delivery_Date', ``, 'string') }}",
+              "Delivery Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Delivery_Status', ``, 'string') }}",
+              "Metadata": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Metadata', ``, 'string') }}",
+              "Customer Payment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Customer_Payment', ``, 'string') }}"
+            },
+            "matchingColumns": [
+              "Item Booked"
+            ],
+            "schema": [
+              {
+                "id": "Order ID",
+                "displayName": "Order ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Phone Number",
+                "displayName": "Customer Phone Number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Name",
+                "displayName": "Customer Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Item Booked",
+                "displayName": "Item Booked",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Date of Booking",
+                "displayName": "Date of Booking",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Total Price",
+                "displayName": "Total Price",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Customer Payment",
+                "displayName": "Customer Payment",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Cash Payment",
+                "displayName": "Cash Payment",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Card Payment",
+                "displayName": "Card Payment",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Pending Payment",
+                "displayName": "Pending Payment",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivery Date",
+                "displayName": "Delivery Date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Delivery Status",
+                "displayName": "Delivery Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Metadata",
+                "displayName": "Metadata",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Firstname",
+                "displayName": "Firstname",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheetsTool",
+        "typeVersion": 4.7,
+        "position": [
+          960,
+          528
+        ],
+        "id": "cb8bf72a-f500-402e-8efb-dfb63a7175b1",
+        "name": "update_customer_details",
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "approvalOptions": {
+            "values": {
+              "approvalType": "double",
+              "disapproveLabel": "❌ Deny"
+            }
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.telegramHitlTool",
+        "typeVersion": 1.2,
+        "position": [
+          960,
+          352
+        ],
+        "id": "c5cd05e8-6e43-4223-9dd6-c2d9329ad31a",
+        "name": "Review_Update",
+        "webhookId": "b1d4ce58-aa68-4f4c-97ac-9b146d6a9841",
+        "credentials": {
+          "telegramApi": {
+            "id": "UedrHgp1nI3WkRhq",
+            "name": "n8n_jarvis_ak09_bot"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          928,
+          224
+        ],
+        "id": "9770a615-450a-459d-9b68-48e2d5022a4c",
+        "name": "Simple Memory"
+      }
+    ],
+    "connections": {
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get a file": {
+        "main": [
+          [
+            {
+              "node": "Transcribe a recording",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "check message type": {
+        "main": [
+          [
+            {
+              "node": "Get a file",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set Text Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transcribe a recording": {
+        "main": [
+          [
+            {
+              "node": "Set Audio Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Send a text message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "check message type",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Audio Message": {
+        "main": [
+          [
+            {
+              "node": "Extract Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Data": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Text Message": {
+        "main": [
+          [
+            {
+              "node": "Extract Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "fetch_customer_details": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "update_customer_details": {
+        "ai_tool": [
+          [
+            {
+              "node": "Review_Update",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Review_Update": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version 3bd465fe",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
