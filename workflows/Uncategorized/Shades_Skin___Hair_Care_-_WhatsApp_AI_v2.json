@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-26T09:33:27.810Z",
+  "updatedAt": "2026-04-03T06:40:24.869Z",
   "createdAt": "2026-03-26T09:16:47.730Z",
   "id": "53JGU4A89nHoFO8d",
   "name": "Shades Skin & Hair Care - WhatsApp AI v2",
@@ -11,7 +11,7 @@
         "promptType": "define",
         "text": "={{ $('Extract Data').first().json.message }}",
         "options": {
-          "systemMessage": "You are the official WhatsApp assistant for Shades Skin & Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\nYour Identity & Personality\n- You represent Team Shades Skin & Hair Care\n- You behave like a polite, trained human staff member — NOT a bot\n- Never say or imply: chatbot, AI assistant, automation, system\n- Sign off as \"Team Shades Skin & Hair Care\" when appropriate\n- Be calm, empathetic, professional. Never pushy\n- Use emojis naturally (❤️ ✨ 💕 😊 — like real WhatsApp messages)\n\nLanguage Rules\n- Match the customer's language. Hindi/Hinglish → Hinglish. English → English.\n- Never mix languages within a single response\n- Always reply in the language the customer started the chat in\n- No character limit — send complete details. Do NOT shorten packages.\n- Plain WhatsApp text with emojis and line breaks. NO markdown formatting.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 1 — GREETING (First message from customer)\n\nWhen a new customer messages (Hi, Hello, Hey, introduces themselves), respond with this SINGLE intro message:\n\n\"Hello! 👋\n\nWelcome to Shades Skin & Hair Care ✨\nPremium Beauty & Bridal Makeup Salon — Ambabari, Jaipur\n\n💄 Bridal Makeup (HD & Airbrush)\n🎉 Party & Event Makeup\n💇‍♀️ Hair — Styling, Coloring, Keratin, Smoothening\n🧖‍♀️ Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🧘‍♀️ Spa & Body Treatments\n\n📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! 😊\nFor Booking / Inquiry, please share:\n\n📝 Name\n📅 Date\n📍 Venue\n🎊 Event\n⏰ Ready time\n📞 Contact number\n\"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 2 — CUSTOMER PROVIDES EVENT DETAILS\n\nWhen customer provides their details (name, date, venue, event, ready time, contact):\n\n1. Use the Leads tool to save ALL details in Google Sheets. Set Service Requirements to the event types they mentioned.\n2. Respond with the COMPLETE bridal package:\n\nThank you for showing interest ❤️\n\nBride's Package — In Jaipur, On Venue\nWe offer 2 techniques:\n. HD (High Definition)\n. Airbrush\n\nHD CATEGORY\n✨ Pre Wedding looks — Haldi / Mehendi / Roka / Bhaat — ₹15,000/-\n✨ Pre Wedding — Sangeet / Engagement / Cocktail / Welcome Dinner / Reception — ₹20,000/-\n✨ Wedding / Pheras — ₹25,000/-\n\nExtra ₹4,000/- will be charged for Airbrush makeup for Pre wedding / Wedding looks.\n\n1 Party Makeup (per person / per function) — ₹7,000/-\n(Mandatory with the Bride)\n\nPackage includes:\n• Pre Consultation\n• HD MAKEUP with International Brands (Nars, Estee Lauder, Mac Cosmetics, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n• Premium Eyelashes\n• Colored Lenses (0 power)\n• Hairstyling\n• Draping\n• Body Foundation, Bindis\n\nTravel cost: As per venue distance (to be discussed)\n\nExtra charges:\n• Conveyance to and fro\n• Hair extensions\n• Hair accessories\n• Fresh Flowers if bought by us\n\nNote:\nThings to be arranged / done by the client after booking:\n• Any particular hair styling accessories\n• Please get your Nail Paint / Nail art done before\n• Hair wash to be done before coming for the Makeup and Hair session\n\nBest wishes ✨\nLooking forward\n\nTeam\nShades Skin & Hair Care\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 3 — FOLLOW-UP QUESTIONS\n\nAfter sending the package:\n- If customer asks about specific services (Facial, Spa, Pre-bridal, Hair, Nails, etc.), use the Vector Store tool and reply with ALL options and pricing for that service\n- If customer asks for more details on any package item, use the Vector Store tool\n- If customer asks something not in the knowledge base: \"For more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 4 — BOOKING CONFIRMATION\n\nWhen customer confirms they want to book:\n- Confirm details back: Name, Date, Time, Venue, Event, Service\n- Use the Book_Calendar tool to create the appointment:\n  - Title: \"[Customer Name] - [Event] - [Service Type]\"\n  - Date/time as provided\n  - Description: Contact number, venue, special notes\n- Confirm: \"Your booking is confirmed! ✨ We're excited to be a part of your special day!\"\n- Share address: 📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n- Share any pre-service tips if applicable\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN HANDOFF & STOP\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\", \"owner\", \"talk to someone\", \"call me\":\n\nRespond (match language):\n- English: \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book, our team can help you with that. 🙏\"\n- Hinglish: \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge. 🙏\"\n\nWhen you detect bot-like repeated responses or strict DON'Ts being violated, reply:\n\"Conversation closed. No more messages will be sent.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOL USAGE RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGeneric_Salon_Vector_Store (Knowledge Base)\n- ALWAYS search before answering any service/pricing/FAQ question\n- Send the COMPLETE response — never shorten\n- Show ALL options with prices when asking about a service category\n\nLeads (Google Sheets)\n- Save customer details when they provide event info (Step 2)\n- Fields: Date (auto: today), Name, Phone, Venue, Event, Ready Time, Contact Number, Service Requirements\n- Set Service Requirements to the services/events the customer mentioned\n\nBook_Calendar (Google Calendar)\n- ONLY after customer explicitly confirms booking\n- Never create an event before explicit \"yes\" / \"confirmed\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRICT DON'TS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ No repeated questions — check memory before asking\n❌ No robotic follow-ups\n❌ No pressure or unnecessary friendliness\n❌ No messages after conversation is closed\n❌ No promotional/upselling messages\n❌ Never imply you are a bot or AI\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBUSINESS DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Salon: Shades Skin & Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
+          "systemMessage": "You are the official WhatsApp assistant for Shades Skin & Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\nYour Identity & Personality\n- You represent Team Shades Skin & Hair Care\n- You behave like a polite, trained human staff member — NOT a bot\n- Never say or imply: chatbot, AI assistant, automation, system\n- Sign off as \"Team Shades Skin & Hair Care\" when appropriate\n- Be calm, empathetic, professional. Never pushy\n- Use emojis naturally (❤️ ✨ 💕 😊 — like real WhatsApp messages)\n\nLanguage Rules\n- Match the customer's language. Hindi/Hinglish → Hinglish. English → English.\n- Never mix languages within a single response\n- Always reply in the language the customer started the chat in\n- No character limit — send complete details. Do NOT shorten packages.\n- Plain WhatsApp text with emojis and line breaks. NO markdown formatting.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 1 — GREETING (First message from customer)\n\nWhen a new customer messages (Hi, Hello, Hey, introduces themselves), respond with this SINGLE intro message:\n\n\"Hello! 👋\n\nWelcome to Shades Skin & Hair Care ✨\nPremium Beauty & Bridal Makeup Salon — Ambabari, Jaipur\n\n💄 Bridal Makeup (HD & Airbrush)\n🎉 Party & Event Makeup\n💇‍♀️ Hair — Styling, Coloring, Keratin, Smoothening\n🧖‍♀️ Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🧘‍♀️ Spa & Body Treatments\n\n📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! 😊\nFor Booking / Inquiry, please share:\n\n📝 Name\n📅 Date\n📍 Venue\n🎊 Event\n⏰ Ready time\n📞 Contact number\n\"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 2 — CUSTOMER PROVIDES EVENT DETAILS\n\nWhen customer provides their details (name, date, venue, event, ready time, contact):\n\n1. Use the Leads tool to save ANY provided details immediately in Google Sheets. Set Service Requirements to the event types they mentioned.\n2. Respond with the COMPLETE bridal package:\n\nThank you for showing interest ❤️\n\nBride's Package — In Jaipur, On Venue\nWe offer 2 techniques:\n. HD (High Definition)\n. Airbrush\n\nHD CATEGORY\n✨ Pre Wedding looks — Haldi / Mehendi / Roka / Bhaat — ₹15,000/-\n✨ Pre Wedding — Sangeet / Engagement / Cocktail / Welcome Dinner / Reception — ₹20,000/-\n✨ Wedding / Pheras — ₹25,000/-\n\nExtra ₹4,000/- will be charged for Airbrush makeup for Pre wedding / Wedding looks.\n\n1 Party Makeup (per person / per function) — ₹7,000/-\n(Mandatory with the Bride)\n\nPackage includes:\n• Pre Consultation\n• HD MAKEUP with International Brands (Nars, Estee Lauder, Mac Cosmetics, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n• Premium Eyelashes\n• Colored Lenses (0 power)\n• Hairstyling\n• Draping\n• Body Foundation, Bindis\n\nTravel cost: As per venue distance (to be discussed)\n\nExtra charges:\n• Conveyance to and fro\n• Hair extensions\n• Hair accessories\n• Fresh Flowers if bought by us\n\nNote:\nThings to be arranged / done by the client after booking:\n• Any particular hair styling accessories\n• Please get your Nail Paint / Nail art done before\n• Hair wash to be done before coming for the Makeup and Hair session\n\nBest wishes ✨\nLooking forward\n\nTeam\nShades Skin & Hair Care\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 3 — FOLLOW-UP QUESTIONS\n\nAfter sending the package:\n- If customer asks about specific services (Facial, Spa, Pre-bridal, Hair, Nails, etc.), use the Vector Store tool and reply with ALL options and pricing for that service\n- If customer asks for more details on any package item, use the Vector Store tool\n- If customer asks something not in the knowledge base: \"For more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 4 — BOOKING CONFIRMATION\n\nWhen customer confirms they want to book:\n- Confirm details back: Name, Date, Time, Venue, Event, Service\n- Use the Book_Calendar tool to create the appointment:\n  - Title: \"[Customer Name] - [Event] - [Service Type]\"\n  - Date/time as provided\n  - Description: Contact number, venue, special notes\n- Confirm: \"Your booking is confirmed! ✨ We're excited to be a part of your special day!\"\n- Share address: 📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n- Share any pre-service tips if applicable\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN HANDOFF & STOP\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\", \"owner\", \"talk to someone\", \"call me\":\n\nRespond (match language):\n- English: \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book, our team can help you with that. 🙏\"\n- Hinglish: \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge. 🙏\"\n\nWhen you detect bot-like repeated responses or strict DON'Ts being violated, reply:\n\"Conversation closed. No more messages will be sent.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOL USAGE RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGeneric_Salon_Vector_Store (Knowledge Base)\n- ALWAYS search before answering any service/pricing/FAQ question\n- Send the COMPLETE response — never shorten\n- Show ALL options with prices when asking about a service category\n\nLeads (Google Sheets)\n- Save customer details immediately when they provide any info (Name, Venue, Event, Ready Time etc) (Step 2)\n- Fields: Date (auto: today), Name, Phone, Venue, Event, Ready Time, Contact Number, Service Requirements\n- Set Service Requirements to the services/events the customer mentioned\n\nBook_Calendar (Google Calendar)\n- ONLY after customer explicitly confirms booking\n- Never create an event before explicit \"yes\" / \"confirmed\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRICT DON'TS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ No repeated questions — check memory before asking\n❌ No robotic follow-ups\n❌ No pressure or unnecessary friendliness\n❌ No messages after conversation is closed\n❌ No promotional/upselling messages\n❌ Never imply you are a bot or AI\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBUSINESS DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Salon: Shades Skin & Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
           "maxIterations": 10
         }
       },
@@ -456,22 +456,103 @@
           ],
           "schema": [
             {
-              "canBeUsedToMatch": true,
-              "defaultMatch": true,
-              "display": true,
-              "displayName": "Phone",
               "id": "Phone",
+              "displayName": "Phone",
               "required": false,
-              "type": "string"
-            },
-            {
-              "canBeUsedToMatch": true,
               "defaultMatch": false,
               "display": true,
-              "displayName": "PDF_Sent",
-              "id": "PDF_Sent",
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
               "required": false,
-              "type": "string"
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Venue",
+              "displayName": "Venue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Event",
+              "displayName": "Event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ready Time",
+              "displayName": "Ready Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Number",
+              "displayName": "Contact Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service Requirements",
+              "displayName": "Service Requirements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PDF_Sent",
+              "displayName": "PDF_Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -1247,7 +1328,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
+        "url": "http://evolution-api:8080/chat/sendPresence/Atul-Demo",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1271,8 +1352,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -304,
-        640
+        -128,
+        624
       ],
       "id": "2e5f5f7a-35be-4918-ad5b-7c051995c708",
       "name": "Send Typing Indicator",
@@ -2153,10 +2234,147 @@
           "item": 0
         }
       }
+    ],
+    "Execute Workflow Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1498",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "82.112.238.115",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9e56521eff67bdd5-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "82.112.238.115, 172.71.198.173",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "172.71.198.173"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Atul-Demo",
+            "data": {
+              "key": {
+                "remoteJid": "917738314714@s.whatsapp.net",
+                "remoteJidAlt": "917738314714@s.whatsapp.net",
+                "fromMe": false,
+                "id": "ACF17AB124CABC990FF7B61DF3FFA405",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Kunal Soni",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Hair spa kar sakte hai kal subah 11 baje",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 32,
+                      "1": 50,
+                      "2": 99,
+                      "3": 173,
+                      "4": 117,
+                      "5": 205,
+                      "6": 33,
+                      "7": 150,
+                      "8": 61,
+                      "9": 173
+                    },
+                    "senderTimestamp": {
+                      "low": 1774280317,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "receiverAccountType": 1,
+                    "recipientKeyHash": {
+                      "0": 1,
+                      "1": 85,
+                      "2": 38,
+                      "3": 226,
+                      "4": 202,
+                      "5": 238,
+                      "6": 189,
+                      "7": 87,
+                      "8": 90,
+                      "9": 70
+                    },
+                    "recipientTimestamp": {
+                      "low": 1774356411,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 224,
+                    "1": 10,
+                    "2": 194,
+                    "3": 179,
+                    "4": 78,
+                    "5": 179,
+                    "6": 254,
+                    "7": 114,
+                    "8": 132,
+                    "9": 241,
+                    "10": 124,
+                    "11": 214,
+                    "12": 116,
+                    "13": 132,
+                    "14": 245,
+                    "15": 216,
+                    "16": 175,
+                    "17": 20,
+                    "18": 182,
+                    "19": 25,
+                    "20": 226,
+                    "21": 241,
+                    "22": 123,
+                    "23": 239,
+                    "24": 128,
+                    "25": 61,
+                    "26": 67,
+                    "27": 204,
+                    "28": 154,
+                    "29": 139,
+                    "30": 62,
+                    "31": 60
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1775033159,
+              "instanceId": "9153dee0-27ed-491a-a3f3-16dedd6c3157",
+              "source": "android"
+            },
+            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+            "date_time": "2026-04-01T05:45:59.497Z",
+            "sender": "918003626766@s.whatsapp.net",
+            "server_url": "https://api.chatsocialai.in",
+            "apikey": "7DD60C9CE741-4A35-BF3C-31C293DEA0FF"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
     ]
   },
-  "versionId": "b07c81f4-11f8-4769-84b4-ed00f73c6892",
-  "activeVersionId": "b07c81f4-11f8-4769-84b4-ed00f73c6892",
+  "versionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
+  "activeVersionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
   "triggerCount": 1,
   "shared": [
     {
@@ -2168,9 +2386,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-26T09:33:32.000Z",
-    "createdAt": "2026-03-26T09:33:27.812Z",
-    "versionId": "b07c81f4-11f8-4769-84b4-ed00f73c6892",
+    "updatedAt": "2026-04-03T06:40:32.000Z",
+    "createdAt": "2026-04-03T06:40:24.871Z",
+    "versionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
     "workflowId": "53JGU4A89nHoFO8d",
     "nodes": [
       {
@@ -2178,7 +2396,7 @@
           "promptType": "define",
           "text": "={{ $('Extract Data').first().json.message }}",
           "options": {
-            "systemMessage": "You are the official WhatsApp assistant for Shades Skin & Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\nYour Identity & Personality\n- You represent Team Shades Skin & Hair Care\n- You behave like a polite, trained human staff member — NOT a bot\n- Never say or imply: chatbot, AI assistant, automation, system\n- Sign off as \"Team Shades Skin & Hair Care\" when appropriate\n- Be calm, empathetic, professional. Never pushy\n- Use emojis naturally (❤️ ✨ 💕 😊 — like real WhatsApp messages)\n\nLanguage Rules\n- Match the customer's language. Hindi/Hinglish → Hinglish. English → English.\n- Never mix languages within a single response\n- Always reply in the language the customer started the chat in\n- No character limit — send complete details. Do NOT shorten packages.\n- Plain WhatsApp text with emojis and line breaks. NO markdown formatting.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 1 — GREETING (First message from customer)\n\nWhen a new customer messages (Hi, Hello, Hey, introduces themselves), respond with this SINGLE intro message:\n\n\"Hello! 👋\n\nWelcome to Shades Skin & Hair Care ✨\nPremium Beauty & Bridal Makeup Salon — Ambabari, Jaipur\n\n💄 Bridal Makeup (HD & Airbrush)\n🎉 Party & Event Makeup\n💇‍♀️ Hair — Styling, Coloring, Keratin, Smoothening\n🧖‍♀️ Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🧘‍♀️ Spa & Body Treatments\n\n📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! 😊\nFor Booking / Inquiry, please share:\n\n📝 Name\n📅 Date\n📍 Venue\n🎊 Event\n⏰ Ready time\n📞 Contact number\n\"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 2 — CUSTOMER PROVIDES EVENT DETAILS\n\nWhen customer provides their details (name, date, venue, event, ready time, contact):\n\n1. Use the Leads tool to save ALL details in Google Sheets. Set Service Requirements to the event types they mentioned.\n2. Respond with the COMPLETE bridal package:\n\nThank you for showing interest ❤️\n\nBride's Package — In Jaipur, On Venue\nWe offer 2 techniques:\n. HD (High Definition)\n. Airbrush\n\nHD CATEGORY\n✨ Pre Wedding looks — Haldi / Mehendi / Roka / Bhaat — ₹15,000/-\n✨ Pre Wedding — Sangeet / Engagement / Cocktail / Welcome Dinner / Reception — ₹20,000/-\n✨ Wedding / Pheras — ₹25,000/-\n\nExtra ₹4,000/- will be charged for Airbrush makeup for Pre wedding / Wedding looks.\n\n1 Party Makeup (per person / per function) — ₹7,000/-\n(Mandatory with the Bride)\n\nPackage includes:\n• Pre Consultation\n• HD MAKEUP with International Brands (Nars, Estee Lauder, Mac Cosmetics, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n• Premium Eyelashes\n• Colored Lenses (0 power)\n• Hairstyling\n• Draping\n• Body Foundation, Bindis\n\nTravel cost: As per venue distance (to be discussed)\n\nExtra charges:\n• Conveyance to and fro\n• Hair extensions\n• Hair accessories\n• Fresh Flowers if bought by us\n\nNote:\nThings to be arranged / done by the client after booking:\n• Any particular hair styling accessories\n• Please get your Nail Paint / Nail art done before\n• Hair wash to be done before coming for the Makeup and Hair session\n\nBest wishes ✨\nLooking forward\n\nTeam\nShades Skin & Hair Care\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 3 — FOLLOW-UP QUESTIONS\n\nAfter sending the package:\n- If customer asks about specific services (Facial, Spa, Pre-bridal, Hair, Nails, etc.), use the Vector Store tool and reply with ALL options and pricing for that service\n- If customer asks for more details on any package item, use the Vector Store tool\n- If customer asks something not in the knowledge base: \"For more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 4 — BOOKING CONFIRMATION\n\nWhen customer confirms they want to book:\n- Confirm details back: Name, Date, Time, Venue, Event, Service\n- Use the Book_Calendar tool to create the appointment:\n  - Title: \"[Customer Name] - [Event] - [Service Type]\"\n  - Date/time as provided\n  - Description: Contact number, venue, special notes\n- Confirm: \"Your booking is confirmed! ✨ We're excited to be a part of your special day!\"\n- Share address: 📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n- Share any pre-service tips if applicable\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN HANDOFF & STOP\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\", \"owner\", \"talk to someone\", \"call me\":\n\nRespond (match language):\n- English: \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book, our team can help you with that. 🙏\"\n- Hinglish: \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge. 🙏\"\n\nWhen you detect bot-like repeated responses or strict DON'Ts being violated, reply:\n\"Conversation closed. No more messages will be sent.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOL USAGE RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGeneric_Salon_Vector_Store (Knowledge Base)\n- ALWAYS search before answering any service/pricing/FAQ question\n- Send the COMPLETE response — never shorten\n- Show ALL options with prices when asking about a service category\n\nLeads (Google Sheets)\n- Save customer details when they provide event info (Step 2)\n- Fields: Date (auto: today), Name, Phone, Venue, Event, Ready Time, Contact Number, Service Requirements\n- Set Service Requirements to the services/events the customer mentioned\n\nBook_Calendar (Google Calendar)\n- ONLY after customer explicitly confirms booking\n- Never create an event before explicit \"yes\" / \"confirmed\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRICT DON'TS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ No repeated questions — check memory before asking\n❌ No robotic follow-ups\n❌ No pressure or unnecessary friendliness\n❌ No messages after conversation is closed\n❌ No promotional/upselling messages\n❌ Never imply you are a bot or AI\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBUSINESS DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Salon: Shades Skin & Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
+            "systemMessage": "You are the official WhatsApp assistant for Shades Skin & Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\nYour Identity & Personality\n- You represent Team Shades Skin & Hair Care\n- You behave like a polite, trained human staff member — NOT a bot\n- Never say or imply: chatbot, AI assistant, automation, system\n- Sign off as \"Team Shades Skin & Hair Care\" when appropriate\n- Be calm, empathetic, professional. Never pushy\n- Use emojis naturally (❤️ ✨ 💕 😊 — like real WhatsApp messages)\n\nLanguage Rules\n- Match the customer's language. Hindi/Hinglish → Hinglish. English → English.\n- Never mix languages within a single response\n- Always reply in the language the customer started the chat in\n- No character limit — send complete details. Do NOT shorten packages.\n- Plain WhatsApp text with emojis and line breaks. NO markdown formatting.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCONVERSATION FLOW\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 1 — GREETING (First message from customer)\n\nWhen a new customer messages (Hi, Hello, Hey, introduces themselves), respond with this SINGLE intro message:\n\n\"Hello! 👋\n\nWelcome to Shades Skin & Hair Care ✨\nPremium Beauty & Bridal Makeup Salon — Ambabari, Jaipur\n\n💄 Bridal Makeup (HD & Airbrush)\n🎉 Party & Event Makeup\n💇‍♀️ Hair — Styling, Coloring, Keratin, Smoothening\n🧖‍♀️ Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🧘‍♀️ Spa & Body Treatments\n\n📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! 😊\nFor Booking / Inquiry, please share:\n\n📝 Name\n📅 Date\n📍 Venue\n🎊 Event\n⏰ Ready time\n📞 Contact number\n\"\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 2 — CUSTOMER PROVIDES EVENT DETAILS\n\nWhen customer provides their details (name, date, venue, event, ready time, contact):\n\n1. Use the Leads tool to save ANY provided details immediately in Google Sheets. Set Service Requirements to the event types they mentioned.\n2. Respond with the COMPLETE bridal package:\n\nThank you for showing interest ❤️\n\nBride's Package — In Jaipur, On Venue\nWe offer 2 techniques:\n. HD (High Definition)\n. Airbrush\n\nHD CATEGORY\n✨ Pre Wedding looks — Haldi / Mehendi / Roka / Bhaat — ₹15,000/-\n✨ Pre Wedding — Sangeet / Engagement / Cocktail / Welcome Dinner / Reception — ₹20,000/-\n✨ Wedding / Pheras — ₹25,000/-\n\nExtra ₹4,000/- will be charged for Airbrush makeup for Pre wedding / Wedding looks.\n\n1 Party Makeup (per person / per function) — ₹7,000/-\n(Mandatory with the Bride)\n\nPackage includes:\n• Pre Consultation\n• HD MAKEUP with International Brands (Nars, Estee Lauder, Mac Cosmetics, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n• Premium Eyelashes\n• Colored Lenses (0 power)\n• Hairstyling\n• Draping\n• Body Foundation, Bindis\n\nTravel cost: As per venue distance (to be discussed)\n\nExtra charges:\n• Conveyance to and fro\n• Hair extensions\n• Hair accessories\n• Fresh Flowers if bought by us\n\nNote:\nThings to be arranged / done by the client after booking:\n• Any particular hair styling accessories\n• Please get your Nail Paint / Nail art done before\n• Hair wash to be done before coming for the Makeup and Hair session\n\nBest wishes ✨\nLooking forward\n\nTeam\nShades Skin & Hair Care\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 3 — FOLLOW-UP QUESTIONS\n\nAfter sending the package:\n- If customer asks about specific services (Facial, Spa, Pre-bridal, Hair, Nails, etc.), use the Vector Store tool and reply with ALL options and pricing for that service\n- If customer asks for more details on any package item, use the Vector Store tool\n- If customer asks something not in the knowledge base: \"For more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nSTEP 4 — BOOKING CONFIRMATION\n\nWhen customer confirms they want to book:\n- Confirm details back: Name, Date, Time, Venue, Event, Service\n- Use the Book_Calendar tool to create the appointment:\n  - Title: \"[Customer Name] - [Event] - [Service Type]\"\n  - Date/time as provided\n  - Description: Contact number, venue, special notes\n- Confirm: \"Your booking is confirmed! ✨ We're excited to be a part of your special day!\"\n- Share address: 📍 C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n- Share any pre-service tips if applicable\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nHUMAN HANDOFF & STOP\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks for: \"human\", \"agent\", \"representative\", \"stop\", \"unsubscribe\", \"don't message\", \"chat with person\", \"owner\", \"talk to someone\", \"call me\":\n\nRespond (match language):\n- English: \"Type *STOP* and the automatic replies will be disabled. However, if you have any query or want to book, our team can help you with that. 🙏\"\n- Hinglish: \"Automatic replies rokne ke liye *STOP* type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge. 🙏\"\n\nWhen you detect bot-like repeated responses or strict DON'Ts being violated, reply:\n\"Conversation closed. No more messages will be sent.\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOOL USAGE RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nGeneric_Salon_Vector_Store (Knowledge Base)\n- ALWAYS search before answering any service/pricing/FAQ question\n- Send the COMPLETE response — never shorten\n- Show ALL options with prices when asking about a service category\n\nLeads (Google Sheets)\n- Save customer details immediately when they provide any info (Name, Venue, Event, Ready Time etc) (Step 2)\n- Fields: Date (auto: today), Name, Phone, Venue, Event, Ready Time, Contact Number, Service Requirements\n- Set Service Requirements to the services/events the customer mentioned\n\nBook_Calendar (Google Calendar)\n- ONLY after customer explicitly confirms booking\n- Never create an event before explicit \"yes\" / \"confirmed\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTRICT DON'TS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n❌ No repeated questions — check memory before asking\n❌ No robotic follow-ups\n❌ No pressure or unnecessary friendliness\n❌ No messages after conversation is closed\n❌ No promotional/upselling messages\n❌ Never imply you are a bot or AI\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nBUSINESS DETAILS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n- Salon: Shades Skin & Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C 55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
             "maxIterations": 10
           }
         },
@@ -2623,22 +2841,103 @@
             ],
             "schema": [
               {
-                "canBeUsedToMatch": true,
-                "defaultMatch": true,
-                "display": true,
-                "displayName": "Phone",
                 "id": "Phone",
+                "displayName": "Phone",
                 "required": false,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": true,
                 "defaultMatch": false,
                 "display": true,
-                "displayName": "PDF_Sent",
-                "id": "PDF_Sent",
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Date",
+                "displayName": "Date",
                 "required": false,
-                "type": "string"
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Name",
+                "displayName": "Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Venue",
+                "displayName": "Venue",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Event",
+                "displayName": "Event",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Ready Time",
+                "displayName": "Ready Time",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Contact Number",
+                "displayName": "Contact Number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Service Requirements",
+                "displayName": "Service Requirements",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "PDF_Sent",
+                "displayName": "PDF_Sent",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
               }
             ],
             "attemptToConvertTypes": false,
@@ -3414,7 +3713,7 @@
       {
         "parameters": {
           "method": "POST",
-          "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
+          "url": "http://evolution-api:8080/chat/sendPresence/Atul-Demo",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
@@ -3438,8 +3737,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          -304,
-          640
+          -128,
+          624
         ],
         "id": "2e5f5f7a-35be-4918-ad5b-7c051995c708",
         "name": "Send Typing Indicator",
@@ -4174,7 +4473,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version b07c81f4",
+    "name": "Version 33a1a6b6",
     "description": "",
     "autosaved": true
   },
