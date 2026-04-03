@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-01T14:25:31.311Z",
+  "updatedAt": "2026-04-03T06:09:33.057Z",
   "createdAt": "2026-04-01T07:12:55.200Z",
   "id": "4J4Xpw2AtPWztT3C",
   "name": "Generic Voice Payment Updates 9115",
@@ -147,8 +147,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        256,
-        -384
+        240,
+        -528
       ],
       "id": "d35e582d-f1cb-4b39-8429-873d10ecc57a",
       "name": "Transcribe a recording",
@@ -737,7 +737,7 @@
       }
     ]
   },
-  "versionId": "f9fda0a1-2d7f-44ec-8179-ce6f8f9d43e7",
+  "versionId": "d2837857-4497-430a-a110-c365f3e55360",
   "activeVersionId": "bb1c1531-f854-4df5-8081-e86b2fe924e5",
   "triggerCount": 1,
   "shared": [
