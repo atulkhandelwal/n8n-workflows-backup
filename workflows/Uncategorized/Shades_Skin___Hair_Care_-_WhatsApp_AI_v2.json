@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-03T06:40:24.869Z",
+  "updatedAt": "2026-04-06T14:49:08.107Z",
   "createdAt": "2026-03-26T09:16:47.730Z",
   "id": "53JGU4A89nHoFO8d",
   "name": "Shades Skin & Hair Care - WhatsApp AI v2",
@@ -340,8 +340,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1152,
-        432
+        1360,
+        416
       ]
     },
     {
@@ -367,17 +367,20 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "returnFirstMatch": true
+        }
       },
       "id": "87c8ea10-c2bf-497f-8f02-a081ffdaba20",
       "name": "Lookup PDF Status",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1376,
-        352
+        1296,
+        144
       ],
       "alwaysOutputData": true,
+      "executeOnce": true,
       "credentials": {
         "googleApi": {
           "id": "N9Lk7ZeXUrzmORvD",
@@ -414,8 +417,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1600,
-        352
+        1520,
+        144
       ]
     },
     {
@@ -568,6 +571,7 @@
         2432,
         368
       ],
+      "retryOnFail": true,
       "credentials": {
         "googleApi": {
           "id": "N9Lk7ZeXUrzmORvD",
@@ -948,17 +952,17 @@
         "authentication": "serviceAccount",
         "documentId": {
           "__rl": true,
-          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
           "mode": "list",
-          "cachedResultName": "Generic_Clothing_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 895714046,
+          "value": 445089332,
           "mode": "list",
           "cachedResultName": "Exclude",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
         },
         "filtersUI": {
           "values": [
@@ -1072,23 +1076,23 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
           "mode": "list",
-          "cachedResultName": "Generic_Clothing_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 895714046,
+          "value": 445089332,
           "mode": "list",
           "cachedResultName": "Exclude",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Role": "START",
-            "Phone": "={{ $('Extract Data').first().json.phone }}"
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Role": "START"
           },
           "matchingColumns": [
             "Phone"
@@ -1140,23 +1144,23 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
           "mode": "list",
-          "cachedResultName": "Generic_Clothing_Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 895714046,
+          "value": 445089332,
           "mode": "list",
           "cachedResultName": "Exclude",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Role": "STOP",
-            "Phone": "={{ $('Extract Data').first().json.phone }}"
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Role": "STOP"
           },
           "matchingColumns": [
             "Phone"
@@ -1344,7 +1348,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 4000\n}\n",
         "options": {
           "timeout": 2000
         }
@@ -1726,7 +1730,7 @@
       "main": [
         [
           {
-            "node": "Lookup PDF Status",
+            "node": "Reply to Customer1",
             "type": "main",
             "index": 0
           }
@@ -1760,13 +1764,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Reply to Customer1",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Download Bridal PDF": {
@@ -2373,8 +2371,8 @@
       }
     ]
   },
-  "versionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
-  "activeVersionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
+  "versionId": "ae756754-5fe9-49f3-9eb5-66084ff17685",
+  "activeVersionId": "ae756754-5fe9-49f3-9eb5-66084ff17685",
   "triggerCount": 1,
   "shared": [
     {
@@ -2386,9 +2384,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-03T06:40:32.000Z",
-    "createdAt": "2026-04-03T06:40:24.871Z",
-    "versionId": "33a1a6b6-528e-4809-94c9-bf1003573d9e",
+    "updatedAt": "2026-04-06T14:49:11.000Z",
+    "createdAt": "2026-04-06T14:49:08.108Z",
+    "versionId": "ae756754-5fe9-49f3-9eb5-66084ff17685",
     "workflowId": "53JGU4A89nHoFO8d",
     "nodes": [
       {
@@ -2725,8 +2723,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          1152,
-          432
+          1360,
+          416
         ]
       },
       {
@@ -2752,17 +2750,20 @@
               }
             ]
           },
-          "options": {}
+          "options": {
+            "returnFirstMatch": true
+          }
         },
         "id": "87c8ea10-c2bf-497f-8f02-a081ffdaba20",
         "name": "Lookup PDF Status",
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          1376,
-          352
+          1296,
+          144
         ],
         "alwaysOutputData": true,
+        "executeOnce": true,
         "credentials": {
           "googleApi": {
             "id": "N9Lk7ZeXUrzmORvD",
@@ -2799,8 +2800,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          1600,
-          352
+          1520,
+          144
         ]
       },
       {
@@ -2953,6 +2954,7 @@
           2432,
           368
         ],
+        "retryOnFail": true,
         "credentials": {
           "googleApi": {
             "id": "N9Lk7ZeXUrzmORvD",
@@ -3333,17 +3335,17 @@
           "authentication": "serviceAccount",
           "documentId": {
             "__rl": true,
-            "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
             "mode": "list",
-            "cachedResultName": "Generic_Clothing_Leads",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+            "cachedResultName": "Generic Salon Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": 895714046,
+            "value": 445089332,
             "mode": "list",
             "cachedResultName": "Exclude",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
           },
           "filtersUI": {
             "values": [
@@ -3457,23 +3459,23 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
-            "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
             "mode": "list",
-            "cachedResultName": "Generic_Clothing_Leads",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+            "cachedResultName": "Generic Salon Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": 895714046,
+            "value": 445089332,
             "mode": "list",
             "cachedResultName": "Exclude",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
           },
           "columns": {
             "mappingMode": "defineBelow",
             "value": {
-              "Role": "START",
-              "Phone": "={{ $('Extract Data').first().json.phone }}"
+              "Phone": "={{ $('Extract Data').first().json.phone }}",
+              "Role": "START"
             },
             "matchingColumns": [
               "Phone"
@@ -3525,23 +3527,23 @@
           "operation": "appendOrUpdate",
           "documentId": {
             "__rl": true,
-            "value": "1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg",
+            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
             "mode": "list",
-            "cachedResultName": "Generic_Clothing_Leads",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1X685EJpekJH8tgPqYJmRklSxxnH5R2y0EUfs5W3Bilg/edit?usp=drivesdk"
+            "cachedResultName": "Generic Salon Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
           },
           "sheetName": {
             "__rl": true,
-            "value": 895714046,
+            "value": 445089332,
             "mode": "list",
             "cachedResultName": "Exclude",
-            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10zjF_49yZfzEsigqg9-CTNOraAQgbfxnlvFKJeVUYBs/edit#gid=895714046"
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
           },
           "columns": {
             "mappingMode": "defineBelow",
             "value": {
-              "Role": "STOP",
-              "Phone": "={{ $('Extract Data').first().json.phone }}"
+              "Phone": "={{ $('Extract Data').first().json.phone }}",
+              "Role": "STOP"
             },
             "matchingColumns": [
               "Phone"
@@ -3729,7 +3731,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
+          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 4000\n}\n",
           "options": {
             "timeout": 2000
           }
@@ -4111,7 +4113,7 @@
         "main": [
           [
             {
-              "node": "Lookup PDF Status",
+              "node": "Reply to Customer1",
               "type": "main",
               "index": 0
             }
@@ -4145,13 +4147,7 @@
               "index": 0
             }
           ],
-          [
-            {
-              "node": "Reply to Customer1",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Download Bridal PDF": {
@@ -4473,7 +4469,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 33a1a6b6",
+    "name": "Version ae756754",
     "description": "",
     "autosaved": true
   },
