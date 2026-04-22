@@ -1,0 +1,2914 @@
+{
+  "updatedAt": "2026-04-22T14:06:57.674Z",
+  "createdAt": "2026-04-22T12:11:58.631Z",
+  "id": "RILoSFcOEsvvg80W",
+  "name": "Shades Skin & Hair Care - WhatsApp AI v3 Test",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Extract Data').first().json.message }}",
+        "options": {
+          "systemMessage": "# IDENTITY\n\nYou are the official WhatsApp assistant for Shades Skin Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\n- You represent Team Shades Skin Hair Care\n- Behave like a polite, trained human staff member, NOT a bot\n- Never say or imply chatbot, AI, automation, system\n- Sign off as Team Shades Skin Hair Care when appropriate\n- Be calm, empathetic, professional\n- Never be pushy\n- Use emojis naturally like real WhatsApp messages\n\n## Language Rules\n- Match the customer's language exactly\n- Hindi/Hinglish → reply in Hinglish\n- English → reply in English\n- Never mix languages in one reply\n- Use plain WhatsApp text with line breaks and emojis only\n- No markdown formatting in customer replies\n\n---\n\n# CONVERSATION FLOW\n\n## STEP 1 — GREETING\nWhen a new customer sends Hi, Hello, Hey, or a general first message, send this SINGLE intro message:\n\nHello! 👋 Welcome to Shades Skin Hair Care — Beauty & Bridal Makeup Salon, Ambabari, Jaipur\n\n✨ Bridal Makeup — HD & Airbrush\n💇 Hair Styling, Coloring, Keratin, Smoothening\n🧖 Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🌿 Spa & Body Treatments\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! For booking inquiry, please share:\nName | Date | Venue | Event | Ready Time | Contact Number\n\nAfter this, call CustomerProfilesTool and set:\n- Status = Active\n- Language = detected customer language\n- Name = if already provided\n\n---\n\n## STEP 2 — CUSTOMER PROVIDES DETAILS\nWhen the customer shares any booking-related detail such as Name, Date, Venue, Event, Ready Time, Contact Number, or service requirement:\n\n1. Call CustomerProfilesTool immediately when any of these are newly known:\n- Name\n- Language\n- Status\n- Notes\n\n2. If customer asks for Bridal Package, Wedding Booking, Sangeet Booking, or package details, send the COMPLETE package below exactly as written:\n\nThank you for showing interest! 💛 Here's our Package:\n\n📍 In Jaipur | On Venue (both available)\nWe offer 2 techniques: HD (High Definition) & Airbrush\n\nCATEGORY | PRICE\nPre-Wedding looks (Haldi, Mehendi, Roka, Bhaat) | ₹15,000\nPre-Wedding (Sangeet, Engagement, Cocktail, Welcome Dinner, Reception) | ₹20,000\nWedding (Pheras) | ₹25,000\nAirbrush Makeup (additional) | ₹4,000\nParty Makeup (per person per function) | ₹7,000\n\n✅ Mandatory with Bride:\n- Pre-Consultation\n- HD Makeup with International Brands (NARS, Estee Lauder, MAC, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n- Premium Eyelashes\n- Colored Lenses (0 power)\n- Hairstyling\n- Draping\n\n❌ Not Included:\n- Body Foundation\n- Bindis\n- Conveyance to and fro (as per venue distance)\n- Hair Extensions\n- Hair Accessories\n- Fresh Flowers if arranged by us\n\n⚠️ Notes:\n- Please get your Nail Paint / Nail Art done before the makeup session\n- Hair wash to be done before coming for the makeup and hair session\n- Any particular hair styling accessories should be arranged by the client\n\n– Team Shades Skin Hair Care ✨\n\n---\n\n## STEP 3 — FOLLOW-UP QUESTIONS\nIf customer asks about specific services like Facial, Spa, Pre-bridal, Hair, Nails, skincare, or wants more details about any package item:\n\n- ALWAYS call GenericSalonVectorStore before answering\n- Send the COMPLETE response\n- Show ALL relevant options and prices\n- Do not shorten the answer\n\nIf the answer is not in the knowledge base:\nFor more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\n\n---\n\n## STEP 4 — COLLECT BOOKING DETAILS\nWhen customer shows clear booking intent such as:\n- I want to book\n- Book karna hai\n- Proceed karo\n- How to book\n\nCheck the full conversation memory for these 7 required fields:\n1. Name\n2. Date\n3. Ready Time\n4. Venue\n5. Event / Function\n6. Service Type\n7. Contact Number\n\nRules:\n- If ALL 7 fields are already available, skip to STEP 5\n- If ANY field is missing, ask ONLY for the missing fields\n- Do NOT re-ask fields already provided\n- Stay in STEP 4 until all 7 fields are confirmed\n- Do NOT call BookingsTool or BookCalendar in this step\n\nEnglish template:\nJust a couple of details needed to complete your booking 😊 Please share only these:\n[only missing fields]\n\nHinglish template:\nBas kuch details aur chahiye booking ke liye 😊 Please share only these:\n[only missing fields]\n\n---\n\n## STEP 5 — BOOKING CONFIRMATION\nOnce all 7 fields are available, send the booking summary and ask for explicit confirmation:\n\nHere's a summary of your booking 📋\n\n👤 Name: [Name]\n📅 Date: [Date]\n⏰ Ready Time: [Ready Time]\n📍 Venue: [Venue]\n🎉 Event: [Event]\n💄 Service: [Service Type]\n📱 Contact: [Contact Number]\n\nReply Yes / Confirm / Haan to confirm your booking 🙏\nIf you'd like to change any detail, just let me know.\n\nRules:\n- If customer changes any field, update it and resend the full summary\n- Stay in STEP 5 until customer explicitly confirms\n- Do NOT call any booking tools before explicit confirmation\n\nWhen customer replies Yes / Confirm / Haan:\n1. Call BookingsTool and save:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\n2. Call BookCalendar and create the appointment with:\n- Title = Customer Name - Event - Service Type\n- Start = confirmed date and time in ISO 8601 with IST offset\n- Description = Contact number, venue, special notes\n\n3. Call CustomerProfilesTool and set:\n- Status = Booked\n- LatestServiceType = confirmed service type\n\n4. Send confirmation message:\n\nYour booking is confirmed! 🎉 We're so excited to be a part of your special day 💛\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nSee you soon! ✨\n– Team Shades Skin Hair Care\n\n---\n\n## FOLLOW-UP STATUS RULE\nSet Status = FollowUp using CustomerProfilesTool when any of the following happens:\n- Customer says they need time\n- Customer says it is expensive / price issue / budget concern\n- Customer says they will get back later\n- Customer stops at package / booking stage and shows hesitation\n- Customer does not want to proceed right now but conversation remains open\n\nDo NOT set FollowUp for normal ongoing inquiry.\nDo NOT set FollowUp after booking is confirmed.\n\n---\n\n## HANDOFF / STOP / HUMAN HELP\nWhen customer says:\n- stop\n- optout\n- unsubscribe\n- don't message\n- talk to human\n- owner\n- representative\n- call me\n- agent\n\nReply in matching language:\n\nEnglish:\nType STOP and the automatic replies will be disabled. However, if you have any query or want to book, our team can still help you.\n\nHinglish:\nAutomatic replies rokne ke liye STOP type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge.\n\nIf customer explicitly sends STOP or OPTOUT:\n- Call CustomerProfilesTool and set:\n  - Status = Stopped\n  - DripOptOut = YES\n\nIf conversation must be closed completely due to repetition, conflict, or instruction failure, reply:\nConversation closed. No more messages will be sent.\n\nThen call CustomerProfilesTool and set:\n- Status = Stopped\n\n---\n\n# TOOL USAGE RULES\n\n## CustomerProfilesTool\nUse this tool to save or update the customer profile in CustomerProfiles sheet.\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\n\nCall this tool whenever any of these changes or becomes known:\n- Name\n- Language\n- Status\n- Notes\n- LatestServiceType\n\nStatus rules:\n- First active conversation → Status = Active\n- Objection / needs time / hesitation / budget concern → Status = FollowUp\n- Booking confirmed → Status = Booked\n- STOP / OPTOUT / unsubscribe → Status = Stopped\n\nOnly write fields that are relevant to the current conversation.\nDo not invent missing values.\nDo not overwrite fields unless the customer has actually provided or changed them.\n\n## BookingsTool\nUse this tool ONLY in STEP 5 and ONLY after explicit confirmation: Yes / Confirm / Haan.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nNever call this tool during Steps 1 to 4.\n\n## GenericSalonVectorStore\nALWAYS call this before answering any question about:\n- services\n- pricing\n- package details\n- FAQs\n\nUse the retrieved information to answer accurately.\nShow complete options and pricing.\nDo not shorten.\n\n## BookCalendar\nUse this tool ONLY after customer explicitly confirms booking in STEP 5.\n\nRules:\n- Never create calendar event before explicit confirmation\n- Title = Customer Name - Event - Service Type\n- DateTime must be in ISO 8601 with IST timezone offset\n- Description should include contact number, venue, and special notes\n\n---\n\n# STRICT GUARDRAILS\n\n- Never re-ask details already available in conversation memory\n- Never imply you are a bot, AI, or automated system\n- Never share prices without calling GenericSalonVectorStore first, except the fixed Bridal Package in STEP 2\n- Never call BookingsTool or BookCalendar before explicit confirmation\n- Never send promotional or upselling messages without customer intent\n- Never send messages after STOP if customer has opted out\n- Never share the internal Google Calendar link with customer\n- Never make up unavailable details\n- Always reply like a trained human salon staff member\n- Always match customer language\n- Keep replies clear, warm, and natural\n\n---\n\n# SALON DETAILS\n\n- Salon: Shades Skin Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        464,
+        528
+      ],
+      "id": "9ae05a4b-6acb-45a2-a0ef-a7502c3ec32e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Extract Data').first().json.phone }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        752
+      ],
+      "id": "ecf0fa69-8475-4048-be06-b8a975203d72",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        752
+      ],
+      "id": "4389aa5e-9fd4-4cc0-884e-b8ca4d01f185",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "435e7194-12be-4f4a-9efb-eebed9cd3ae4",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "974654cd-77c5-47c7-b326-2ea4f4268120",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "conversation closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "af425ca6-7c01-46f7-8add-91c6d6faec92",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Conversation Closed",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        528
+      ],
+      "id": "5c09e458-40b7-4280-bc49-eadf049ab5dd",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        272
+      ],
+      "id": "760276c5-85a5-49c5-bf3b-9c40211dac3b",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "gupta.atulgupta13@gmail.com",
+          "mode": "list",
+          "cachedResultName": "gupta.atulgupta13@gmail.com"
+        },
+        "start": "={{ $fromAI('Start', 'Start time in ISO 8601 format with IST timezone offset. Example: 2026-02-02T16:00:00+05:30', 'string') }}",
+        "end": "={{ DateTime.fromISO($json.Start).plus({ minutes: 30 }).toISO() }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        768
+      ],
+      "id": "a80298df-3014-4ec8-983e-cd520b0fb626",
+      "name": "Book_Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "xpFkiT2kzPjmRecv",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "pdf-chk-1",
+              "leftValue": "={{ $json.output }}",
+              "operator": {
+                "operation": "contains",
+                "type": "string"
+              },
+              "rightValue": "Welcome to Shades Skin"
+            },
+            {
+              "id": "pdf-chk-2",
+              "leftValue": "={{ $json.output }}",
+              "operator": {
+                "operation": "contains",
+                "type": "string"
+              },
+              "rightValue": "Bride's Package"
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "5f621f73-8edd-44d3-bda1-8d42a959a5de",
+      "name": "PDF Trigger Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "Generic Salon Leads",
+          "mode": "list",
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "Leads",
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "f9c35b33-054f-42ce-8441-4889b58aa609",
+      "name": "Lookup PDF Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1552,
+        144
+      ],
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "pdf-sent-1",
+              "leftValue": "={{ $json.PDF_Sent }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "YES"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4a6ca5c9-4f08-40ae-9aba-ae1701e15b22",
+      "name": "PDF Already Sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        144
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "da50e97d-ea7f-4929-af2f-7dcbae48b6f3",
+      "name": "Download Bridal PDF",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "cachedResultName": "Generic Salon Leads",
+          "mode": "list",
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
+        },
+        "sheetName": {
+          "__rl": true,
+          "cachedResultName": "Leads",
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "PDF_Sent": "YES",
+            "Phone": "={{ $('Extract Data').first().json.phone }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Venue",
+              "displayName": "Venue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Event",
+              "displayName": "Event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ready Time",
+              "displayName": "Ready Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Contact Number",
+              "displayName": "Contact Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Service Requirements",
+              "displayName": "Service Requirements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "PDF_Sent",
+              "displayName": "PDF_Sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8c67b232-f66c-46c8-85df-dae70e8a5f1c",
+      "name": "Update PDF Sent",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2688,
+        368
+      ],
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "96cd8c2b-2bf4-4597-b2f7-737e197389b5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1808,
+        64
+      ],
+      "id": "bb85f71a-a263-4f2e-8de2-658155a98eb2",
+      "name": "Webhook",
+      "webhookId": "96cd8c2b-2bf4-4597-b2f7-737e197389b5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('AI Agent').first().json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2112,
+        192
+      ],
+      "id": "c775e4a7-cc1e-4290-9e17-89bb4682160f",
+      "name": "Reply to Customer",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('AI Agent').first().json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2112,
+        368
+      ],
+      "id": "9021b827-0ae1-4ba8-ab61-0120cc12fd1f",
+      "name": "Reply to Customer1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendMedia/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "mediatype",
+              "value": "document"
+            },
+            {
+              "name": "mimetype",
+              "value": "application/pdf"
+            },
+            {
+              "name": "caption",
+              "value": "💕 Here is our complete Bridal Package for you! ✨ Feel free to reach out for any questions. Team Shades Skin & Hair Care"
+            },
+            {
+              "name": "media",
+              "value": "https://drive.google.com/uc?export=download&id=1CD010KvdzurLyeUPVmXYZjdT3qqoz6Rq"
+            },
+            {
+              "name": "fileName",
+              "value": "Brides by Shades♥️.pdf"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2400,
+        368
+      ],
+      "id": "b2bddcb7-5357-46af-aae4-4522b76e9c0b",
+      "name": "Send Bridal PDF",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "generic-salon-kb",
+          "mode": "list",
+          "cachedResultName": "generic-salon-kb"
+        },
+        "options": {
+          "pineconeNamespace": "Q&A"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        944
+      ],
+      "id": "dc7665ed-02f2-447d-b437-65049cb09d64",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "adLnDHmN8u8AKtlg",
+          "name": "generic-salon-pinecone"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        1104
+      ],
+      "id": "d12edd95-213d-4c95-9bfe-0577af9d018e",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxRetries": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        912
+      ],
+      "id": "6d83a641-b386-48a2-b6b9-d7fa494a6614",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        848,
+        752
+      ],
+      "id": "789e8443-26c5-4cb9-86e9-f0900c1d9033",
+      "name": "Generic_Salon_Vector_Store"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        368
+      ],
+      "id": "3b69f65c-2acc-4e21-9980-6ffae0a5598b",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cda683a8-9808-492f-bad9-fc7d1da3aa9d",
+              "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.fromMe }}",
+              "rightValue": "919352922959@s.whatsapp.net",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "9071c1b7-4cec-42d5-9712-c29bdf5c4ba1",
+              "leftValue": "={{ $('Execute Workflow Trigger').item.json.body.data.key.remoteJid }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "cd4b9557-1066-456f-9ab4-d846188d9579",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "^\\s*[Ss][Tt][Aa][Rr][Tt]\\s*$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            },
+            {
+              "id": "cd4910f7-dcab-47ab-a673-509d6408af1b",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "^\\s*[Ss][Tt][Oo][Pp]\\s*$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -976,
+        592
+      ],
+      "id": "ed30d3dd-ef38-40b5-ae1c-f6b5409ab7b2",
+      "name": "Check Message Sender"
+    },
+    {
+      "parameters": {
+        "mode": "delete",
+        "deleteMode": "all"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        1056
+      ],
+      "id": "9d5518d6-7ae9-4f20-b484-7b86cb57b5ca",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "6414829a-df46-48de-a2bd-d92dbd9d2b67",
+              "leftValue": "={{ $json.Phone }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists"
+              }
+            },
+            {
+              "id": "0525d581-ab47-4d5a-b27f-76dece4bbdd8",
+              "leftValue": "={{ $json.Role }}",
+              "rightValue": "=^(Friend|STOP)$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -592,
+        624
+      ],
+      "id": "50b1743f-b941-4c52-9810-1e17c506a8d5",
+      "name": "Exclude Contacts",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 445089332,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone",
+              "lookupValue": "={{ $json.phone }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -768,
+        624
+      ],
+      "id": "1c3c76eb-0fca-45d3-ba61-4b015d49a6b2",
+      "name": "Get_Contacts",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        800
+      ],
+      "id": "20f4230f-bb53-4006-afa8-739aabde51e8",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "^\\s*[Ss][Tt][Aa][Rr][Tt]\\s*$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "cbba69b0-4db5-43cd-a279-54721a9159f8"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "START"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "83b93ad5-021a-411c-bf30-fc243184ee51",
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "^\\s*[Ss][Tt][Oo][Pp]\\s*$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "STOP"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Do Nothing"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -816,
+        304
+      ],
+      "id": "cfefe215-f85f-47ad-9bbd-84386e9afb28",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 445089332,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Role": "START"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -464,
+        32
+      ],
+      "id": "b72bbd4a-4974-4cd7-9afc-fd0d5fd2b1ea",
+      "name": "START Conversation",
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 445089332,
+          "mode": "list",
+          "cachedResultName": "Exclude",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=445089332"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Role": "STOP"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -464,
+        208
+      ],
+      "id": "26ea2058-2946-4c44-99ae-cac621e133e3",
+      "name": "STOP Conversation",
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.sendMessage }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "0a535809-18c8-4c63-9b26-66c644dc5ce1",
+      "name": "Start Conversation Message",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7a5ad4da-488a-4a99-b3c8-d8996f92c6af",
+              "name": "sendMessage",
+              "value": "={{ `We're sorry to see you go! 👋\n\nYou've been opted out of automated replies. If you ever change your mind, we're just one message away.\n\nType *START* to reactivate.` }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        224
+      ],
+      "id": "b812d4fe-628c-4b73-9778-9fe14846f480",
+      "name": "STOP Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6cab5509-be58-4611-9854-1ff2a94d7b01",
+              "name": "sendMessage",
+              "value": "={{ `You have successfully resubscribed to automated messages. ✅\n\nHow can we assist you today?` }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "e4fba833-9be3-429a-a7d6-7bfba60df328",
+      "name": "START Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "5c764ff2fbcf10434f2303cb9819d71a280590a8b8f73a29babf4a457c64a020"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Extract Data').first().json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.sendMessage }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -48,
+        224
+      ],
+      "id": "3b7261c0-937c-415d-a3f9-4763828ed325",
+      "name": "STOP Conversation1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/chat/sendPresence/Atul-Demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 4000\n}\n",
+        "options": {
+          "timeout": 2000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -240,
+        640
+      ],
+      "id": "92737a11-01fb-4b5e-881a-62f343551bd1",
+      "name": "Send Typing Indicator",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "366a5bc3-0ed2-49cc-b1f7-7367e2e98f1c",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "audioMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio Message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f1297157-7c7d-48be-aad0-3ae551f39e1b",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "imageMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image Message"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d1f72847-14d7-4a7f-afca-2018aff49002",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "videoMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Video Message"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Text Message"
+        }
+      },
+      "id": "b31cdd2e-a8f1-4c15-8be9-71390dacda52",
+      "name": "Detect Message Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -2288,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a937a5ba-cb4c-45dc-885e-fd93114ffbdf",
+              "name": "=message",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "7d10fa1e-0080-49a0-acfb-63734f6e0da9",
+              "name": "messageType",
+              "value": "audio",
+              "type": "string"
+            },
+            {
+              "id": "45230021-d9b9-485e-b819-1827164b2fa1",
+              "name": "webhookData",
+              "value": "={{ $('Execute Workflow Trigger').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1de11f7a-ca92-475e-a8b8-e7bdce692282",
+      "name": "Set Audio Message Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c39453d9-20f5-4c50-b18e-739b2dfea68b",
+              "name": "=message",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "03000028-1362-46db-a310-5a2f09a9e483",
+              "name": "messageType",
+              "value": "text",
+              "type": "string"
+            },
+            {
+              "id": "92821c3d-54db-440a-a351-d37a038ba76e",
+              "name": "=webhookData",
+              "value": "={{ $('Execute Workflow Trigger').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc922d8e-4492-4c2b-b138-bbcd42556056",
+      "name": "Set Text Message Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1840,
+        608
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "423d1e17-3437-4c39-9b8d-332f748c0d7c",
+      "name": "No Operation (Image)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1904,
+        832
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "8bd087cf-5935-4170-b139-852bd9624e4b",
+      "name": "No Operation (Video)",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1904,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert Evolution API base64 response to binary file for Whisper\nconst items = $input.all();\nconst outputItems = [];\n\nfor (const item of items) {\n  try {\n    // Evolution API returns: { base64: \"...\", mimetype: \"audio/ogg; codecs=opus\" }\n    const base64Data = item.json.base64;\n    const mimeType = item.json.mimetype || 'audio/ogg; codecs=opus';\n    \n    if (!base64Data) {\n      throw new Error('No base64 data returned from Evolution API');\n    }\n    \n    // Determine file extension from mimetype\n    let fileExtension = 'ogg';\n    if (mimeType.includes('mp3')) fileExtension = 'mp3';\n    else if (mimeType.includes('m4a')) fileExtension = 'm4a';\n    else if (mimeType.includes('wav')) fileExtension = 'wav';\n    else if (mimeType.includes('webm')) fileExtension = 'webm';\n    \n    // Convert base64 to binary\n    const binaryData = Buffer.from(base64Data, 'base64');\n    \n    // Create binary data object for n8n\n    item.binary = {\n      data: {\n        data: binaryData.toString('base64'),\n        mimeType: mimeType,\n        fileName: `audio.${fileExtension}`,\n        fileExtension: fileExtension\n      }\n    };\n    \n    outputItems.push(item);\n  } catch (error) {\n    throw new Error(`Base64 conversion failed: ${error.message}`);\n  }\n}\n\nreturn outputItems;"
+      },
+      "id": "4504f337-a5a7-4d8d-ad72-4197476966cb",
+      "name": "Convert Base64 to File1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1904,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.body.server_url }}/chat/getBase64FromMediaMessage/{{ $json.body.instance }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.body.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"message\": {\n    \"key\": {\n      \"id\": \"{{ $json.body.data.key.id }}\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "id": "7816c682-b030-440a-b408-8a6309876876",
+      "name": "Download Audio2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2064,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "id": "cbbf9754-2e07-4347-91d7-f08a282e27ed",
+      "name": "Transcribe Audio2",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.7,
+      "position": [
+        -1728,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2544,
+        608
+      ],
+      "id": "241707e9-f931-47f0-982b-3db510eee757",
+      "name": "Execute Workflow Trigger"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"phone\": \"{{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.body.data.message.conversation }}\",\n  \"messageId\": \"{{ $json.body.data.key.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1360,
+        128
+      ],
+      "id": "722543c1-6852-42f7-b378-c9a4461d5c30",
+      "name": "Extract Data_old"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"phone\": \"{{ $json.webhookData.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.webhookData.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        624
+      ],
+      "id": "7f8961c5-199d-4743-95f2-4ec179c8d720",
+      "name": "Extract Data"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Save or update the customer profile. Call this tool whenever the customer provides their Name, or when you detect their Language preference, or when the Status changes (Active, FollowUp, Booked, Stopped), or when the customer shares a Note or special request.",
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 617231842,
+          "mode": "list",
+          "cachedResultName": "CustomerProfiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Language": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Language', ``, 'string') }}",
+            "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
+            "Notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Notes', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LastContactAt",
+              "displayName": "LastContactAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastInboundAt",
+              "displayName": "LastInboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastOutboundAt",
+              "displayName": "LastOutboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FollowUpTimestamp",
+              "displayName": "FollowUpTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastDripSent",
+              "displayName": "LastDripSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "DripOptOut",
+              "displayName": "DripOptOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "OptOutSource",
+              "displayName": "OptOutSource",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CurrentBookingStatus",
+              "displayName": "CurrentBookingStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestBookingDate",
+              "displayName": "LatestBookingDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestServiceType",
+              "displayName": "LatestServiceType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UpdatedAt",
+              "displayName": "UpdatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        928
+      ],
+      "id": "98698a48-73a0-49a7-a227-bf69fa0f2682",
+      "name": "CustomerProfilesTool",
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Save a new booking. Call this tool ONLY when the customer explicitly confirms their booking by replying Yes, Confirm, or Haan in Step 5. Never call this tool during field collection. Save all booking details: EventDate, Event, Venue, ReadyTime, ContactNumber, ServiceRequirements.",
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1748812029,
+          "mode": "list",
+          "cachedResultName": "Bookings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=1748812029"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "BookingDate": "={{ $now.toISO() }}",
+            "EventDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('EventDate', ``, 'string') }}",
+            "Event": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event', ``, 'string') }}",
+            "Venue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Venue', ``, 'string') }}",
+            "ReadyTime": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ReadyTime', ``, 'string') }}",
+            "ServiceRequirements": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ServiceRequirements', ``, 'string') }}",
+            "BookingStatus": "Confirmed",
+            "Source": "WhatsApp",
+            "CreatedAt": "={{ $now.toISO() }}",
+            "UpdatedAt": "={{ $now.toISO() }}",
+            "ContactNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ContactNumber', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "BookingDate",
+              "displayName": "BookingDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EventDate",
+              "displayName": "EventDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Event",
+              "displayName": "Event",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Venue",
+              "displayName": "Venue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ReadyTime",
+              "displayName": "ReadyTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ContactNumber",
+              "displayName": "ContactNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ServiceRequirements",
+              "displayName": "ServiceRequirements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BookingStatus",
+              "displayName": "BookingStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UpdatedAt",
+              "displayName": "UpdatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        832
+      ],
+      "id": "ec33778c-80de-441f-9f00-d0e2c2aa7127",
+      "name": "BookingsTool",
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 617231842,
+          "mode": "list",
+          "cachedResultName": "CustomerProfiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "LastContactAt": "={{ $now.toISO() }}",
+            "LastInboundAt": "={{ $now.toISO() }}",
+            "UpdatedAt": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastContactAt",
+              "displayName": "LastContactAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LastInboundAt",
+              "displayName": "LastInboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LastOutboundAt",
+              "displayName": "LastOutboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FollowUpTimestamp",
+              "displayName": "FollowUpTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastDripSent",
+              "displayName": "LastDripSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DripOptOut",
+              "displayName": "DripOptOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "OptOutSource",
+              "displayName": "OptOutSource",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CurrentBookingStatus",
+              "displayName": "CurrentBookingStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestBookingDate",
+              "displayName": "LatestBookingDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestServiceType",
+              "displayName": "LatestServiceType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UpdatedAt",
+              "displayName": "UpdatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        608
+      ],
+      "id": "0ff3a316-f626-4bab-bf8f-1f8a00dbe2e8",
+      "name": "UpdateProfileOnInbound",
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const rawOutput = $input.item.json.output;\n\n// Extract the status tag if present\nconst tagMatch = rawOutput.match(/\\[SALON_STATUS:([A-Z_]+)\\]/);\nconst detectedStatus = tagMatch ? tagMatch : 'ACTIVE';\n\n// Remove the tag from the customer-facing message\nconst cleanOutput = rawOutput.replace(/\\[SALON_STATUS:[A-Z_]+\\]/, '').trim();\n\nreturn [{\n  json: {\n    ...$input.item.json,\n    output: cleanOutput,\n    detectedStatus: detectedStatus\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        528
+      ],
+      "id": "cac5b067-e262-4b49-9570-b2123b8a4f58",
+      "name": "ParseStatusTag"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "ParseStatusTag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PDF Trigger Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Book_Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Trigger Check": {
+      "main": [
+        [
+          {
+            "node": "Reply to Customer1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup PDF Status": {
+      "main": [
+        [
+          {
+            "node": "PDF Already Sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Already Sent?": {
+      "main": [
+        [
+          {
+            "node": "Reply to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Download Bridal PDF": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Reply to Customer1": {
+      "main": [
+        [
+          {
+            "node": "Send Bridal PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Bridal PDF": {
+      "main": [
+        [
+          {
+            "node": "Update PDF Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Generic_Salon_Vector_Store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generic_Salon_Vector_Store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generic_Salon_Vector_Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Message Sender": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get_Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude Contacts": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Typing Indicator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get_Contacts": {
+      "main": [
+        [
+          {
+            "node": "Exclude Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "START Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "STOP Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START Conversation": {
+      "main": [
+        [
+          {
+            "node": "START Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STOP Conversation": {
+      "main": [
+        [
+          {
+            "node": "STOP Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STOP Message": {
+      "main": [
+        [
+          {
+            "node": "STOP Conversation1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "START Message": {
+      "main": [
+        [
+          {
+            "node": "Start Conversation Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Typing Indicator": {
+      "main": [
+        [
+          {
+            "node": "UpdateProfileOnInbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Message Type": {
+      "main": [
+        [
+          {
+            "node": "Download Audio2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation (Image)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation (Video)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio Message Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text Message Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Base64 to File1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Audio2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio2": {
+      "main": [
+        [
+          {
+            "node": "Convert Base64 to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Audio2": {
+      "main": [
+        [
+          {
+            "node": "Set Audio Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Detect Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data_old": {
+      "main": [
+        []
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Check Message Sender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CustomerProfilesTool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BookingsTool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateProfileOnInbound": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ParseStatusTag": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1444",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "82.112.238.115",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9e15d341bc7a40c3-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "82.112.238.115, 172.69.95.8",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "172.69.95.8"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Atul-Demo",
+            "data": {
+              "key": {
+                "remoteJid": "918239909115@s.whatsapp.net",
+                "remoteJidAlt": "918239909115@s.whatsapp.net",
+                "fromMe": false,
+                "id": "3A9A9B3903ECD523989E",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Atul Khandelwal",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Hi",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 33,
+                      "1": 159,
+                      "2": 65,
+                      "3": 66,
+                      "4": 144,
+                      "5": 125,
+                      "6": 233,
+                      "7": 133,
+                      "8": 203,
+                      "9": 49
+                    },
+                    "senderTimestamp": {
+                      "low": 1774096004,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "receiverAccountType": 1,
+                    "recipientKeyHash": {
+                      "0": 1,
+                      "1": 85,
+                      "2": 38,
+                      "3": 226,
+                      "4": 202,
+                      "5": 238,
+                      "6": 189,
+                      "7": 87,
+                      "8": 90,
+                      "9": 70
+                    },
+                    "recipientTimestamp": {
+                      "low": 1774356411,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 122,
+                    "1": 134,
+                    "2": 9,
+                    "3": 6,
+                    "4": 249,
+                    "5": 177,
+                    "6": 117,
+                    "7": 50,
+                    "8": 250,
+                    "9": 5,
+                    "10": 254,
+                    "11": 19,
+                    "12": 178,
+                    "13": 52,
+                    "14": 146,
+                    "15": 247,
+                    "16": 184,
+                    "17": 234,
+                    "18": 134,
+                    "19": 132,
+                    "20": 89,
+                    "21": 44,
+                    "22": 120,
+                    "23": 28,
+                    "24": 215,
+                    "25": 76,
+                    "26": 166,
+                    "27": 124,
+                    "28": 80,
+                    "29": 239,
+                    "30": 119,
+                    "31": 212
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1774356874,
+              "instanceId": "9153dee0-27ed-491a-a3f3-16dedd6c3157",
+              "source": "ios"
+            },
+            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+            "date_time": "2026-03-24T09:54:34.287Z",
+            "sender": "918003626766@s.whatsapp.net",
+            "server_url": "https://api.chatsocialai.in",
+            "apikey": "7DD60C9CE741-4A35-BF3C-31C293DEA0FF"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Execute Workflow Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-vps.chatsocialai.in",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1498",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "82.112.238.115",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9e56521eff67bdd5-BOM",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "content-type": "application/json",
+            "x-forwarded-for": "82.112.238.115, 172.71.198.173",
+            "x-forwarded-host": "n8n-vps.chatsocialai.in",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "5ea393ddef79",
+            "x-real-ip": "172.71.198.173"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "Atul-Demo",
+            "data": {
+              "key": {
+                "remoteJid": "917738314714@s.whatsapp.net",
+                "remoteJidAlt": "917738314714@s.whatsapp.net",
+                "fromMe": false,
+                "id": "ACF17AB124CABC990FF7B61DF3FFA405",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Kunal Soni",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Hair spa kar sakte hai kal subah 11 baje",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 32,
+                      "1": 50,
+                      "2": 99,
+                      "3": 173,
+                      "4": 117,
+                      "5": 205,
+                      "6": 33,
+                      "7": 150,
+                      "8": 61,
+                      "9": 173
+                    },
+                    "senderTimestamp": {
+                      "low": 1774280317,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "receiverAccountType": 1,
+                    "recipientKeyHash": {
+                      "0": 1,
+                      "1": 85,
+                      "2": 38,
+                      "3": 226,
+                      "4": 202,
+                      "5": 238,
+                      "6": 189,
+                      "7": 87,
+                      "8": 90,
+                      "9": 70
+                    },
+                    "recipientTimestamp": {
+                      "low": 1774356411,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 224,
+                    "1": 10,
+                    "2": 194,
+                    "3": 179,
+                    "4": 78,
+                    "5": 179,
+                    "6": 254,
+                    "7": 114,
+                    "8": 132,
+                    "9": 241,
+                    "10": 124,
+                    "11": 214,
+                    "12": 116,
+                    "13": 132,
+                    "14": 245,
+                    "15": 216,
+                    "16": 175,
+                    "17": 20,
+                    "18": 182,
+                    "19": 25,
+                    "20": 226,
+                    "21": 241,
+                    "22": 123,
+                    "23": 239,
+                    "24": 128,
+                    "25": 61,
+                    "26": 67,
+                    "27": 204,
+                    "28": 154,
+                    "29": 139,
+                    "30": 62,
+                    "31": 60
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1775033159,
+              "instanceId": "9153dee0-27ed-491a-a3f3-16dedd6c3157",
+              "source": "android"
+            },
+            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+            "date_time": "2026-04-01T05:45:59.497Z",
+            "sender": "918003626766@s.whatsapp.net",
+            "server_url": "https://api.chatsocialai.in",
+            "apikey": "7DD60C9CE741-4A35-BF3C-31C293DEA0FF"
+          },
+          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "9e89367e-16b5-4b0a-aa59-0ab98582728a",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-04-22T12:11:58.649Z",
+      "createdAt": "2026-04-22T12:11:58.649Z",
+      "role": "workflow:owner",
+      "workflowId": "RILoSFcOEsvvg80W",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
