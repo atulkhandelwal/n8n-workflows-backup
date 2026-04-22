@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-20T13:13:08.833Z",
+  "updatedAt": "2026-04-22T12:11:22.593Z",
   "createdAt": "2026-03-26T09:16:47.730Z",
   "id": "53JGU4A89nHoFO8d",
   "name": "Shades Skin & Hair Care - WhatsApp AI v2",
@@ -1650,17 +1650,6 @@
       ],
       "id": "65564e53-32dd-4248-a5f0-ba74264e06ea",
       "name": "Extract Data"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [
-        624,
-        736
-      ],
-      "id": "b3dd826b-c199-4b31-9824-ee9b57abc7ae",
-      "name": "Create a row in Supabase"
     }
   ],
   "connections": {
@@ -2094,17 +2083,6 @@
           }
         ]
       ]
-    },
-    "Create a row in Supabase": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
@@ -2395,7 +2373,7 @@
       }
     ]
   },
-  "versionId": "b4bc6be0-5734-4d36-b8fb-c0ca99434bc0",
+  "versionId": "bd04e2f0-1717-49e3-812a-c9c5b8863007",
   "activeVersionId": "c3f00162-1443-4fd3-88fc-4d767e17f98d",
   "triggerCount": 1,
   "shared": [
