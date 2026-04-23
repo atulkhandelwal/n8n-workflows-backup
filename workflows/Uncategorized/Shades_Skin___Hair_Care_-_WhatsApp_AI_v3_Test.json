@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-22T14:06:57.674Z",
+  "updatedAt": "2026-04-23T11:20:31.726Z",
   "createdAt": "2026-04-22T12:11:58.631Z",
   "id": "RILoSFcOEsvvg80W",
   "name": "Shades Skin & Hair Care - WhatsApp AI v3 Test",
@@ -123,7 +123,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1360,
+        1568,
         272
       ],
       "id": "760276c5-85a5-49c5-bf3b-9c40211dac3b",
@@ -233,7 +233,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1552,
+        1760,
         144
       ],
       "alwaysOutputData": true,
@@ -274,7 +274,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1776,
+        1984,
         144
       ]
     },
@@ -425,7 +425,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        2688,
+        2896,
         368
       ],
       "retryOnFail": true,
@@ -483,7 +483,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2112,
+        2320,
         192
       ],
       "id": "c775e4a7-cc1e-4290-9e17-89bb4682160f",
@@ -521,7 +521,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2112,
+        2320,
         368
       ],
       "id": "9021b827-0ae1-4ba8-ab61-0120cc12fd1f",
@@ -579,7 +579,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2400,
+        2608,
         368
       ],
       "id": "b2bddcb7-5357-46af-aae4-4522b76e9c0b",
@@ -853,8 +853,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -384,
-        800
+        -240,
+        464
       ],
       "id": "20f4230f-bb53-4006-afa8-739aabde51e8",
       "name": "No Operation, do nothing2"
@@ -1095,7 +1095,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -48,
+        160,
         32
       ],
       "id": "0a535809-18c8-4c63-9b26-66c644dc5ce1",
@@ -1119,7 +1119,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -256,
+        -48,
         224
       ],
       "id": "b812d4fe-628c-4b73-9778-9fe14846f480",
@@ -1142,7 +1142,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -256,
+        -48,
         32
       ],
       "id": "e4fba833-9be3-429a-a7d6-7bfba60df328",
@@ -1179,7 +1179,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -48,
+        160,
         224
       ],
       "id": "3b7261c0-937c-415d-a3f9-4763828ed325",
@@ -1511,7 +1511,7 @@
     {
       "parameters": {
         "descriptionType": "manual",
-        "toolDescription": "Save or update the customer profile. Call this tool whenever the customer provides their Name, or when you detect their Language preference, or when the Status changes (Active, FollowUp, Booked, Stopped), or when the customer shares a Note or special request.",
+        "toolDescription": "Update the customer profile in CustomerProfiles.\n\nCall this tool when:\n- Customer provides their Name\n- You detect their Language (English or Hinglish)\n- Status changes to Active, FollowUp, or Booked\n- Customer shares a special note or requirement\n- Booking is confirmed and LatestServiceType becomes known\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\nOnly write fields that are clearly known from the conversation.\nDo not invent missing values.",
         "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
@@ -1535,7 +1535,8 @@
             "Phone": "={{ $('Extract Data').first().json.phone }}",
             "Language": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Language', ``, 'string') }}",
             "Status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Status', ``, 'string') }}",
-            "Notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Notes', ``, 'string') }}"
+            "Notes": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Notes', ``, 'string') }}",
+            "LatestServiceType": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('LatestServiceType', ``, 'string') }}"
           },
           "matchingColumns": [
             "Phone"
@@ -1679,7 +1680,7 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true,
-              "removed": true
+              "removed": false
             },
             {
               "id": "Notes",
@@ -1735,7 +1736,7 @@
     {
       "parameters": {
         "descriptionType": "manual",
-        "toolDescription": "Save a new booking. Call this tool ONLY when the customer explicitly confirms their booking by replying Yes, Confirm, or Haan in Step 5. Never call this tool during field collection. Save all booking details: EventDate, Event, Venue, ReadyTime, ContactNumber, ServiceRequirements.",
+        "toolDescription": "Save a confirmed booking in the Bookings sheet.\n\nCall this tool ONLY in Step 5, ONLY after the customer explicitly replies Yes, Confirm, or Haan.\nNever call this tool during Steps 1 to 4.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nPhone and system fields are auto-filled by n8n.",
         "authentication": "serviceAccount",
         "operation": "append",
         "documentId": {
@@ -1756,7 +1757,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "Phone": "={{ $('Extract Data').first().json.phone }}",
-            "BookingDate": "={{ $now.toISO() }}",
+            "BookingDate": "={{ $now.toFormat('yyyy-MM-dd') }}",
             "EventDate": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('EventDate', ``, 'string') }}",
             "Event": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event', ``, 'string') }}",
             "Venue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Venue', ``, 'string') }}",
@@ -2141,6 +2142,226 @@
       ],
       "id": "cac5b067-e262-4b49-9570-b2123b8a4f58",
       "name": "ParseStatusTag"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 617231842,
+          "mode": "list",
+          "cachedResultName": "CustomerProfiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Extract Data').first().json.phone }}",
+            "Status": "Stopped",
+            "LastDripSent": "Reminder",
+            "UpdatedAt": "={{ $now.toISO() }}",
+            "LastContactAt": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LastContactAt",
+              "displayName": "LastContactAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LastInboundAt",
+              "displayName": "LastInboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastOutboundAt",
+              "displayName": "LastOutboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FollowUpTimestamp",
+              "displayName": "FollowUpTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastDripSent",
+              "displayName": "LastDripSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DripOptOut",
+              "displayName": "DripOptOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "OptOutSource",
+              "displayName": "OptOutSource",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CurrentBookingStatus",
+              "displayName": "CurrentBookingStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestBookingDate",
+              "displayName": "LatestBookingDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestServiceType",
+              "displayName": "LatestServiceType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UpdatedAt",
+              "displayName": "UpdatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        208
+      ],
+      "id": "3352a8cf-80ee-49d3-861d-79f544066398",
+      "name": "UpdateProfileOnSTOP",
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
     }
   ],
   "connections": {
@@ -2410,7 +2631,7 @@
       "main": [
         [
           {
-            "node": "STOP Message",
+            "node": "UpdateProfileOnSTOP",
             "type": "main",
             "index": 0
           }
@@ -2602,6 +2823,17 @@
         [
           {
             "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateProfileOnSTOP": {
+      "main": [
+        [
+          {
+            "node": "STOP Message",
             "type": "main",
             "index": 0
           }
@@ -2897,7 +3129,7 @@
       }
     ]
   },
-  "versionId": "9e89367e-16b5-4b0a-aa59-0ab98582728a",
+  "versionId": "0af4fbd2-7bce-4e29-829b-fda7e40aaf74",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
