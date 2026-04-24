@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-03T07:37:42.306Z",
+  "updatedAt": "2026-04-24T11:49:08.834Z",
   "createdAt": "2026-02-23T08:30:44.975Z",
   "id": "8HUtdcsTal9bMijB",
   "name": "Generic Demo Workflow v1",
@@ -628,34 +628,6 @@
       "parameters": {
         "workflowId": {
           "__rl": true,
-          "value": "53JGU4A89nHoFO8d",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/53JGU4A89nHoFO8d",
-          "cachedResultName": "Shades Skin & Hair Care - WhatsApp AI v2"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {},
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": true
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.3,
-      "position": [
-        1360,
-        -432
-      ],
-      "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
-      "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v2'"
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
           "value": "GiAIYRyljOEaLbXK",
           "mode": "list",
           "cachedResultUrl": "/workflow/GiAIYRyljOEaLbXK",
@@ -722,6 +694,34 @@
       ],
       "id": "451b9eae-9582-45ac-a443-2f5d2abd1d2e",
       "name": "Call Generic HVAC Booking"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "RILoSFcOEsvvg80W",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/RILoSFcOEsvvg80W",
+          "cachedResultName": "Shades Skin & Hair Care - WhatsApp AI v3 Test"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        -432
+      ],
+      "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
+      "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'"
     }
   ],
   "connections": {
@@ -905,7 +905,7 @@
       "main": [
         [
           {
-            "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v2'",
+            "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'",
             "type": "main",
             "index": 0
           }
@@ -1075,8 +1075,8 @@
       }
     ]
   },
-  "versionId": "bbe1b416-e451-4f70-a765-c84760329fc7",
-  "activeVersionId": "bbe1b416-e451-4f70-a765-c84760329fc7",
+  "versionId": "b7123417-ae9f-4364-8da1-231683235540",
+  "activeVersionId": "b7123417-ae9f-4364-8da1-231683235540",
   "triggerCount": 1,
   "shared": [
     {
@@ -1088,9 +1088,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-03T07:39:54.000Z",
-    "createdAt": "2026-04-03T07:37:42.307Z",
-    "versionId": "bbe1b416-e451-4f70-a765-c84760329fc7",
+    "updatedAt": "2026-04-24T11:49:12.000Z",
+    "createdAt": "2026-04-24T11:49:08.835Z",
+    "versionId": "b7123417-ae9f-4364-8da1-231683235540",
     "workflowId": "8HUtdcsTal9bMijB",
     "nodes": [
       {
@@ -1715,34 +1715,6 @@
         "parameters": {
           "workflowId": {
             "__rl": true,
-            "value": "53JGU4A89nHoFO8d",
-            "mode": "list",
-            "cachedResultUrl": "/workflow/53JGU4A89nHoFO8d",
-            "cachedResultName": "Shades Skin & Hair Care - WhatsApp AI v2"
-          },
-          "workflowInputs": {
-            "mappingMode": "defineBelow",
-            "value": {},
-            "matchingColumns": [],
-            "schema": [],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": true
-          },
-          "options": {}
-        },
-        "type": "n8n-nodes-base.executeWorkflow",
-        "typeVersion": 1.3,
-        "position": [
-          1360,
-          -432
-        ],
-        "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
-        "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v2'"
-      },
-      {
-        "parameters": {
-          "workflowId": {
-            "__rl": true,
             "value": "GiAIYRyljOEaLbXK",
             "mode": "list",
             "cachedResultUrl": "/workflow/GiAIYRyljOEaLbXK",
@@ -1809,6 +1781,34 @@
         ],
         "id": "451b9eae-9582-45ac-a443-2f5d2abd1d2e",
         "name": "Call Generic HVAC Booking"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "RILoSFcOEsvvg80W",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/RILoSFcOEsvvg80W",
+            "cachedResultName": "Shades Skin & Hair Care - WhatsApp AI v3 Test"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          1360,
+          -432
+        ],
+        "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
+        "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'"
       }
     ],
     "connections": {
@@ -1992,7 +1992,7 @@
         "main": [
           [
             {
-              "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v2'",
+              "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'",
               "type": "main",
               "index": 0
             }
@@ -2012,7 +2012,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version bbe1b416",
+    "name": "Version b7123417",
     "description": "",
     "autosaved": true
   },
