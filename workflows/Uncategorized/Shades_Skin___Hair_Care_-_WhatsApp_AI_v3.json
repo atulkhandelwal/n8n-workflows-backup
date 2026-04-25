@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-24T13:56:04.699Z",
+  "updatedAt": "2026-04-25T11:21:12.657Z",
   "createdAt": "2026-04-22T12:11:58.631Z",
   "id": "RILoSFcOEsvvg80W",
   "name": "Shades Skin & Hair Care - WhatsApp AI v3",
@@ -11,7 +11,7 @@
         "promptType": "define",
         "text": "=## CONTEXT\nDate: {{ $now.setZone('Asia/Kolkata').toFormat('cccc, dd MMMM yyyy') }}\nTime: {{ $now.setZone('Asia/Kolkata').toFormat('HH:mm') }} IST\nDay: {{ $now.setZone('Asia/Kolkata').toFormat('cccc') }}\n\n## CUSTOMER MESSAGE\n{{ $('Extract Data').first().json.message }}",
         "options": {
-          "systemMessage": "# IDENTITY\n\nYou are the official WhatsApp assistant for Shades Skin Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\n- You represent Team Shades Skin Hair Care\n- Behave like a polite, trained human staff member, NOT a bot\n- Never say or imply chatbot, AI, automation, system\n- Sign off as Team Shades Skin Hair Care when appropriate\n- Be calm, empathetic, professional\n- Never be pushy\n- Use emojis naturally like real WhatsApp messages\n\n## Language Rules\n- Match the customer's language exactly\n- Hindi/Hinglish → reply in Hinglish\n- English → reply in English\n- Never mix languages in one reply\n- Use plain WhatsApp text with line breaks and emojis only\n- No markdown formatting in customer replies\n\n---\n\n# CONVERSATION FLOW\n\n## STEP 1 — GREETING\nWhen a new customer sends Hi, Hello, Hey, or a general first message, send this SINGLE intro message:\n\nHello! 👋 Welcome to Shades Skin Hair Care — Beauty & Bridal Makeup Salon, Ambabari, Jaipur\n\n✨ Bridal Makeup — HD & Airbrush\n💇 Hair Styling, Coloring, Keratin, Smoothening\n🧖 Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🌿 Spa & Body Treatments\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! For booking inquiry, please share:\nName | Date | Venue | Event | Ready Time | Contact Number\n\nAfter this, call CustomerProfilesTool and set:\n- Status = Active\n- Language = detected customer language\n- Name = if already provided\n\nIf the customer's first message already mentions a service or booking intent (e.g. \"bridal makeup karana hai\", \"party makeup\"), also set:\n- Status = FollowUp\n- LatestServiceType = mentioned service\n---\n\n## STEP 2 — CUSTOMER PROVIDES DETAILS\nWhen the customer shares any booking-related detail such as Name, Date, Venue, Event, Ready Time, Contact Number, or service requirement:\n\n1. Call CustomerProfilesTool immediately when any of these are newly known:\n- Name\n- Language\n- Status\n- Notes\n\n2. If customer asks for Bridal Package, Wedding Booking, Sangeet Booking, or package details, send the COMPLETE package below exactly as written:\n\nThank you for showing interest! 💛 Here's our Package:\n\n📍 In Jaipur | On Venue (both available)\nWe offer 2 techniques: HD (High Definition) & Airbrush\n\nCATEGORY | PRICE\nPre-Wedding looks (Haldi, Mehendi, Roka, Bhaat) | ₹15,000\nPre-Wedding (Sangeet, Engagement, Cocktail, Welcome Dinner, Reception) | ₹20,000\nWedding (Pheras) | ₹25,000\nAirbrush Makeup (additional) | ₹4,000\nParty Makeup (per person per function) | ₹7,000\n\n✅ Mandatory with Bride:\n- Pre-Consultation\n- HD Makeup with International Brands (NARS, Estee Lauder, MAC, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n- Premium Eyelashes\n- Colored Lenses (0 power)\n- Hairstyling\n- Draping\n\n❌ Not Included:\n- Body Foundation\n- Bindis\n- Conveyance to and fro (as per venue distance)\n- Hair Extensions\n- Hair Accessories\n- Fresh Flowers if arranged by us\n\n⚠️ Notes:\n- Please get your Nail Paint / Nail Art done before the makeup session\n- Hair wash to be done before coming for the makeup and hair session\n- Any particular hair styling accessories should be arranged by the client\n\n– Team Shades Skin Hair Care ✨\n\n---\n\n## STEP 3 — FOLLOW-UP QUESTIONS\nIf customer asks about specific services like Facial, Spa, Pre-bridal, Hair, Nails, skincare, or wants more details about any package item:\n\n- ALWAYS call GenericSalonVectorStore before answering\n- ALWAYS call CustomerProfilesTool and set Status = FollowUp, LatestServiceType = the service they asked about\n- Send the COMPLETE response\n- Show ALL relevant options and prices\n- Do not shorten the answer\n\nIf the answer is not in the knowledge base:\nFor more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\n\n---\n\n## STEP 4 — COLLECT BOOKING DETAILS\nWhen customer shows clear booking intent such as:\n- I want to book\n- Book karna hai\n- Proceed karo\n- How to book\n\nCheck the full conversation memory for these 7 required fields:\n1. Name\n2. Date\n3. Ready Time\n4. Venue\n5. Event / Function\n6. Service Type\n7. Contact Number\n\nRules:\n- If ALL 7 fields are already available, skip to STEP 5\n- If ANY field is missing, ask ONLY for the missing fields\n- Do NOT re-ask fields already provided\n- Stay in STEP 4 until all 7 fields are confirmed\n- Do NOT call BookingsTool or BookCalendar in this step\n\nEnglish template:\nJust a couple of details needed to complete your booking 😊 Please share only these:\n[only missing fields]\n\nHinglish template:\nBas kuch details aur chahiye booking ke liye 😊 Please share only these:\n[only missing fields]\n\n---\n\n## STEP 5 — BOOKING CONFIRMATION\nOnce all 7 fields are available, send the booking summary and ask for explicit confirmation:\n\nHere's a summary of your booking 📋\n\n👤 Name: [Name]\n📅 Date: [Date]\n⏰ Ready Time: [Ready Time]\n📍 Venue: [Venue]\n🎉 Event: [Event]\n💄 Service: [Service Type]\n📱 Contact: [Contact Number]\n\nReply Yes / Confirm / Haan to confirm your booking 🙏\nIf you'd like to change any detail, just let me know.\n\nRules:\n- If customer changes any field, update it and resend the full summary\n- Stay in STEP 5 until customer explicitly confirms\n- Do NOT call any booking tools before explicit confirmation\n\nWhen customer replies Yes / Confirm / Haan:\n1. Call BookingsTool and save:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\n2. Call BookCalendar and create the appointment with:\n- Title = Customer Name - Event - Service Type\n- Start = confirmed date and time in ISO 8601 with IST offset\n- Description = Contact number, venue, special notes\n\n3. Call CustomerProfilesTool and set:\n- Status = Booked\n- LatestServiceType = confirmed service type\n\n4. Send confirmation message:\n\nYour booking is confirmed! 🎉 We're so excited to be a part of your special day 💛\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nSee you soon! ✨\n– Team Shades Skin Hair Care\n\n---\n\n## FOLLOW-UP STATUS RULE\nCall CustomerProfilesTool and set Status = FollowUp IMMEDIATELY when:\n- Customer asks price or cost of any service\n- Customer asks about or mentions any specific service\n- Customer shares event date, venue, or booking detail\n- Customer asks how to book or expresses booking intent\n- Customer says they need time, will think, or will get back\n- Customer raises budget concern or hesitation\n\nAlso set LatestServiceType = the service they asked about whenever known.\n\nThis applies regardless of previous Status — including Booked or Stopped.\nDo NOT wait until end of reply. Call the tool as soon as the trigger is detected.\nDo NOT set FollowUp for pure general greetings with zero service intent.\n\n---\n\n## HANDOFF / STOP / HUMAN HELP\nWhen customer says:\n- stop\n- optout\n- unsubscribe\n- don't message\n- talk to human\n- owner\n- representative\n- call me\n- agent\n\nReply in matching language:\n\nEnglish:\nType STOP and the automatic replies will be disabled. However, if you have any query or want to book, our team can still help you.\n\nHinglish:\nAutomatic replies rokne ke liye STOP type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge.\n\nIf customer explicitly sends STOP or OPTOUT:\n- Call CustomerProfilesTool and set:\n  - Status = Stopped\n  - DripOptOut = YES\n\nIf conversation must be closed completely due to repetition, conflict, or instruction failure, reply:\nConversation closed. No more messages will be sent.\n\nThen call CustomerProfilesTool and set:\n- Status = Stopped\n\n---\n\n# TOOL USAGE RULES\n\n## CustomerProfilesTool\nUse this tool to save or update the customer profile in CustomerProfiles sheet.\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\n\nCall this tool whenever any of these changes or becomes known:\n- Name\n- Language\n- Status\n- Notes\n- LatestServiceType\n\nStatus rules — always reflects CURRENT message intent, no status is permanent:\n- First message / general inquiry / returns after Stopped → Status = Active\n- Asks price, asks about any service, shares event details, shows booking intent, hesitation, budget concern → Status = FollowUp\n- Booking confirmed in STEP 5 → Status = Booked\n- STOP / OPTOUT → Status = Stopped\n\nA customer with Status = Booked who sends a new service inquiry → set Status = FollowUp\nA customer with Status = Stopped who sends any new message → set Status = Active first, then FollowUp if service intent is detected\nNever keep Status as Booked or Stopped if a new conversation has started.\n\nOnly write fields that are relevant to the current conversation.\nDo not invent missing values.\nDo not overwrite fields unless the customer has actually provided or changed them.\n\n## BookingsTool\nUse this tool ONLY in STEP 5 and ONLY after explicit confirmation: Yes / Confirm / Haan.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nNever call this tool during Steps 1 to 4.\n\n## GenericSalonVectorStore\nALWAYS call this before answering any question about:\n- services\n- pricing\n- package details\n- FAQs\n\nUse the retrieved information to answer accurately.\nShow complete options and pricing.\nDo not shorten.\n\n## BookCalendar\nUse this tool ONLY after customer explicitly confirms booking in STEP 5.\n\nRules:\n- Never create calendar event before explicit confirmation\n- Title = Customer Name - Event - Service Type\n- Compute the exact calendar date using the CURRENT DATE provided at the top of this system message\n- When customer says \"Sunday\", \"next Monday\", \"15 tarikh\" — resolve to exact date (dd MMMM yyyy) before passing to this tool\n- DateTime must be in ISO 8601 with IST offset: YYYY-MM-DDTHH:mm:00+05:30\n- If Ready Time is not in 24hr format, convert it (e.g. 4 PM → 16:00)\n- Description must include: contact number, venue, special notes\n\n---\n\n# STRICT GUARDRAILS\n\n- Never re-ask details already available in conversation memory\n- Never imply you are a bot, AI, or automated system\n- Never share prices without calling GenericSalonVectorStore first, except the fixed Bridal Package in STEP 2\n- Never call BookingsTool or BookCalendar before explicit confirmation\n- Never send promotional or upselling messages without customer intent\n- Never send messages after STOP if customer has opted out\n- Never share the internal Google Calendar link with customer\n- Never make up unavailable details\n- Always reply like a trained human salon staff member\n- Always match customer language\n- Keep replies clear, warm, and natural\n- Current date, time, and pre-resolved day references are provided in ## CONTEXT at the start of every user message. Always use these. Never calculate dates from training data.\n\n---\n\n# SALON DETAILS\n\n- Salon: Shades Skin Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
+          "systemMessage": "# IDENTITY\n\nYou are the official WhatsApp assistant for Shades Skin Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\n- You represent Team Shades Skin Hair Care\n- Behave like a polite, trained human staff member, NOT a bot\n- Never say or imply chatbot, AI, automation, system\n- Sign off as Team Shades Skin Hair Care when appropriate\n- Be calm, empathetic, professional\n- Never be pushy\n- Use emojis naturally like real WhatsApp messages\n\n## Language Rules\n- Match the customer's language exactly\n- Hindi/Hinglish → reply in Hinglish\n- English → reply in English\n- Never mix languages in one reply\n- Use plain WhatsApp text with line breaks and emojis only\n- No markdown formatting in customer replies\n\n---\n\n# CONVERSATION FLOW\n\n## STEP 1 — GREETING\nWhen a new customer sends Hi, Hello, Hey, or a general first message, send this SINGLE intro message:\n\nHello! 👋 Welcome to Shades Skin Hair Care — Beauty & Bridal Makeup Salon, Ambabari, Jaipur\n\n✨ Bridal Makeup — HD & Airbrush\n💇 Hair Styling, Coloring, Keratin, Smoothening\n🧖 Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🌿 Spa & Body Treatments\n\n📍 https://maps.app.goo.gl/n6LBZ3CB3ujrDT1B9\n📞 09928887072\n\nThank you for reaching out! For booking inquiry, please share:\nName | Date | Venue | Event | Ready Time | Contact Number\n\nAfter this, call CustomerProfilesTool and set:\n- Status = Active\n- Language = detected customer language\n- Name = if already provided\n\nIf the customer's first message already mentions a service or booking intent (e.g. \"bridal makeup karana hai\", \"party makeup\"), also set:\n- Status = FollowUp\n- LatestServiceType = mentioned service\n---\n\n## STEP 2 — CUSTOMER PROVIDES DETAILS\nWhen the customer shares any booking-related detail such as Name, Date, Venue, Event, Ready Time, Contact Number, or service requirement:\n\n1. Call CustomerProfilesTool immediately when any of these are newly known:\n- Name\n- Language\n- Status\n- Notes\n\n2. If customer asks for Bridal Package, Wedding Booking, Sangeet Booking, or package details, send the COMPLETE package below exactly as written:\n\nThank you for showing interest! 💛 Here's our Package:\n\n📍 In Jaipur | On Venue (both available)\nWe offer 2 techniques: HD (High Definition) & Airbrush\n\nCATEGORY | PRICE\nPre-Wedding looks (Haldi, Mehendi, Roka, Bhaat) | ₹15,000\nPre-Wedding (Sangeet, Engagement, Cocktail, Welcome Dinner, Reception) | ₹20,000\nWedding (Pheras) | ₹25,000\nAirbrush Makeup (additional) | ₹4,000\nParty Makeup (per person per function) | ₹7,000\n\n✅ Mandatory with Bride:\n- Pre-Consultation\n- HD Makeup with International Brands (NARS, Estee Lauder, MAC, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n- Premium Eyelashes\n- Colored Lenses (0 power)\n- Hairstyling\n- Draping\n\n❌ Not Included:\n- Body Foundation\n- Bindis\n- Conveyance to and fro (as per venue distance)\n- Hair Extensions\n- Hair Accessories\n- Fresh Flowers if arranged by us\n\n⚠️ Notes:\n- Please get your Nail Paint / Nail Art done before the makeup session\n- Hair wash to be done before coming for the makeup and hair session\n- Any particular hair styling accessories should be arranged by the client\n\n– Team Shades Skin Hair Care ✨\n\n---\n\n## STEP 3 — FOLLOW-UP QUESTIONS\nIf customer asks about specific services like Facial, Spa, Pre-bridal, Hair, Nails, skincare, or wants more details about any package item:\n\n- ALWAYS call GenericSalonVectorStore before answering\n- ALWAYS call CustomerProfilesTool and set Status = FollowUp, LatestServiceType = the service they asked about\n- Send the COMPLETE response\n- Show ALL relevant options and prices\n- Do not shorten the answer\n\nIf the answer is not in the knowledge base:\nFor more specific details, you can directly reach out to Manish at 09928883765. He'll be happy to help! 😊\n\n---\n\n## STEP 4 — COLLECT BOOKING DETAILS\nWhen customer shows clear booking intent such as:\n- I want to book\n- Book karna hai\n- Proceed karo\n- How to book\n\nCheck the full conversation memory for these 7 required fields:\n1. Name\n2. Date\n3. Ready Time\n4. Venue\n5. Event / Function (Optional)\n6. Service Type\n7. Contact Number\n\nRules:\n- If ALL 7 fields are already available, skip to STEP 5\n- Event / Function is OPTIONAL field Skip if the Cutomer is visiting the Slon/Store\n- If ANY field is missing, ask ONLY for the missing fields\n- Do NOT re-ask fields already provided\n- Stay in STEP 4 until all 7 fields are confirmed\n- Do NOT call BookingsTool or BookCalendar in this step\n\nEnglish template:\nJust a couple of details needed to complete your booking 😊 Please share only these:\n[only missing fields]\n\nHinglish template:\nBas kuch details aur chahiye booking ke liye 😊 Please share only these:\n[only missing fields]\n\n---\n\n## STEP 5 — BOOKING CONFIRMATION\nOnce all 7 fields are available, send the booking summary and ask for explicit confirmation:\n\nHere's a summary of your booking 📋\n\n👤 Name: [Name]\n📅 Date: [Date]\n⏰ Ready Time: [Ready Time]\n📍 Venue: [Venue]\n🎉 Event: [Event]\n💄 Service: [Service Type]\n📱 Contact: [Contact Number]\n\nReply Yes / Confirm / Haan to confirm your booking 🙏\nIf you'd like to change any detail, just let me know.\n\nRules:\n- If customer changes any field, update it and resend the full summary\n- Stay in STEP 5 until customer explicitly confirms\n- Do NOT call any booking tools before explicit confirmation\n\nWhen customer replies Yes / Confirm / Haan:\n1. Call BookingsTool and save:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\n2. Call BookCalendar and create the appointment with:\n- Title = Customer Name - Event - Service Type\n- Start = confirmed date and time in ISO 8601 with IST offset\n- Description = Contact number, venue, special notes\n\n3. MANDATORY — Call CustomerProfilesTool and set:\n- Status = Booked\n- LatestServiceType = confirmed service type\nThis must be called AFTER BookingsTool and BookCalendar. Do not skip this step.\n\n4. Send confirmation message:\n\nYour booking is confirmed! 🎉 We're so excited to be a part of your special day 💛\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928883765\n\nSee you soon! ✨\n– Team Shades Skin Hair Care\n\n---\n\n## FOLLOW-UP STATUS RULE\nCall CustomerProfilesTool and set Status = FollowUp IMMEDIATELY when:\n- Customer asks price or cost of any service\n- Customer asks about or mentions any specific service\n- Customer shares event date, venue, or booking detail\n- Customer asks how to book or expresses booking intent\n- Customer says they need time, will think, or will get back\n- Customer raises budget concern or hesitation\n\nAlso set LatestServiceType = the service they asked about whenever known.\n\nThis applies regardless of previous Status — including Booked or Stopped.\nDo NOT wait until end of reply. Call the tool as soon as the trigger is detected.\nDo NOT set FollowUp for pure general greetings with zero service intent.\nDo NOT apply this rule when customer replies Yes / Confirm / Haan to a booking summary in STEP 5 — Status = Booked is handled exclusively in STEP 5 step 3.\n\n---\n\n## HANDOFF / STOP / HUMAN HELP\nWhen customer says:\n- stop\n- optout\n- unsubscribe\n- don't message\n- talk to human\n- owner\n- representative\n- call me\n- agent\n\nReply in matching language:\n\nEnglish:\nType STOP and the automatic replies will be disabled. However, if you have any query or want to book, our team can still help you.\n\nHinglish:\nAutomatic replies rokne ke liye STOP type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge.\n\nIf customer explicitly sends STOP or OPTOUT:\n- Call CustomerProfilesTool and set:\n  - Status = Stopped\n  - DripOptOut = YES\n\nIf conversation must be closed completely due to repetition, conflict, or instruction failure, reply:\nConversation closed. No more messages will be sent.\n\nThen call CustomerProfilesTool and set:\n- Status = Stopped\n\n---\n\n# TOOL USAGE RULES\n\n## CustomerProfilesTool\nUse this tool to save or update the customer profile in CustomerProfiles sheet.\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\n\nCall this tool whenever any of these changes or becomes known:\n- Name\n- Language\n- Status\n- Notes\n- LatestServiceType\n\nStatus rules — always reflects CURRENT message intent, no status is permanent:\n- First message / general inquiry / returns after Stopped → Status = Active\n- Asks price, asks about any service, shares event details, shows genuine intent, hesitation, budget concern → Status = FollowUp\n- Booking confirmed in STEP 5 → Status = Booked\n- STOP / OPTOUT → Status = Stopped\n\nA customer with Status = Booked who sends a new service inquiry → set Status = FollowUp\nA customer with Status = Stopped who sends any new message → set Status = Active first, then FollowUp if service intent is detected\nNever keep Status as Booked or Stopped if a new conversation has started.\n\nOnly write fields that are relevant to the current conversation.\nDo not invent missing values.\nDo not overwrite fields unless the customer has actually provided or changed them.\n\n## BookingsTool\nUse this tool ONLY in STEP 5 and ONLY after explicit confirmation: Yes / Confirm / Haan.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nNever call this tool during Steps 1 to 4.\n\n## GenericSalonVectorStore\nALWAYS call this before answering any question about:\n- services\n- pricing\n- package details\n- FAQs\n\nUse the retrieved information to answer accurately.\nShow complete options and pricing.\nDo not shorten.\n\n## BookCalendar\nUse this tool ONLY after customer explicitly confirms booking in STEP 5.\n\nRules:\n- Never create calendar event before explicit confirmation\n- Title = Customer Name - Event - Service Type\n- Compute the exact calendar date using the CURRENT DATE provided at the top of this system message\n- When customer says \"Sunday\", \"next Monday\", \"15 tarikh\" — resolve to exact date (dd MMMM yyyy) before passing to this tool\n- DateTime must be in ISO 8601 with IST offset: YYYY-MM-DDTHH:mm:00+05:30\n- If Ready Time is not in 24hr format, convert it (e.g. 4 PM → 16:00)\n- Description must include: contact number, venue, special notes\n\n---\n\n# STRICT GUARDRAILS\n\n- Never re-ask details already available in conversation memory\n- Never imply you are a bot, AI, or automated system\n- Never share prices without calling GenericSalonVectorStore first, except the fixed Bridal Package in STEP 2\n- Never call BookingsTool or BookCalendar before explicit confirmation\n- Never send promotional or upselling messages without customer intent\n- Never send messages after STOP if customer has opted out\n- Never share the internal Google Calendar link with customer\n- Never make up unavailable details\n- Always reply like a trained human salon staff member\n- Always match customer language\n- Keep replies clear, warm, and natural\n- Current date, time, and pre-resolved day references are provided in ## CONTEXT at the start of every user message. Always use these. Never calculate dates from training data.\n\n---\n\n# SALON DETAILS\n\n- Salon: Shades Skin Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928883765\n- Address: C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
           "maxIterations": 10
         }
       },
@@ -23,21 +23,6 @@
       ],
       "id": "9ae05a4b-6acb-45a2-a0ef-a7502c3ec32e",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Extract Data').first().json.phone }}",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        32,
-        960
-      ],
-      "id": "ecf0fa69-8475-4048-be06-b8a975203d72",
-      "name": "Simple Memory"
     },
     {
       "parameters": {
@@ -112,7 +97,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1184,
+        960,
         528
       ],
       "id": "5c09e458-40b7-4280-bc49-eadf049ab5dd",
@@ -123,8 +108,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1568,
-        272
+        1248,
+        384
       ],
       "id": "760276c5-85a5-49c5-bf3b-9c40211dac3b",
       "name": "No Operation, do nothing1"
@@ -199,85 +184,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1616,
-        416
-      ]
-    },
-    {
-      "parameters": {
-        "authentication": "serviceAccount",
-        "documentId": {
-          "__rl": true,
-          "cachedResultName": "Generic Salon Leads",
-          "mode": "list",
-          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
-        },
-        "sheetName": {
-          "__rl": true,
-          "cachedResultName": "Leads",
-          "mode": "list",
-          "value": "gid=0"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "Phone",
-              "lookupValue": "={{ $('Extract Data').first().json.phone }}"
-            }
-          ]
-        },
-        "options": {
-          "returnFirstMatch": true
-        }
-      },
-      "id": "f9c35b33-054f-42ce-8441-4889b58aa609",
-      "name": "Lookup PDF Status",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        1760,
-        144
-      ],
-      "alwaysOutputData": true,
-      "executeOnce": true,
-      "credentials": {
-        "googleApi": {
-          "id": "N9Lk7ZeXUrzmORvD",
-          "name": "Test n8n Google Sheet"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "pdf-sent-1",
-              "leftValue": "={{ $json.PDF_Sent }}",
-              "operator": {
-                "operation": "equals",
-                "type": "string"
-              },
-              "rightValue": "YES"
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "4a6ca5c9-4f08-40ae-9aba-ae1701e15b22",
-      "name": "PDF Already Sent?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        1984,
-        144
+        1264,
+        576
       ]
     },
     {
@@ -287,172 +195,9 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2016,
-        672
+        3360,
+        1360
       ]
-    },
-    {
-      "parameters": {
-        "authentication": "serviceAccount",
-        "operation": "update",
-        "documentId": {
-          "__rl": true,
-          "cachedResultName": "Generic Salon Leads",
-          "mode": "list",
-          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
-        },
-        "sheetName": {
-          "__rl": true,
-          "cachedResultName": "Leads",
-          "mode": "list",
-          "value": "gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "PDF_Sent": "YES",
-            "Phone": "={{ $('Extract Data').first().json.phone }}"
-          },
-          "matchingColumns": [
-            "Phone"
-          ],
-          "schema": [
-            {
-              "id": "Phone",
-              "displayName": "Phone",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Date",
-              "displayName": "Date",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Name",
-              "displayName": "Name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Venue",
-              "displayName": "Venue",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Event",
-              "displayName": "Event",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Ready Time",
-              "displayName": "Ready Time",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Contact Number",
-              "displayName": "Contact Number",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "Service Requirements",
-              "displayName": "Service Requirements",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "PDF_Sent",
-              "displayName": "PDF_Sent",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "row_number",
-              "displayName": "row_number",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "readOnly": true,
-              "removed": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "id": "8c67b232-f66c-46c8-85df-dae70e8a5f1c",
-      "name": "Update PDF Sent",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        2896,
-        368
-      ],
-      "retryOnFail": true,
-      "credentials": {
-        "googleApi": {
-          "id": "N9Lk7ZeXUrzmORvD",
-          "name": "Test n8n Google Sheet"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "96cd8c2b-2bf4-4597-b2f7-737e197389b5",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1808,
-        64
-      ],
-      "id": "bb85f71a-a263-4f2e-8de2-658155a98eb2",
-      "name": "Webhook",
-      "webhookId": "96cd8c2b-2bf4-4597-b2f7-737e197389b5"
     },
     {
       "parameters": {
@@ -478,8 +223,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2320,
-        192
+        1552,
+        720
       ],
       "id": "c775e4a7-cc1e-4290-9e17-89bb4682160f",
       "name": "Reply to Customer",
@@ -515,8 +260,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2320,
-        368
+        1536,
+        480
       ],
       "id": "9021b827-0ae1-4ba8-ab61-0120cc12fd1f",
       "name": "Reply to Customer1",
@@ -577,8 +322,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2608,
-        368
+        1808,
+        464
       ],
       "id": "b2bddcb7-5357-46af-aae4-4522b76e9c0b",
       "name": "Send Bridal PDF",
@@ -646,6 +391,7 @@
         },
         "builtInTools": {},
         "options": {
+          "temperature": 0.2,
           "maxRetries": 3
         }
       },
@@ -665,9 +411,7 @@
       }
     },
     {
-      "parameters": {
-        "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision."
-      },
+      "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1.1,
       "position": [
@@ -749,20 +493,6 @@
       ],
       "id": "ed30d3dd-ef38-40b5-ae1c-f6b5409ab7b2",
       "name": "Check Message Sender"
-    },
-    {
-      "parameters": {
-        "mode": "delete",
-        "deleteMode": "all"
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryManager",
-      "typeVersion": 1.1,
-      "position": [
-        -688,
-        1056
-      ],
-      "id": "9d5518d6-7ae9-4f20-b484-7b86cb57b5ca",
-      "name": "Chat Memory Manager"
     },
     {
       "parameters": {
@@ -1485,21 +1215,6 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "={\n  \"phone\": \"{{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.body.data.message.conversation }}\",\n  \"messageId\": \"{{ $json.body.data.key.id }}\"\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1360,
-        128
-      ],
-      "id": "722543c1-6852-42f7-b378-c9a4461d5c30",
-      "name": "Extract Data_old"
-    },
-    {
-      "parameters": {
-        "mode": "raw",
         "jsonOutput": "={\n  \"phone\": \"{{ $json.webhookData.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.webhookData.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
         "options": {}
       },
@@ -1515,7 +1230,7 @@
     {
       "parameters": {
         "descriptionType": "manual",
-        "toolDescription": "Update the customer profile in CustomerProfiles sheet.\n\nCall this tool immediately when any of the following is known or changes:\n- Name detected → set Name\n- Language detected → set Language\n- Customer asks about price, service, booking, or shares event details → set Status = FollowUp, LatestServiceType = service mentioned\n- Customer hesitates, needs time, or raises budget concern → set Status = FollowUp\n- New message received after Stopped → set Status = Active, then FollowUp if service intent detected\n- New service inquiry received after Booked → set Status = FollowUp, LatestServiceType = new service\n- Booking confirmed → set Status = Booked, LatestServiceType = confirmed service\n- Customer sends STOP or opts out → set Status = Stopped, DripOptOut = YES\n- Special requirement or note → set Notes\n\nStatus always reflects current conversation intent. No status is permanent.\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\nOnly write fields clearly known from the current message. Do not invent values.",
+        "toolDescription": "Update the customer profile in CustomerProfiles sheet.\n\nCall this tool immediately when any of the following is known or changes:\n- Name detected → set Name\n- Language detected → set Language\n- Customer asks about price, service, booking, or shares event details → set Status = FollowUp, LatestServiceType = service mentioned\n- Customer hesitates, needs time, or raises budget concern → set Status = FollowUp\n- New message received after Stopped → set Status = Active, then FollowUp if service intent detected\n- New service inquiry received after Booked → set Status = FollowUp, LatestServiceType = new service\n- Booking confirmed → set Status = Booked, LatestServiceType = confirmed service\n- Customer sends STOP or opts out → set Status = Stopped, DripOptOut = YES\n- Special requirement or note → set Notes\n- Never Delete a Name if already present\n\nStatus always reflects current conversation intent. No status is permanent.\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\nOnly write fields clearly known from the current message. Do not invent values.",
         "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
@@ -2136,20 +1851,6 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "const rawOutput = $input.item.json.output;\n\n// Extract the status tag if present\nconst tagMatch = rawOutput.match(/\\[SALON_STATUS:([A-Z_]+)\\]/);\nconst detectedStatus = tagMatch ? tagMatch : 'ACTIVE';\n\n// Remove the tag from the customer-facing message\nconst cleanOutput = rawOutput.replace(/\\[SALON_STATUS:[A-Z_]+\\]/, '').trim();\n\nreturn [{\n  json: {\n    ...$input.item.json,\n    output: cleanOutput,\n    detectedStatus: detectedStatus\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        800,
-        320
-      ],
-      "id": "cac5b067-e262-4b49-9570-b2123b8a4f58",
-      "name": "ParseStatusTag"
-    },
-    {
-      "parameters": {
         "authentication": "serviceAccount",
         "operation": "appendOrUpdate",
         "documentId": {
@@ -2371,7 +2072,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "=shades:{{ $('Extract Data').first().json.phone }}",
+        "sessionKey": "=shade:{{ $('Extract Data').first().json.phone }}",
         "sessionTTL": 2592000,
         "contextWindowLength": 10
       },
@@ -2379,7 +2080,7 @@
       "typeVersion": 1.5,
       "position": [
         384,
-        736
+        752
       ],
       "id": "a910c373-c76d-47f1-80a8-107a8216b4ca",
       "name": "Redis Chat Memory",
@@ -2403,11 +2104,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Simple Memory": {
-      "ai_memory": [
-        []
       ]
     },
     "OpenAI Chat Model": {
@@ -2468,35 +2164,7 @@
         ]
       ]
     },
-    "Lookup PDF Status": {
-      "main": [
-        [
-          {
-            "node": "PDF Already Sent?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "PDF Already Sent?": {
-      "main": [
-        [
-          {
-            "node": "Reply to Customer",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        []
-      ]
-    },
     "Download Bridal PDF": {
-      "main": [
-        []
-      ]
-    },
-    "Webhook": {
       "main": [
         []
       ]
@@ -2514,13 +2182,7 @@
     },
     "Send Bridal PDF": {
       "main": [
-        [
-          {
-            "node": "Update PDF Sent",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Pinecone Vector Store": {
@@ -2792,11 +2454,6 @@
         ]
       ]
     },
-    "Extract Data_old": {
-      "main": [
-        []
-      ]
-    },
     "Extract Data": {
       "main": [
         [
@@ -2841,11 +2498,6 @@
         ]
       ]
     },
-    "ParseStatusTag": {
-      "main": [
-        []
-      ]
-    },
     "UpdateProfileOnSTOP": {
       "main": [
         [
@@ -2882,143 +2534,6 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Webhook": [
-      {
-        "json": {
-          "headers": {
-            "host": "n8n-vps.chatsocialai.in",
-            "user-agent": "axios/1.13.2",
-            "content-length": "1444",
-            "accept": "application/json, text/plain, */*",
-            "accept-encoding": "gzip, br",
-            "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "82.112.238.115",
-            "cf-ipcountry": "IN",
-            "cf-ray": "9e15d341bc7a40c3-BOM",
-            "cf-visitor": "{\"scheme\":\"https\"}",
-            "content-type": "application/json",
-            "x-forwarded-for": "82.112.238.115, 172.69.95.8",
-            "x-forwarded-host": "n8n-vps.chatsocialai.in",
-            "x-forwarded-port": "443",
-            "x-forwarded-proto": "https",
-            "x-forwarded-server": "5ea393ddef79",
-            "x-real-ip": "172.69.95.8"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "event": "messages.upsert",
-            "instance": "Atul-Demo",
-            "data": {
-              "key": {
-                "remoteJid": "918239909115@s.whatsapp.net",
-                "remoteJidAlt": "918239909115@s.whatsapp.net",
-                "fromMe": false,
-                "id": "3A9A9B3903ECD523989E",
-                "participant": "",
-                "addressingMode": "lid"
-              },
-              "pushName": "Atul Khandelwal",
-              "status": "DELIVERY_ACK",
-              "message": {
-                "conversation": "Hi",
-                "messageContextInfo": {
-                  "threadId": [],
-                  "deviceListMetadata": {
-                    "senderKeyIndexes": [],
-                    "recipientKeyIndexes": [],
-                    "senderKeyHash": {
-                      "0": 33,
-                      "1": 159,
-                      "2": 65,
-                      "3": 66,
-                      "4": 144,
-                      "5": 125,
-                      "6": 233,
-                      "7": 133,
-                      "8": 203,
-                      "9": 49
-                    },
-                    "senderTimestamp": {
-                      "low": 1774096004,
-                      "high": 0,
-                      "unsigned": true
-                    },
-                    "receiverAccountType": 1,
-                    "recipientKeyHash": {
-                      "0": 1,
-                      "1": 85,
-                      "2": 38,
-                      "3": 226,
-                      "4": 202,
-                      "5": 238,
-                      "6": 189,
-                      "7": 87,
-                      "8": 90,
-                      "9": 70
-                    },
-                    "recipientTimestamp": {
-                      "low": 1774356411,
-                      "high": 0,
-                      "unsigned": true
-                    }
-                  },
-                  "deviceListMetadataVersion": 2,
-                  "messageSecret": {
-                    "0": 122,
-                    "1": 134,
-                    "2": 9,
-                    "3": 6,
-                    "4": 249,
-                    "5": 177,
-                    "6": 117,
-                    "7": 50,
-                    "8": 250,
-                    "9": 5,
-                    "10": 254,
-                    "11": 19,
-                    "12": 178,
-                    "13": 52,
-                    "14": 146,
-                    "15": 247,
-                    "16": 184,
-                    "17": 234,
-                    "18": 134,
-                    "19": 132,
-                    "20": 89,
-                    "21": 44,
-                    "22": 120,
-                    "23": 28,
-                    "24": 215,
-                    "25": 76,
-                    "26": 166,
-                    "27": 124,
-                    "28": 80,
-                    "29": 239,
-                    "30": 119,
-                    "31": 212
-                  }
-                }
-              },
-              "messageType": "conversation",
-              "messageTimestamp": 1774356874,
-              "instanceId": "9153dee0-27ed-491a-a3f3-16dedd6c3157",
-              "source": "ios"
-            },
-            "destination": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
-            "date_time": "2026-03-24T09:54:34.287Z",
-            "sender": "918003626766@s.whatsapp.net",
-            "server_url": "https://api.chatsocialai.in",
-            "apikey": "7DD60C9CE741-4A35-BF3C-31C293DEA0FF"
-          },
-          "webhookUrl": "https://n8n-vps.chatsocialai.in/webhook/whatsapp-demo",
-          "executionMode": "production"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ],
     "Execute Workflow Trigger": [
       {
         "json": {
@@ -3157,9 +2672,9 @@
       }
     ]
   },
-  "versionId": "3403f835-4b41-4264-a43e-69d1a860e14b",
-  "activeVersionId": "3403f835-4b41-4264-a43e-69d1a860e14b",
-  "triggerCount": 1,
+  "versionId": "bcefe779-0665-4a0c-b4ec-101fa8b56a4a",
+  "activeVersionId": "bf262d83-3f5a-4213-a8c2-4bd58d406c7c",
+  "triggerCount": 0,
   "shared": [
     {
       "updatedAt": "2026-04-22T12:11:58.649Z",
@@ -3170,9 +2685,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-24T13:57:23.000Z",
-    "createdAt": "2026-04-24T13:56:04.702Z",
-    "versionId": "3403f835-4b41-4264-a43e-69d1a860e14b",
+    "updatedAt": "2026-04-25T10:49:25.000Z",
+    "createdAt": "2026-04-25T10:49:04.505Z",
+    "versionId": "bf262d83-3f5a-4213-a8c2-4bd58d406c7c",
     "workflowId": "RILoSFcOEsvvg80W",
     "nodes": [
       {
@@ -3180,7 +2695,7 @@
           "promptType": "define",
           "text": "=## CONTEXT\nDate: {{ $now.setZone('Asia/Kolkata').toFormat('cccc, dd MMMM yyyy') }}\nTime: {{ $now.setZone('Asia/Kolkata').toFormat('HH:mm') }} IST\nDay: {{ $now.setZone('Asia/Kolkata').toFormat('cccc') }}\n\n## CUSTOMER MESSAGE\n{{ $('Extract Data').first().json.message }}",
           "options": {
-            "systemMessage": "# IDENTITY\n\nYou are the official WhatsApp assistant for Shades Skin Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\n- You represent Team Shades Skin Hair Care\n- Behave like a polite, trained human staff member, NOT a bot\n- Never say or imply chatbot, AI, automation, system\n- Sign off as Team Shades Skin Hair Care when appropriate\n- Be calm, empathetic, professional\n- Never be pushy\n- Use emojis naturally like real WhatsApp messages\n\n## Language Rules\n- Match the customer's language exactly\n- Hindi/Hinglish → reply in Hinglish\n- English → reply in English\n- Never mix languages in one reply\n- Use plain WhatsApp text with line breaks and emojis only\n- No markdown formatting in customer replies\n\n---\n\n# CONVERSATION FLOW\n\n## STEP 1 — GREETING\nWhen a new customer sends Hi, Hello, Hey, or a general first message, send this SINGLE intro message:\n\nHello! 👋 Welcome to Shades Skin Hair Care — Beauty & Bridal Makeup Salon, Ambabari, Jaipur\n\n✨ Bridal Makeup — HD & Airbrush\n💇 Hair Styling, Coloring, Keratin, Smoothening\n🧖 Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🌿 Spa & Body Treatments\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nThank you for reaching out! For booking inquiry, please share:\nName | Date | Venue | Event | Ready Time | Contact Number\n\nAfter this, call CustomerProfilesTool and set:\n- Status = Active\n- Language = detected customer language\n- Name = if already provided\n\nIf the customer's first message already mentions a service or booking intent (e.g. \"bridal makeup karana hai\", \"party makeup\"), also set:\n- Status = FollowUp\n- LatestServiceType = mentioned service\n---\n\n## STEP 2 — CUSTOMER PROVIDES DETAILS\nWhen the customer shares any booking-related detail such as Name, Date, Venue, Event, Ready Time, Contact Number, or service requirement:\n\n1. Call CustomerProfilesTool immediately when any of these are newly known:\n- Name\n- Language\n- Status\n- Notes\n\n2. If customer asks for Bridal Package, Wedding Booking, Sangeet Booking, or package details, send the COMPLETE package below exactly as written:\n\nThank you for showing interest! 💛 Here's our Package:\n\n📍 In Jaipur | On Venue (both available)\nWe offer 2 techniques: HD (High Definition) & Airbrush\n\nCATEGORY | PRICE\nPre-Wedding looks (Haldi, Mehendi, Roka, Bhaat) | ₹15,000\nPre-Wedding (Sangeet, Engagement, Cocktail, Welcome Dinner, Reception) | ₹20,000\nWedding (Pheras) | ₹25,000\nAirbrush Makeup (additional) | ₹4,000\nParty Makeup (per person per function) | ₹7,000\n\n✅ Mandatory with Bride:\n- Pre-Consultation\n- HD Makeup with International Brands (NARS, Estee Lauder, MAC, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n- Premium Eyelashes\n- Colored Lenses (0 power)\n- Hairstyling\n- Draping\n\n❌ Not Included:\n- Body Foundation\n- Bindis\n- Conveyance to and fro (as per venue distance)\n- Hair Extensions\n- Hair Accessories\n- Fresh Flowers if arranged by us\n\n⚠️ Notes:\n- Please get your Nail Paint / Nail Art done before the makeup session\n- Hair wash to be done before coming for the makeup and hair session\n- Any particular hair styling accessories should be arranged by the client\n\n– Team Shades Skin Hair Care ✨\n\n---\n\n## STEP 3 — FOLLOW-UP QUESTIONS\nIf customer asks about specific services like Facial, Spa, Pre-bridal, Hair, Nails, skincare, or wants more details about any package item:\n\n- ALWAYS call GenericSalonVectorStore before answering\n- ALWAYS call CustomerProfilesTool and set Status = FollowUp, LatestServiceType = the service they asked about\n- Send the COMPLETE response\n- Show ALL relevant options and prices\n- Do not shorten the answer\n\nIf the answer is not in the knowledge base:\nFor more specific details, you can directly reach out to Manish at 09928887072. He'll be happy to help! 😊\n\n---\n\n## STEP 4 — COLLECT BOOKING DETAILS\nWhen customer shows clear booking intent such as:\n- I want to book\n- Book karna hai\n- Proceed karo\n- How to book\n\nCheck the full conversation memory for these 7 required fields:\n1. Name\n2. Date\n3. Ready Time\n4. Venue\n5. Event / Function\n6. Service Type\n7. Contact Number\n\nRules:\n- If ALL 7 fields are already available, skip to STEP 5\n- If ANY field is missing, ask ONLY for the missing fields\n- Do NOT re-ask fields already provided\n- Stay in STEP 4 until all 7 fields are confirmed\n- Do NOT call BookingsTool or BookCalendar in this step\n\nEnglish template:\nJust a couple of details needed to complete your booking 😊 Please share only these:\n[only missing fields]\n\nHinglish template:\nBas kuch details aur chahiye booking ke liye 😊 Please share only these:\n[only missing fields]\n\n---\n\n## STEP 5 — BOOKING CONFIRMATION\nOnce all 7 fields are available, send the booking summary and ask for explicit confirmation:\n\nHere's a summary of your booking 📋\n\n👤 Name: [Name]\n📅 Date: [Date]\n⏰ Ready Time: [Ready Time]\n📍 Venue: [Venue]\n🎉 Event: [Event]\n💄 Service: [Service Type]\n📱 Contact: [Contact Number]\n\nReply Yes / Confirm / Haan to confirm your booking 🙏\nIf you'd like to change any detail, just let me know.\n\nRules:\n- If customer changes any field, update it and resend the full summary\n- Stay in STEP 5 until customer explicitly confirms\n- Do NOT call any booking tools before explicit confirmation\n\nWhen customer replies Yes / Confirm / Haan:\n1. Call BookingsTool and save:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\n2. Call BookCalendar and create the appointment with:\n- Title = Customer Name - Event - Service Type\n- Start = confirmed date and time in ISO 8601 with IST offset\n- Description = Contact number, venue, special notes\n\n3. Call CustomerProfilesTool and set:\n- Status = Booked\n- LatestServiceType = confirmed service type\n\n4. Send confirmation message:\n\nYour booking is confirmed! 🎉 We're so excited to be a part of your special day 💛\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928887072\n\nSee you soon! ✨\n– Team Shades Skin Hair Care\n\n---\n\n## FOLLOW-UP STATUS RULE\nCall CustomerProfilesTool and set Status = FollowUp IMMEDIATELY when:\n- Customer asks price or cost of any service\n- Customer asks about or mentions any specific service\n- Customer shares event date, venue, or booking detail\n- Customer asks how to book or expresses booking intent\n- Customer says they need time, will think, or will get back\n- Customer raises budget concern or hesitation\n\nAlso set LatestServiceType = the service they asked about whenever known.\n\nThis applies regardless of previous Status — including Booked or Stopped.\nDo NOT wait until end of reply. Call the tool as soon as the trigger is detected.\nDo NOT set FollowUp for pure general greetings with zero service intent.\n\n---\n\n## HANDOFF / STOP / HUMAN HELP\nWhen customer says:\n- stop\n- optout\n- unsubscribe\n- don't message\n- talk to human\n- owner\n- representative\n- call me\n- agent\n\nReply in matching language:\n\nEnglish:\nType STOP and the automatic replies will be disabled. However, if you have any query or want to book, our team can still help you.\n\nHinglish:\nAutomatic replies rokne ke liye STOP type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge.\n\nIf customer explicitly sends STOP or OPTOUT:\n- Call CustomerProfilesTool and set:\n  - Status = Stopped\n  - DripOptOut = YES\n\nIf conversation must be closed completely due to repetition, conflict, or instruction failure, reply:\nConversation closed. No more messages will be sent.\n\nThen call CustomerProfilesTool and set:\n- Status = Stopped\n\n---\n\n# TOOL USAGE RULES\n\n## CustomerProfilesTool\nUse this tool to save or update the customer profile in CustomerProfiles sheet.\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\n\nCall this tool whenever any of these changes or becomes known:\n- Name\n- Language\n- Status\n- Notes\n- LatestServiceType\n\nStatus rules — always reflects CURRENT message intent, no status is permanent:\n- First message / general inquiry / returns after Stopped → Status = Active\n- Asks price, asks about any service, shares event details, shows booking intent, hesitation, budget concern → Status = FollowUp\n- Booking confirmed in STEP 5 → Status = Booked\n- STOP / OPTOUT → Status = Stopped\n\nA customer with Status = Booked who sends a new service inquiry → set Status = FollowUp\nA customer with Status = Stopped who sends any new message → set Status = Active first, then FollowUp if service intent is detected\nNever keep Status as Booked or Stopped if a new conversation has started.\n\nOnly write fields that are relevant to the current conversation.\nDo not invent missing values.\nDo not overwrite fields unless the customer has actually provided or changed them.\n\n## BookingsTool\nUse this tool ONLY in STEP 5 and ONLY after explicit confirmation: Yes / Confirm / Haan.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nNever call this tool during Steps 1 to 4.\n\n## GenericSalonVectorStore\nALWAYS call this before answering any question about:\n- services\n- pricing\n- package details\n- FAQs\n\nUse the retrieved information to answer accurately.\nShow complete options and pricing.\nDo not shorten.\n\n## BookCalendar\nUse this tool ONLY after customer explicitly confirms booking in STEP 5.\n\nRules:\n- Never create calendar event before explicit confirmation\n- Title = Customer Name - Event - Service Type\n- Compute the exact calendar date using the CURRENT DATE provided at the top of this system message\n- When customer says \"Sunday\", \"next Monday\", \"15 tarikh\" — resolve to exact date (dd MMMM yyyy) before passing to this tool\n- DateTime must be in ISO 8601 with IST offset: YYYY-MM-DDTHH:mm:00+05:30\n- If Ready Time is not in 24hr format, convert it (e.g. 4 PM → 16:00)\n- Description must include: contact number, venue, special notes\n\n---\n\n# STRICT GUARDRAILS\n\n- Never re-ask details already available in conversation memory\n- Never imply you are a bot, AI, or automated system\n- Never share prices without calling GenericSalonVectorStore first, except the fixed Bridal Package in STEP 2\n- Never call BookingsTool or BookCalendar before explicit confirmation\n- Never send promotional or upselling messages without customer intent\n- Never send messages after STOP if customer has opted out\n- Never share the internal Google Calendar link with customer\n- Never make up unavailable details\n- Always reply like a trained human salon staff member\n- Always match customer language\n- Keep replies clear, warm, and natural\n- Current date, time, and pre-resolved day references are provided in ## CONTEXT at the start of every user message. Always use these. Never calculate dates from training data.\n\n---\n\n# SALON DETAILS\n\n- Salon: Shades Skin Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928887072\n- Address: C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
+            "systemMessage": "# IDENTITY\n\nYou are the official WhatsApp assistant for Shades Skin Hair Care Ambabari, a premium beauty and bridal makeup salon in Jaipur, owned by Manish.\n\n- You represent Team Shades Skin Hair Care\n- Behave like a polite, trained human staff member, NOT a bot\n- Never say or imply chatbot, AI, automation, system\n- Sign off as Team Shades Skin Hair Care when appropriate\n- Be calm, empathetic, professional\n- Never be pushy\n- Use emojis naturally like real WhatsApp messages\n\n## Language Rules\n- Match the customer's language exactly\n- Hindi/Hinglish → reply in Hinglish\n- English → reply in English\n- Never mix languages in one reply\n- Use plain WhatsApp text with line breaks and emojis only\n- No markdown formatting in customer replies\n\n---\n\n# CONVERSATION FLOW\n\n## STEP 1 — GREETING\nWhen a new customer sends Hi, Hello, Hey, or a general first message, send this SINGLE intro message:\n\nHello! 👋 Welcome to Shades Skin Hair Care — Beauty & Bridal Makeup Salon, Ambabari, Jaipur\n\n✨ Bridal Makeup — HD & Airbrush\n💇 Hair Styling, Coloring, Keratin, Smoothening\n🧖 Skincare — Facials, Cleanup, De-tan\n💅 Nails — Manicure, Pedicure, Nail Art\n🌿 Spa & Body Treatments\n\n📍 https://maps.app.goo.gl/n6LBZ3CB3ujrDT1B9\n📞 09928887072\n\nThank you for reaching out! For booking inquiry, please share:\nName | Date | Venue | Event | Ready Time | Contact Number\n\nAfter this, call CustomerProfilesTool and set:\n- Status = Active\n- Language = detected customer language\n- Name = if already provided\n\nIf the customer's first message already mentions a service or booking intent (e.g. \"bridal makeup karana hai\", \"party makeup\"), also set:\n- Status = FollowUp\n- LatestServiceType = mentioned service\n---\n\n## STEP 2 — CUSTOMER PROVIDES DETAILS\nWhen the customer shares any booking-related detail such as Name, Date, Venue, Event, Ready Time, Contact Number, or service requirement:\n\n1. Call CustomerProfilesTool immediately when any of these are newly known:\n- Name\n- Language\n- Status\n- Notes\n\n2. If customer asks for Bridal Package, Wedding Booking, Sangeet Booking, or package details, send the COMPLETE package below exactly as written:\n\nThank you for showing interest! 💛 Here's our Package:\n\n📍 In Jaipur | On Venue (both available)\nWe offer 2 techniques: HD (High Definition) & Airbrush\n\nCATEGORY | PRICE\nPre-Wedding looks (Haldi, Mehendi, Roka, Bhaat) | ₹15,000\nPre-Wedding (Sangeet, Engagement, Cocktail, Welcome Dinner, Reception) | ₹20,000\nWedding (Pheras) | ₹25,000\nAirbrush Makeup (additional) | ₹4,000\nParty Makeup (per person per function) | ₹7,000\n\n✅ Mandatory with Bride:\n- Pre-Consultation\n- HD Makeup with International Brands (NARS, Estee Lauder, MAC, Makeup Forever, Huda Beauty, Urban Decay, Charlotte Tilbury, Too Faced and many more)\n- Premium Eyelashes\n- Colored Lenses (0 power)\n- Hairstyling\n- Draping\n\n❌ Not Included:\n- Body Foundation\n- Bindis\n- Conveyance to and fro (as per venue distance)\n- Hair Extensions\n- Hair Accessories\n- Fresh Flowers if arranged by us\n\n⚠️ Notes:\n- Please get your Nail Paint / Nail Art done before the makeup session\n- Hair wash to be done before coming for the makeup and hair session\n- Any particular hair styling accessories should be arranged by the client\n\n– Team Shades Skin Hair Care ✨\n\n---\n\n## STEP 3 — FOLLOW-UP QUESTIONS\nIf customer asks about specific services like Facial, Spa, Pre-bridal, Hair, Nails, skincare, or wants more details about any package item:\n\n- ALWAYS call GenericSalonVectorStore before answering\n- ALWAYS call CustomerProfilesTool and set Status = FollowUp, LatestServiceType = the service they asked about\n- Send the COMPLETE response\n- Show ALL relevant options and prices\n- Do not shorten the answer\n\nIf the answer is not in the knowledge base:\nFor more specific details, you can directly reach out to Manish at 09928883765. He'll be happy to help! 😊\n\n---\n\n## STEP 4 — COLLECT BOOKING DETAILS\nWhen customer shows clear booking intent such as:\n- I want to book\n- Book karna hai\n- Proceed karo\n- How to book\n\nCheck the full conversation memory for these 7 required fields:\n1. Name\n2. Date\n3. Ready Time\n4. Venue\n5. Event / Function (Optional)\n6. Service Type\n7. Contact Number\n\nRules:\n- If ALL 7 fields are already available, skip to STEP 5\n- Event / Function is OPTIONAL field Skip if the Cutomer is visiting the Slon/Store\n- If ANY field is missing, ask ONLY for the missing fields\n- Do NOT re-ask fields already provided\n- Stay in STEP 4 until all 7 fields are confirmed\n- Do NOT call BookingsTool or BookCalendar in this step\n\nEnglish template:\nJust a couple of details needed to complete your booking 😊 Please share only these:\n[only missing fields]\n\nHinglish template:\nBas kuch details aur chahiye booking ke liye 😊 Please share only these:\n[only missing fields]\n\n---\n\n## STEP 5 — BOOKING CONFIRMATION\nOnce all 7 fields are available, send the booking summary and ask for explicit confirmation:\n\nHere's a summary of your booking 📋\n\n👤 Name: [Name]\n📅 Date: [Date]\n⏰ Ready Time: [Ready Time]\n📍 Venue: [Venue]\n🎉 Event: [Event]\n💄 Service: [Service Type]\n📱 Contact: [Contact Number]\n\nReply Yes / Confirm / Haan to confirm your booking 🙏\nIf you'd like to change any detail, just let me know.\n\nRules:\n- If customer changes any field, update it and resend the full summary\n- Stay in STEP 5 until customer explicitly confirms\n- Do NOT call any booking tools before explicit confirmation\n\nWhen customer replies Yes / Confirm / Haan:\n1. Call BookingsTool and save:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\n2. Call BookCalendar and create the appointment with:\n- Title = Customer Name - Event - Service Type\n- Start = confirmed date and time in ISO 8601 with IST offset\n- Description = Contact number, venue, special notes\n\n3. MANDATORY — Call CustomerProfilesTool and set:\n- Status = Booked\n- LatestServiceType = confirmed service type\nThis must be called AFTER BookingsTool and BookCalendar. Do not skip this step.\n\n4. Send confirmation message:\n\nYour booking is confirmed! 🎉 We're so excited to be a part of your special day 💛\n\n📍 C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039\n📞 09928883765\n\nSee you soon! ✨\n– Team Shades Skin Hair Care\n\n---\n\n## FOLLOW-UP STATUS RULE\nCall CustomerProfilesTool and set Status = FollowUp IMMEDIATELY when:\n- Customer asks price or cost of any service\n- Customer asks about or mentions any specific service\n- Customer shares event date, venue, or booking detail\n- Customer asks how to book or expresses booking intent\n- Customer says they need time, will think, or will get back\n- Customer raises budget concern or hesitation\n\nAlso set LatestServiceType = the service they asked about whenever known.\n\nThis applies regardless of previous Status — including Booked or Stopped.\nDo NOT wait until end of reply. Call the tool as soon as the trigger is detected.\nDo NOT set FollowUp for pure general greetings with zero service intent.\nDo NOT apply this rule when customer replies Yes / Confirm / Haan to a booking summary in STEP 5 — Status = Booked is handled exclusively in STEP 5 step 3.\n\n---\n\n## HANDOFF / STOP / HUMAN HELP\nWhen customer says:\n- stop\n- optout\n- unsubscribe\n- don't message\n- talk to human\n- owner\n- representative\n- call me\n- agent\n\nReply in matching language:\n\nEnglish:\nType STOP and the automatic replies will be disabled. However, if you have any query or want to book, our team can still help you.\n\nHinglish:\nAutomatic replies rokne ke liye STOP type karein. Par agar aapko koi sawaal hai ya booking karni hai, toh hum aapki help kar denge.\n\nIf customer explicitly sends STOP or OPTOUT:\n- Call CustomerProfilesTool and set:\n  - Status = Stopped\n  - DripOptOut = YES\n\nIf conversation must be closed completely due to repetition, conflict, or instruction failure, reply:\nConversation closed. No more messages will be sent.\n\nThen call CustomerProfilesTool and set:\n- Status = Stopped\n\n---\n\n# TOOL USAGE RULES\n\n## CustomerProfilesTool\nUse this tool to save or update the customer profile in CustomerProfiles sheet.\n\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\n\nCall this tool whenever any of these changes or becomes known:\n- Name\n- Language\n- Status\n- Notes\n- LatestServiceType\n\nStatus rules — always reflects CURRENT message intent, no status is permanent:\n- First message / general inquiry / returns after Stopped → Status = Active\n- Asks price, asks about any service, shares event details, shows genuine intent, hesitation, budget concern → Status = FollowUp\n- Booking confirmed in STEP 5 → Status = Booked\n- STOP / OPTOUT → Status = Stopped\n\nA customer with Status = Booked who sends a new service inquiry → set Status = FollowUp\nA customer with Status = Stopped who sends any new message → set Status = Active first, then FollowUp if service intent is detected\nNever keep Status as Booked or Stopped if a new conversation has started.\n\nOnly write fields that are relevant to the current conversation.\nDo not invent missing values.\nDo not overwrite fields unless the customer has actually provided or changed them.\n\n## BookingsTool\nUse this tool ONLY in STEP 5 and ONLY after explicit confirmation: Yes / Confirm / Haan.\n\nSave only:\n- EventDate\n- Event\n- Venue\n- ReadyTime\n- ContactNumber\n- ServiceRequirements\n\nNever call this tool during Steps 1 to 4.\n\n## GenericSalonVectorStore\nALWAYS call this before answering any question about:\n- services\n- pricing\n- package details\n- FAQs\n\nUse the retrieved information to answer accurately.\nShow complete options and pricing.\nDo not shorten.\n\n## BookCalendar\nUse this tool ONLY after customer explicitly confirms booking in STEP 5.\n\nRules:\n- Never create calendar event before explicit confirmation\n- Title = Customer Name - Event - Service Type\n- Compute the exact calendar date using the CURRENT DATE provided at the top of this system message\n- When customer says \"Sunday\", \"next Monday\", \"15 tarikh\" — resolve to exact date (dd MMMM yyyy) before passing to this tool\n- DateTime must be in ISO 8601 with IST offset: YYYY-MM-DDTHH:mm:00+05:30\n- If Ready Time is not in 24hr format, convert it (e.g. 4 PM → 16:00)\n- Description must include: contact number, venue, special notes\n\n---\n\n# STRICT GUARDRAILS\n\n- Never re-ask details already available in conversation memory\n- Never imply you are a bot, AI, or automated system\n- Never share prices without calling GenericSalonVectorStore first, except the fixed Bridal Package in STEP 2\n- Never call BookingsTool or BookCalendar before explicit confirmation\n- Never send promotional or upselling messages without customer intent\n- Never send messages after STOP if customer has opted out\n- Never share the internal Google Calendar link with customer\n- Never make up unavailable details\n- Always reply like a trained human salon staff member\n- Always match customer language\n- Keep replies clear, warm, and natural\n- Current date, time, and pre-resolved day references are provided in ## CONTEXT at the start of every user message. Always use these. Never calculate dates from training data.\n\n---\n\n# SALON DETAILS\n\n- Salon: Shades Skin Hair Care Ambabari\n- Owner: Manish\n- Contact: 09928883765\n- Address: C-55, Above Au Finance Bank, near Maharishi Arvind College, Ambabari, Jaipur, Rajasthan 302039",
             "maxIterations": 10
           }
         },
@@ -3192,21 +2707,6 @@
         ],
         "id": "9ae05a4b-6acb-45a2-a0ef-a7502c3ec32e",
         "name": "AI Agent"
-      },
-      {
-        "parameters": {
-          "sessionIdType": "customKey",
-          "sessionKey": "={{ $('Extract Data').first().json.phone }}",
-          "contextWindowLength": 10
-        },
-        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-        "typeVersion": 1.3,
-        "position": [
-          32,
-          960
-        ],
-        "id": "ecf0fa69-8475-4048-be06-b8a975203d72",
-        "name": "Simple Memory"
       },
       {
         "parameters": {
@@ -3281,7 +2781,7 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          1184,
+          1040,
           528
         ],
         "id": "5c09e458-40b7-4280-bc49-eadf049ab5dd",
@@ -3292,8 +2792,8 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          1568,
-          272
+          1440,
+          416
         ],
         "id": "760276c5-85a5-49c5-bf3b-9c40211dac3b",
         "name": "No Operation, do nothing1"
@@ -3368,85 +2868,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
-          1616,
-          416
-        ]
-      },
-      {
-        "parameters": {
-          "authentication": "serviceAccount",
-          "documentId": {
-            "__rl": true,
-            "cachedResultName": "Generic Salon Leads",
-            "mode": "list",
-            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
-          },
-          "sheetName": {
-            "__rl": true,
-            "cachedResultName": "Leads",
-            "mode": "list",
-            "value": "gid=0"
-          },
-          "filtersUI": {
-            "values": [
-              {
-                "lookupColumn": "Phone",
-                "lookupValue": "={{ $('Extract Data').first().json.phone }}"
-              }
-            ]
-          },
-          "options": {
-            "returnFirstMatch": true
-          }
-        },
-        "id": "f9c35b33-054f-42ce-8441-4889b58aa609",
-        "name": "Lookup PDF Status",
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.7,
-        "position": [
-          1760,
-          144
-        ],
-        "alwaysOutputData": true,
-        "executeOnce": true,
-        "credentials": {
-          "googleApi": {
-            "id": "N9Lk7ZeXUrzmORvD",
-            "name": "Test n8n Google Sheet"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 2
-            },
-            "conditions": [
-              {
-                "id": "pdf-sent-1",
-                "leftValue": "={{ $json.PDF_Sent }}",
-                "operator": {
-                  "operation": "equals",
-                  "type": "string"
-                },
-                "rightValue": "YES"
-              }
-            ],
-            "combinator": "and"
-          },
-          "options": {}
-        },
-        "id": "4a6ca5c9-4f08-40ae-9aba-ae1701e15b22",
-        "name": "PDF Already Sent?",
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.2,
-        "position": [
-          1984,
-          144
+          1440,
+          592
         ]
       },
       {
@@ -3456,172 +2879,9 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          2016,
-          672
+          3360,
+          1360
         ]
-      },
-      {
-        "parameters": {
-          "authentication": "serviceAccount",
-          "operation": "update",
-          "documentId": {
-            "__rl": true,
-            "cachedResultName": "Generic Salon Leads",
-            "mode": "list",
-            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY"
-          },
-          "sheetName": {
-            "__rl": true,
-            "cachedResultName": "Leads",
-            "mode": "list",
-            "value": "gid=0"
-          },
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "PDF_Sent": "YES",
-              "Phone": "={{ $('Extract Data').first().json.phone }}"
-            },
-            "matchingColumns": [
-              "Phone"
-            ],
-            "schema": [
-              {
-                "id": "Phone",
-                "displayName": "Phone",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true
-              },
-              {
-                "id": "Date",
-                "displayName": "Date",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Name",
-                "displayName": "Name",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Venue",
-                "displayName": "Venue",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Event",
-                "displayName": "Event",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Ready Time",
-                "displayName": "Ready Time",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Contact Number",
-                "displayName": "Contact Number",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "Service Requirements",
-                "displayName": "Service Requirements",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true,
-                "removed": true
-              },
-              {
-                "id": "PDF_Sent",
-                "displayName": "PDF_Sent",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "string",
-                "canBeUsedToMatch": true
-              },
-              {
-                "id": "row_number",
-                "displayName": "row_number",
-                "required": false,
-                "defaultMatch": false,
-                "display": true,
-                "type": "number",
-                "canBeUsedToMatch": true,
-                "readOnly": true,
-                "removed": true
-              }
-            ],
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false
-          },
-          "options": {}
-        },
-        "id": "8c67b232-f66c-46c8-85df-dae70e8a5f1c",
-        "name": "Update PDF Sent",
-        "type": "n8n-nodes-base.googleSheets",
-        "typeVersion": 4.7,
-        "position": [
-          2896,
-          368
-        ],
-        "retryOnFail": true,
-        "credentials": {
-          "googleApi": {
-            "id": "N9Lk7ZeXUrzmORvD",
-            "name": "Test n8n Google Sheet"
-          }
-        }
-      },
-      {
-        "parameters": {
-          "httpMethod": "POST",
-          "path": "96cd8c2b-2bf4-4597-b2f7-737e197389b5",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "position": [
-          -1808,
-          64
-        ],
-        "id": "bb85f71a-a263-4f2e-8de2-658155a98eb2",
-        "name": "Webhook",
-        "webhookId": "96cd8c2b-2bf4-4597-b2f7-737e197389b5"
       },
       {
         "parameters": {
@@ -3647,8 +2907,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          2320,
-          192
+          1872,
+          784
         ],
         "id": "c775e4a7-cc1e-4290-9e17-89bb4682160f",
         "name": "Reply to Customer",
@@ -3684,8 +2944,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          2320,
-          368
+          1760,
+          560
         ],
         "id": "9021b827-0ae1-4ba8-ab61-0120cc12fd1f",
         "name": "Reply to Customer1",
@@ -3746,8 +3006,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          2608,
-          368
+          2016,
+          560
         ],
         "id": "b2bddcb7-5357-46af-aae4-4522b76e9c0b",
         "name": "Send Bridal PDF",
@@ -3918,20 +3178,6 @@
         ],
         "id": "ed30d3dd-ef38-40b5-ae1c-f6b5409ab7b2",
         "name": "Check Message Sender"
-      },
-      {
-        "parameters": {
-          "mode": "delete",
-          "deleteMode": "all"
-        },
-        "type": "@n8n/n8n-nodes-langchain.memoryManager",
-        "typeVersion": 1.1,
-        "position": [
-          -688,
-          1056
-        ],
-        "id": "9d5518d6-7ae9-4f20-b484-7b86cb57b5ca",
-        "name": "Chat Memory Manager"
       },
       {
         "parameters": {
@@ -4654,21 +3900,6 @@
       {
         "parameters": {
           "mode": "raw",
-          "jsonOutput": "={\n  \"phone\": \"{{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.body.data.message.conversation }}\",\n  \"messageId\": \"{{ $json.body.data.key.id }}\"\n}",
-          "options": {}
-        },
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4,
-        "position": [
-          -1360,
-          128
-        ],
-        "id": "722543c1-6852-42f7-b378-c9a4461d5c30",
-        "name": "Extract Data_old"
-      },
-      {
-        "parameters": {
-          "mode": "raw",
           "jsonOutput": "={\n  \"phone\": \"{{ $json.webhookData.body.data.key.remoteJid.replace('@s.whatsapp.net', '') }}\",\n  \"message\": \"{{ $json.message }}\",\n  \"messageId\": \"{{ $json.webhookData.body.data.key.id }}\",\n  \"messageType\": \"{{ $json.messageType }}\"\n}",
           "options": {}
         },
@@ -4684,7 +3915,7 @@
       {
         "parameters": {
           "descriptionType": "manual",
-          "toolDescription": "Update the customer profile in CustomerProfiles sheet.\n\nCall this tool immediately when any of the following is known or changes:\n- Name detected → set Name\n- Language detected → set Language\n- Customer asks about price, service, booking, or shares event details → set Status = FollowUp, LatestServiceType = service mentioned\n- Customer hesitates, needs time, or raises budget concern → set Status = FollowUp\n- New message received after Stopped → set Status = Active, then FollowUp if service intent detected\n- New service inquiry received after Booked → set Status = FollowUp, LatestServiceType = new service\n- Booking confirmed → set Status = Booked, LatestServiceType = confirmed service\n- Customer sends STOP or opts out → set Status = Stopped, DripOptOut = YES\n- Special requirement or note → set Notes\n\nStatus always reflects current conversation intent. No status is permanent.\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\nOnly write fields clearly known from the current message. Do not invent values.",
+          "toolDescription": "Update the customer profile in CustomerProfiles sheet.\n\nCall this tool immediately when any of the following is known or changes:\n- Name detected → set Name\n- Language detected → set Language\n- Customer asks about price, service, booking, or shares event details → set Status = FollowUp, LatestServiceType = service mentioned\n- Customer hesitates, needs time, or raises budget concern → set Status = FollowUp\n- New message received after Stopped → set Status = Active, then FollowUp if service intent detected\n- New service inquiry received after Booked → set Status = FollowUp, LatestServiceType = new service\n- Booking confirmed → set Status = Booked, LatestServiceType = confirmed service\n- Customer sends STOP or opts out → set Status = Stopped, DripOptOut = YES\n- Special requirement or note → set Notes\n- Never Delete a Name if already present\n\nStatus always reflects current conversation intent. No status is permanent.\nPhone is auto-filled by n8n. Do NOT pass Phone yourself.\nOnly write fields clearly known from the current message. Do not invent values.",
           "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
@@ -5305,20 +4536,6 @@
       },
       {
         "parameters": {
-          "mode": "runOnceForEachItem",
-          "jsCode": "const rawOutput = $input.item.json.output;\n\n// Extract the status tag if present\nconst tagMatch = rawOutput.match(/\\[SALON_STATUS:([A-Z_]+)\\]/);\nconst detectedStatus = tagMatch ? tagMatch : 'ACTIVE';\n\n// Remove the tag from the customer-facing message\nconst cleanOutput = rawOutput.replace(/\\[SALON_STATUS:[A-Z_]+\\]/, '').trim();\n\nreturn [{\n  json: {\n    ...$input.item.json,\n    output: cleanOutput,\n    detectedStatus: detectedStatus\n  }\n}];"
-        },
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          800,
-          320
-        ],
-        "id": "cac5b067-e262-4b49-9570-b2123b8a4f58",
-        "name": "ParseStatusTag"
-      },
-      {
-        "parameters": {
           "authentication": "serviceAccount",
           "operation": "appendOrUpdate",
           "documentId": {
@@ -5540,7 +4757,7 @@
       {
         "parameters": {
           "sessionIdType": "customKey",
-          "sessionKey": "=shades:{{ $('Extract Data').first().json.phone }}",
+          "sessionKey": "=shade:{{ $('Extract Data').first().json.phone }}",
           "sessionTTL": 2592000,
           "contextWindowLength": 10
         },
@@ -5548,7 +4765,7 @@
         "typeVersion": 1.5,
         "position": [
           384,
-          736
+          752
         ],
         "id": "a910c373-c76d-47f1-80a8-107a8216b4ca",
         "name": "Redis Chat Memory",
@@ -5572,11 +4789,6 @@
               "index": 0
             }
           ]
-        ]
-      },
-      "Simple Memory": {
-        "ai_memory": [
-          []
         ]
       },
       "OpenAI Chat Model": {
@@ -5637,35 +4849,7 @@
           ]
         ]
       },
-      "Lookup PDF Status": {
-        "main": [
-          [
-            {
-              "node": "PDF Already Sent?",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "PDF Already Sent?": {
-        "main": [
-          [
-            {
-              "node": "Reply to Customer",
-              "type": "main",
-              "index": 0
-            }
-          ],
-          []
-        ]
-      },
       "Download Bridal PDF": {
-        "main": [
-          []
-        ]
-      },
-      "Webhook": {
         "main": [
           []
         ]
@@ -5683,13 +4867,7 @@
       },
       "Send Bridal PDF": {
         "main": [
-          [
-            {
-              "node": "Update PDF Sent",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Pinecone Vector Store": {
@@ -5961,11 +5139,6 @@
           ]
         ]
       },
-      "Extract Data_old": {
-        "main": [
-          []
-        ]
-      },
       "Extract Data": {
         "main": [
           [
@@ -6010,11 +5183,6 @@
           ]
         ]
       },
-      "ParseStatusTag": {
-        "main": [
-          []
-        ]
-      },
       "UpdateProfileOnSTOP": {
         "main": [
           [
@@ -6039,7 +5207,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 3403f835",
+    "name": "Version bf262d83",
     "description": "",
     "autosaved": true
   },
