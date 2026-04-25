@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-24T13:56:53.034Z",
+  "updatedAt": "2026-04-25T12:00:54.606Z",
   "createdAt": "2026-04-24T06:31:29.753Z",
   "id": "26UmBACIu8h8Hhin",
   "name": "FollowUp Reminder Generic Salon v1",
@@ -12,7 +12,7 @@
           "interval": [
             {
               "field": "minutes",
-              "minutesInterval": 1
+              "minutesInterval": 30
             }
           ]
         }
@@ -94,8 +94,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        128,
-        -224
+        176,
+        -48
       ],
       "id": "3bceada5-9e9d-4f25-a3d6-fe250d97eaab",
       "name": "Filter FollowUp Reminder"
@@ -133,7 +133,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        592,
+        544,
         176
       ],
       "id": "f62918be-6a02-4223-8567-83f2fa854377",
@@ -396,7 +396,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\n/g, ' ').replace(/\\\"/g, '\\\\\\\"') }}\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\\"/g, '\\\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
         "options": {
           "timeout": 10000
         }
@@ -420,13 +420,13 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "=shades:{{ $('Loop Over Items').item.json.Phone }}"
+        "sessionKey": "=shade:{{ $('Loop Over Items').item.json.Phone }}"
       },
       "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
       "typeVersion": 1.5,
       "position": [
-        736,
-        272
+        752,
+        176
       ],
       "id": "89238720-2577-4da8-8d01-fe5f1181d275",
       "name": "Redis Chat Memory",
@@ -444,11 +444,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        176,
-        -48
+        -48,
+        848
       ],
       "id": "dbe72788-20f3-43bd-94a1-15c3983731f8",
-      "name": "Code in JavaScript"
+      "name": "2 Min Reminder"
     }
   ],
   "connections": {
@@ -467,7 +467,7 @@
       "main": [
         [
           {
-            "node": "Code in JavaScript",
+            "node": "Filter FollowUp Reminder",
             "type": "main",
             "index": 0
           }
@@ -494,7 +494,13 @@
     },
     "Filter FollowUp Reminder": {
       "main": [
-        []
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "AI Agent": {
@@ -552,15 +558,9 @@
         ]
       ]
     },
-    "Code in JavaScript": {
+    "2 Min Reminder": {
       "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -580,9 +580,30 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "c71534e0-781a-4b9d-bfbb-029b7c2c381b",
-  "activeVersionId": "c71534e0-781a-4b9d-bfbb-029b7c2c381b",
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-04-25T14:24:07.003+05:30",
+          "Readable date": "April 25th 2026, 2:24:07 pm",
+          "Readable time": "2:24:07 pm",
+          "Day of week": "Saturday",
+          "Year": "2026",
+          "Month": "April",
+          "Day of month": "25",
+          "Hour": "14",
+          "Minute": "24",
+          "Second": "07",
+          "Timezone": "Asia/Kolkata (UTC+05:30)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "304a7f4a-734b-40cc-92cb-d4ddb52a104e",
+  "activeVersionId": "304a7f4a-734b-40cc-92cb-d4ddb52a104e",
   "triggerCount": 1,
   "shared": [
     {
@@ -594,9 +615,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-24T13:57:15.000Z",
-    "createdAt": "2026-04-24T13:56:53.035Z",
-    "versionId": "c71534e0-781a-4b9d-bfbb-029b7c2c381b",
+    "updatedAt": "2026-04-25T12:01:00.000Z",
+    "createdAt": "2026-04-25T12:00:54.608Z",
+    "versionId": "304a7f4a-734b-40cc-92cb-d4ddb52a104e",
     "workflowId": "26UmBACIu8h8Hhin",
     "nodes": [
       {
@@ -605,7 +626,7 @@
             "interval": [
               {
                 "field": "minutes",
-                "minutesInterval": 1
+                "minutesInterval": 30
               }
             ]
           }
@@ -687,8 +708,8 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          128,
-          -224
+          176,
+          -48
         ],
         "id": "3bceada5-9e9d-4f25-a3d6-fe250d97eaab",
         "name": "Filter FollowUp Reminder"
@@ -726,7 +747,7 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          592,
+          544,
           176
         ],
         "id": "f62918be-6a02-4223-8567-83f2fa854377",
@@ -989,7 +1010,7 @@
           "genericAuthType": "httpHeaderAuth",
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\n/g, ' ').replace(/\\\"/g, '\\\\\\\"') }}\"\n}",
+          "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\\"/g, '\\\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
           "options": {
             "timeout": 10000
           }
@@ -1013,13 +1034,13 @@
       {
         "parameters": {
           "sessionIdType": "customKey",
-          "sessionKey": "=shades:{{ $('Loop Over Items').item.json.Phone }}"
+          "sessionKey": "=shade:{{ $('Loop Over Items').item.json.Phone }}"
         },
         "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
         "typeVersion": 1.5,
         "position": [
-          736,
-          272
+          752,
+          176
         ],
         "id": "89238720-2577-4da8-8d01-fe5f1181d275",
         "name": "Redis Chat Memory",
@@ -1037,11 +1058,11 @@
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
-          176,
-          -48
+          -48,
+          848
         ],
         "id": "dbe72788-20f3-43bd-94a1-15c3983731f8",
-        "name": "Code in JavaScript"
+        "name": "2 Min Reminder"
       }
     ],
     "connections": {
@@ -1060,7 +1081,7 @@
         "main": [
           [
             {
-              "node": "Code in JavaScript",
+              "node": "Filter FollowUp Reminder",
               "type": "main",
               "index": 0
             }
@@ -1087,7 +1108,13 @@
       },
       "Filter FollowUp Reminder": {
         "main": [
-          []
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
         ]
       },
       "AI Agent": {
@@ -1145,20 +1172,14 @@
           ]
         ]
       },
-      "Code in JavaScript": {
+      "2 Min Reminder": {
         "main": [
-          [
-            {
-              "node": "Loop Over Items",
-              "type": "main",
-              "index": 0
-            }
-          ]
+          []
         ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version c71534e0",
+    "name": "Version 304a7f4a",
     "description": "",
     "autosaved": true
   },
