@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-25T12:00:54.606Z",
+  "updatedAt": "2026-04-27T09:47:14.798Z",
   "createdAt": "2026-04-24T06:31:29.753Z",
   "id": "26UmBACIu8h8Hhin",
   "name": "FollowUp Reminder Generic Salon v1",
@@ -444,8 +444,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -48,
-        848
+        -32,
+        480
       ],
       "id": "dbe72788-20f3-43bd-94a1-15c3983731f8",
       "name": "2 Min Reminder"
@@ -602,7 +602,7 @@
       }
     ]
   },
-  "versionId": "304a7f4a-734b-40cc-92cb-d4ddb52a104e",
+  "versionId": "5626c112-a4b9-41c6-a2d8-a37f92dcf7d8",
   "activeVersionId": "304a7f4a-734b-40cc-92cb-d4ddb52a104e",
   "triggerCount": 1,
   "shared": [
