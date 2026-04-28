@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-10T09:48:18.619Z",
+  "updatedAt": "2026-04-28T07:52:05.280Z",
   "createdAt": "2026-04-01T07:12:55.200Z",
   "id": "4J4Xpw2AtPWztT3C",
   "name": "Generic Voice Payment Updates 9115",
@@ -17,7 +17,7 @@
       "typeVersion": 1.2,
       "position": [
         -576,
-        -112
+        -32
       ],
       "id": "b401a104-52fa-4445-9e0b-2f1cc2a8240e",
       "name": "Telegram Trigger",
@@ -41,8 +41,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        1088,
-        -64
+        1048,
+        -128
       ],
       "id": "a82638ac-b33f-4003-bc38-8fe2721a3c51",
       "name": "AI Agent"
@@ -56,7 +56,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        48,
+        96,
         -224
       ],
       "id": "87daec2d-c7fd-4fd6-8703-6e32584872f9",
@@ -130,8 +130,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -192,
-        -96
+        -128,
+        -128
       ],
       "id": "350348dd-7f55-45fc-8f0c-9f3bde4355c6",
       "name": "check message type"
@@ -147,8 +147,8 @@
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        240,
-        -528
+        -208,
+        832
       ],
       "id": "d35e582d-f1cb-4b39-8429-873d10ecc57a",
       "name": "Transcribe a recording",
@@ -171,7 +171,7 @@
       "typeVersion": 1.2,
       "position": [
         1456,
-        -64
+        -128
       ],
       "id": "27866126-8441-4f18-98a5-a4ba06b36f78",
       "name": "Send a text message",
@@ -210,8 +210,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -384,
-        -96
+        -352,
+        -32
       ],
       "id": "474c8a65-201f-45df-bb89-b9b46605314b",
       "name": "If"
@@ -221,8 +221,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -192,
-        96
+        -128,
+        64
       ],
       "id": "fc6561f2-b4f5-4c99-953f-0b9ffc008727",
       "name": "No Operation, do nothing"
@@ -241,8 +241,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        976,
-        224
+        992,
+        96
       ],
       "id": "1fde3eda-8275-4c30-983b-e6374e00d761",
       "name": "OpenAI Chat Model",
@@ -270,7 +270,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        560,
+        544,
         -224
       ],
       "id": "4fc1460a-a427-43a4-b4c6-39f62cc636d2",
@@ -293,8 +293,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        880,
-        -64
+        768,
+        -128
       ],
       "id": "40885e53-e093-484b-a2b0-5968076bc5ab",
       "name": "Extract Data"
@@ -316,7 +316,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        432,
+        544,
         -32
       ],
       "id": "c394dec3-d2c4-4bb8-8785-1ba940a5e3c1",
@@ -330,8 +330,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1136,
-        256
+        48,
+        864
       ],
       "id": "aa095ec9-c250-4225-8bfd-ab15470863e5",
       "name": "Simple Memory"
@@ -451,8 +451,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1280,
-        192
+        1184,
+        96
       ],
       "id": "ed4c160b-af32-44b9-84b4-19a5dee230dd",
       "name": "append_payment_entry",
@@ -488,8 +488,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1456,
-        192
+        1360,
+        96
       ],
       "id": "0d7993bb-cd1d-4575-abae-6dc5f5ed704c",
       "name": "fetch_payment_records",
@@ -536,7 +536,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        256,
+        320,
         -224
       ],
       "id": "92bf9c9b-9c36-4e2a-b327-15dedf9b1a42",
@@ -549,6 +549,19 @@
           "name": "sarvam-voice-api"
         }
       }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        1152,
+        224
+      ],
+      "id": "771f7266-568a-4ee9-836b-04647680bbb1",
+      "name": "MCP Client"
     }
   ],
   "connections": {
@@ -707,6 +720,17 @@
           }
         ]
       ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -771,8 +795,8 @@
       }
     ]
   },
-  "versionId": "695c732e-3fe0-4d5e-a6e7-e43fb75d40c9",
-  "activeVersionId": "695c732e-3fe0-4d5e-a6e7-e43fb75d40c9",
+  "versionId": "11a18901-a88d-4b99-a217-efc0b15e6480",
+  "activeVersionId": "baf85899-4350-48cb-bfb0-bac5a1f79c6b",
   "triggerCount": 1,
   "shared": [
     {
@@ -784,9 +808,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-10T09:48:36.000Z",
-    "createdAt": "2026-04-10T09:48:18.620Z",
-    "versionId": "695c732e-3fe0-4d5e-a6e7-e43fb75d40c9",
+    "updatedAt": "2026-04-28T07:11:03.000Z",
+    "createdAt": "2026-04-28T07:10:19.882Z",
+    "versionId": "baf85899-4350-48cb-bfb0-bac5a1f79c6b",
     "workflowId": "4J4Xpw2AtPWztT3C",
     "nodes": [
       {
@@ -800,7 +824,7 @@
         "typeVersion": 1.2,
         "position": [
           -576,
-          -112
+          -32
         ],
         "id": "b401a104-52fa-4445-9e0b-2f1cc2a8240e",
         "name": "Telegram Trigger",
@@ -824,8 +848,8 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3.1,
         "position": [
-          1088,
-          -64
+          1048,
+          -128
         ],
         "id": "a82638ac-b33f-4003-bc38-8fe2721a3c51",
         "name": "AI Agent"
@@ -839,7 +863,7 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "position": [
-          48,
+          96,
           -224
         ],
         "id": "87daec2d-c7fd-4fd6-8703-6e32584872f9",
@@ -913,8 +937,8 @@
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.4,
         "position": [
-          -192,
-          -96
+          -128,
+          -128
         ],
         "id": "350348dd-7f55-45fc-8f0c-9f3bde4355c6",
         "name": "check message type"
@@ -930,8 +954,8 @@
         "type": "@n8n/n8n-nodes-langchain.openAi",
         "typeVersion": 2.1,
         "position": [
-          240,
-          -528
+          -208,
+          832
         ],
         "id": "d35e582d-f1cb-4b39-8429-873d10ecc57a",
         "name": "Transcribe a recording",
@@ -954,7 +978,7 @@
         "typeVersion": 1.2,
         "position": [
           1456,
-          -64
+          -128
         ],
         "id": "27866126-8441-4f18-98a5-a4ba06b36f78",
         "name": "Send a text message",
@@ -993,8 +1017,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          -384,
-          -96
+          -352,
+          -32
         ],
         "id": "474c8a65-201f-45df-bb89-b9b46605314b",
         "name": "If"
@@ -1004,8 +1028,8 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          -192,
-          96
+          -128,
+          64
         ],
         "id": "fc6561f2-b4f5-4c99-953f-0b9ffc008727",
         "name": "No Operation, do nothing"
@@ -1024,8 +1048,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          976,
-          224
+          992,
+          96
         ],
         "id": "1fde3eda-8275-4c30-983b-e6374e00d761",
         "name": "OpenAI Chat Model",
@@ -1053,7 +1077,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          560,
+          544,
           -224
         ],
         "id": "4fc1460a-a427-43a4-b4c6-39f62cc636d2",
@@ -1076,8 +1100,8 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          880,
-          -64
+          768,
+          -128
         ],
         "id": "40885e53-e093-484b-a2b0-5968076bc5ab",
         "name": "Extract Data"
@@ -1099,7 +1123,7 @@
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          432,
+          544,
           -32
         ],
         "id": "c394dec3-d2c4-4bb8-8785-1ba940a5e3c1",
@@ -1113,8 +1137,8 @@
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
         "position": [
-          1136,
-          256
+          48,
+          864
         ],
         "id": "aa095ec9-c250-4225-8bfd-ab15470863e5",
         "name": "Simple Memory"
@@ -1234,8 +1258,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1280,
-          192
+          1184,
+          96
         ],
         "id": "ed4c160b-af32-44b9-84b4-19a5dee230dd",
         "name": "append_payment_entry",
@@ -1271,8 +1295,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1456,
-          192
+          1360,
+          96
         ],
         "id": "0d7993bb-cd1d-4575-abae-6dc5f5ed704c",
         "name": "fetch_payment_records",
@@ -1319,7 +1343,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4,
         "position": [
-          256,
+          320,
           -224
         ],
         "id": "92bf9c9b-9c36-4e2a-b327-15dedf9b1a42",
@@ -1493,7 +1517,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 695c732e",
+    "name": "Version baf85899",
     "description": "",
     "autosaved": true
   },
