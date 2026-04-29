@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-28T07:52:05.280Z",
+  "updatedAt": "2026-04-29T12:32:42.900Z",
   "createdAt": "2026-04-01T07:12:55.200Z",
   "id": "4J4Xpw2AtPWztT3C",
   "name": "Generic Voice Payment Updates 9115",
@@ -557,8 +557,8 @@
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.2,
       "position": [
-        1152,
-        224
+        1024,
+        320
       ],
       "id": "771f7266-568a-4ee9-836b-04647680bbb1",
       "name": "MCP Client"
@@ -795,7 +795,7 @@
       }
     ]
   },
-  "versionId": "11a18901-a88d-4b99-a217-efc0b15e6480",
+  "versionId": "ed2f100c-5a02-4c77-b411-d0e2115bc83e",
   "activeVersionId": "baf85899-4350-48cb-bfb0-bac5a1f79c6b",
   "triggerCount": 1,
   "shared": [
