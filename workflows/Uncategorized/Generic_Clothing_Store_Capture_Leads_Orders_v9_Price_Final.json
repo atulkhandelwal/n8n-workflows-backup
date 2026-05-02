@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-10T11:56:44.629Z",
+  "updatedAt": "2026-05-02T17:04:42.268Z",
   "createdAt": "2026-03-05T06:37:00.153Z",
   "id": "GiAIYRyljOEaLbXK",
   "name": "Generic Clothing Store Capture Leads Orders v9 Price Final",
@@ -22,7 +22,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2160,
+        1968,
         176
       ],
       "id": "5b79bbec-ad8f-4f0d-935b-60f6b809b995",
@@ -84,8 +84,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        752,
-        240
+        432,
+        736
       ],
       "id": "4ba80f3f-7ddb-4af6-86ca-6370fe22ce60",
       "name": "Simple Memory1"
@@ -162,7 +162,7 @@
       "typeVersion": 3.4,
       "position": [
         -752,
-        368
+        416
       ],
       "id": "66df01cb-9f9f-44d1-a409-5cea8cb153d0",
       "name": "Extract Data"
@@ -313,8 +313,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryManager",
       "typeVersion": 1.1,
       "position": [
-        -224,
-        736
+        -96,
+        1552
       ],
       "id": "ad6308a2-3d18-420d-81a5-90a272b856e4",
       "name": "Chat Memory Manager"
@@ -627,8 +627,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2544,
-        512
+        2032,
+        1664
       ],
       "id": "cdfa44dd-e591-4d00-8dca-9ab083a46438",
       "name": "No Operation, do nothing3"
@@ -647,8 +647,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2816,
-        480
+        2304,
+        1632
       ],
       "id": "833cd8ec-026a-47b1-9174-496cbffcec88",
       "name": "OpenAI Chat Model3",
@@ -670,8 +670,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2800,
-        288
+        2288,
+        1440
       ],
       "id": "8e84c8c8-37b1-44ff-8f31-8436e51e6159",
       "name": "Prepare Response for Issues"
@@ -739,8 +739,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2352,
-        384
+        1840,
+        1536
       ],
       "id": "2af76dff-ebc2-4d56-ac53-9fc1e56215ab",
       "name": "Customer has Query"
@@ -775,8 +775,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        2544,
-        288
+        2032,
+        1440
       ],
       "id": "9ed7f376-6085-4fd8-86ef-cdae5fdcda50",
       "name": "Extract Issue Details",
@@ -817,8 +817,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        224,
-        320
+        144,
+        368
       ],
       "id": "b6377b0e-7671-4463-8ff7-588f6b8bb8b2",
       "name": "Fetch_Customer_Status",
@@ -891,7 +891,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        432,
+        400,
         320
       ],
       "id": "a7d47dd5-8ad0-4bd7-bad1-db7237b818ad",
@@ -945,8 +945,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        3168,
-        288
+        2656,
+        1440
       ],
       "id": "c2ce7613-6917-43f6-9986-3bc69862e32b",
       "name": "Send Message to Business",
@@ -983,7 +983,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2144,
+        1920,
         384
       ],
       "id": "84d3bd8e-e2ea-4d91-907d-9dec837360b6",
@@ -1476,40 +1476,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
-        "options": {
-          "timeout": 2000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        48,
-        400
-      ],
-      "id": "4c0c6c8f-c0f7-4a38-9d7a-59b8346bc7b8",
-      "name": "Send Typing Indicator",
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL CONTEXT INTERPRETATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. WORK TYPES = PRODUCT AVAILABILITY\nWhen context mentions any work/embroidery type, it means sarees/lehengas WITH that work ARE AVAILABLE:\n\n✓ \"Gotta Patti work\" = Gotta Patti sarees/lehengas are available\n✓ \"Mothda work\" = Mothda sarees/lehengas are available\n✓ \"Zari work\" = Zari work sarees/lehengas are available\n✓ \"Leheriya\" = Leheriya sarees are available\n✓ \"Chunri\" = Chunri sarees are available\n✓ \"Stone work\" = Stone work sarees/lehengas are available\n✓ \"Sequin\" = Sequin sarees/lehengas are available\n✓ \"Mirror/Abhla work\" = Mirror work sarees/lehengas are available\n✓ \"Thread embroidery\" = Thread embroidered sarees/lehengas are available\n✓ \"Pearl work\" = Pearl work sarees/lehengas are available\n✓ \"Block print\" = Block printed sarees are available\n✓ \"Digital print\" = Digital printed sarees are available\n✓ \"Hand painted\" = Hand painted sarees are available\n✓ \"Lace work\" = Lace sarees are available\n\n2. FABRIC MENTIONS = PRODUCT AVAILABILITY\nWhen fabrics are listed, products are available in those materials:\n\n✓ Silk, Georgette, Chiffon, Cotton, Art Silk, Pure Silk, Raw Silk, Velvet, Brocade, Satin, Net, Organza, Taffeta, Cotton-Silk blend, Chanderi\n\n3. SPECIFIC PRODUCT CATEGORIES (CONFIRM THESE ARE AVAILABLE)\n\nSAREES:\n✓ Rajasthani Bandhani sarees (specialty product)\n✓ Banarasi sarees\n✓ Tussar sarees\n✓ Kanjivaram sarees\n✓ Gaji sarees\n✓ Pure Silk sarees\n✓ Art Silk sarees\n✓ Bridal sarees\n✓ Designer collection sarees\n✓ Festival collection sarees (Diwali, Karwa Chauth, Teej, Holi, Navratri, Raksha Bandhan)\n✓ Daily & Office wear cotton sarees\n✓ Party wear sarees (Georgette, sequin, heavy border)\n\nLEHENGAS:\n✓ Bridal lehengas (custom-stitched)\n✓ Wedding function lehengas (Sangeet, Mehendi, Haldi, Engagement, Reception)\n✓ Wedding guest lehengas\n✓ Girlish lehengas (ages 5-30)\n✓ Party wear lehengas (Cocktail, Birthday, Anniversary)\n✓ Festival lehengas (Navratri Chaniya Choli in all 9 colors, Diwali, Karwa Chauth, Teej)\n\nBLOUSES:\n✓ Unstitched blouse pieces (included with sarees)\n✓ Custom blouse stitching available\n✓ Ready-made blouses\n\n4. OCCASIONS SERVED (PRODUCTS AVAILABLE FOR)\n✓ Weddings (Bride, Pre-wedding functions, Reception, Guest)\n✓ Festivals (Diwali, Karwa Chauth, Teej, Navratri, Holi, Raksha Bandhan)\n✓ Parties & Social events (Birthday, Anniversary, Cocktail)\n✓ Professional/Office wear\n✓ Daily & Casual wear\n✓ Religious occasions (Temple visits, Pujas)\n\n5. SERVICES AVAILABLE\n✓ Custom stitching (lehengas, blouses)\n✓ Design customization\n✓ Color customization\n✓ Size customization (XS to XXL)\n✓ Professional measurements\n✓ Alteration services\n✓ Free home delivery in Jaipur\n✓ Outstation delivery (all India)\n✓ International shipping (USA, UK, Australia, Canada, Middle East, Europe)\n✓ WhatsApp shopping with photos/videos\n✓ Video call product viewing\n\n6. STORE INFORMATION\nLocation: Shop No. 12345, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur\nPhone/WhatsApp: 09999999999\nTimings: Mon-Sat 11AM-9PM | Sun 11AM-7PM\nEstablished: 1990 (30+ years)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nRESPONSE LOGIC (FOLLOW STRICTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks about ANY item listed above:\n→ Answer: \"YES, [product] is available\" + provide relevant details from context\n\nIF customer asks about specific price/exact stock:\n→ Answer: \"For specific pricing and stock availability, please contact us on WhatsApp: 09999999999 or visit our store.\"\n\nIF customer asks about product NOT mentioned anywhere in context:\n→ Answer: \"I don't have specific information about [product]. Please contact our team on WhatsApp 09999999999 for details.\"\n\nNEVER say \"I don't know\" if the product category, work type, or fabric is mentioned in retrieved context.\n\nNEVER make up information not present in context.\n\nALWAYS provide store contact (09999999999) when detailed information is requested."
       },
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
@@ -1809,8 +1775,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        3008,
-        464
+        2496,
+        1616
       ],
       "id": "e13a9ca5-71aa-482f-b1c4-c9e8359c4a46",
       "name": "Get_Lead_Details_to_Send",
@@ -1851,8 +1817,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        2912,
-        656
+        2400,
+        1808
       ],
       "id": "673d0ca4-b0cc-4956-80e4-1ea5fc3b65d5",
       "name": "Get_Order_Details",
@@ -2041,6 +2007,27 @@
           "name": "Test n8n Google Sheet"
         }
       }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=clothing:{{ $('Extract Data').first().json.phone }}",
+        "sessionTTL": 100000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        768,
+        208
+      ],
+      "id": "2de8148e-58ab-4457-b404-2848349d5115",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "PIJplpb7DR92z81P",
+          "name": "Redis n8n-redis"
+        }
+      }
     }
   ],
   "connections": {
@@ -2073,18 +2060,7 @@
     },
     "Simple Memory1": {
       "ai_memory": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "ai_memory",
-            "index": 0
-          },
-          {
-            "node": "Order_Booking_Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Check Message Sender": {
@@ -2159,7 +2135,7 @@
         ],
         [
           {
-            "node": "Send Typing Indicator",
+            "node": "Fetch_Customer_Status",
             "type": "main",
             "index": 0
           }
@@ -2433,17 +2409,6 @@
         ]
       ]
     },
-    "Send Typing Indicator": {
-      "main": [
-        [
-          {
-            "node": "Fetch_Customer_Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "clothing-store-kb": {
       "ai_tool": [
         [
@@ -2611,6 +2576,22 @@
           }
         ]
       ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Order_Booking_Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -2625,8 +2606,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
-  "activeVersionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
+  "versionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
+  "activeVersionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
   "triggerCount": 0,
   "shared": [
     {
@@ -2638,9 +2619,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-03-10T11:56:47.000Z",
-    "createdAt": "2026-03-10T11:56:44.632Z",
-    "versionId": "a58c35cd-7063-4ec2-bbf8-a0ea10ad7f7a",
+    "updatedAt": "2026-05-02T17:04:44.000Z",
+    "createdAt": "2026-05-02T17:04:42.272Z",
+    "versionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
     "workflowId": "GiAIYRyljOEaLbXK",
     "nodes": [
       {
@@ -2659,7 +2640,7 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          2160,
+          1968,
           176
         ],
         "id": "5b79bbec-ad8f-4f0d-935b-60f6b809b995",
@@ -2721,8 +2702,8 @@
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
         "position": [
-          752,
-          240
+          432,
+          736
         ],
         "id": "4ba80f3f-7ddb-4af6-86ca-6370fe22ce60",
         "name": "Simple Memory1"
@@ -2799,7 +2780,7 @@
         "typeVersion": 3.4,
         "position": [
           -752,
-          368
+          416
         ],
         "id": "66df01cb-9f9f-44d1-a409-5cea8cb153d0",
         "name": "Extract Data"
@@ -2950,8 +2931,8 @@
         "type": "@n8n/n8n-nodes-langchain.memoryManager",
         "typeVersion": 1.1,
         "position": [
-          -224,
-          736
+          -96,
+          1552
         ],
         "id": "ad6308a2-3d18-420d-81a5-90a272b856e4",
         "name": "Chat Memory Manager"
@@ -3264,8 +3245,8 @@
         "type": "n8n-nodes-base.noOp",
         "typeVersion": 1,
         "position": [
-          2544,
-          512
+          2032,
+          1664
         ],
         "id": "cdfa44dd-e591-4d00-8dca-9ab083a46438",
         "name": "No Operation, do nothing3"
@@ -3284,8 +3265,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          2816,
-          480
+          2304,
+          1632
         ],
         "id": "833cd8ec-026a-47b1-9174-496cbffcec88",
         "name": "OpenAI Chat Model3",
@@ -3307,8 +3288,8 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3.1,
         "position": [
-          2800,
-          288
+          2288,
+          1440
         ],
         "id": "8e84c8c8-37b1-44ff-8f31-8436e51e6159",
         "name": "Prepare Response for Issues"
@@ -3376,8 +3357,8 @@
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.3,
         "position": [
-          2352,
-          384
+          1840,
+          1536
         ],
         "id": "2af76dff-ebc2-4d56-ac53-9fc1e56215ab",
         "name": "Customer has Query"
@@ -3412,8 +3393,8 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          2544,
-          288
+          2032,
+          1440
         ],
         "id": "9ed7f376-6085-4fd8-86ef-cdae5fdcda50",
         "name": "Extract Issue Details",
@@ -3454,8 +3435,8 @@
         "type": "n8n-nodes-base.googleSheets",
         "typeVersion": 4.7,
         "position": [
-          224,
-          320
+          144,
+          368
         ],
         "id": "b6377b0e-7671-4463-8ff7-588f6b8bb8b2",
         "name": "Fetch_Customer_Status",
@@ -3528,7 +3509,7 @@
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.4,
         "position": [
-          432,
+          400,
           320
         ],
         "id": "a7d47dd5-8ad0-4bd7-bad1-db7237b818ad",
@@ -3582,8 +3563,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          3168,
-          288
+          2656,
+          1440
         ],
         "id": "c2ce7613-6917-43f6-9986-3bc69862e32b",
         "name": "Send Message to Business",
@@ -3620,7 +3601,7 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.3,
         "position": [
-          2144,
+          1920,
           384
         ],
         "id": "84d3bd8e-e2ea-4d91-907d-9dec837360b6",
@@ -4113,40 +4094,6 @@
       },
       {
         "parameters": {
-          "method": "POST",
-          "url": "https://api.chatsocialai.in/chat/sendPresence/Atul-Demo",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "apikey",
-                "value": "D575B3CCD4FA-4E86-B864-7F0F7BAFC52D"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={\n  \"number\": \"{{ $('Extract Data').first().json.phone }}\",\n  \"presence\": \"composing\",\n  \"delay\": 1000\n}\n",
-          "options": {
-            "timeout": 2000
-          }
-        },
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.3,
-        "position": [
-          48,
-          400
-        ],
-        "id": "4c0c6c8f-c0f7-4a38-9d7a-59b8346bc7b8",
-        "name": "Send Typing Indicator",
-        "onError": "continueRegularOutput"
-      },
-      {
-        "parameters": {
           "description": "Retrieves accurate product information about Jaipur Ethnic Wear inventory, policies, and services. Use retrieved context to answer customer questions with precision.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nCRITICAL CONTEXT INTERPRETATION RULES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n1. WORK TYPES = PRODUCT AVAILABILITY\nWhen context mentions any work/embroidery type, it means sarees/lehengas WITH that work ARE AVAILABLE:\n\n✓ \"Gotta Patti work\" = Gotta Patti sarees/lehengas are available\n✓ \"Mothda work\" = Mothda sarees/lehengas are available\n✓ \"Zari work\" = Zari work sarees/lehengas are available\n✓ \"Leheriya\" = Leheriya sarees are available\n✓ \"Chunri\" = Chunri sarees are available\n✓ \"Stone work\" = Stone work sarees/lehengas are available\n✓ \"Sequin\" = Sequin sarees/lehengas are available\n✓ \"Mirror/Abhla work\" = Mirror work sarees/lehengas are available\n✓ \"Thread embroidery\" = Thread embroidered sarees/lehengas are available\n✓ \"Pearl work\" = Pearl work sarees/lehengas are available\n✓ \"Block print\" = Block printed sarees are available\n✓ \"Digital print\" = Digital printed sarees are available\n✓ \"Hand painted\" = Hand painted sarees are available\n✓ \"Lace work\" = Lace sarees are available\n\n2. FABRIC MENTIONS = PRODUCT AVAILABILITY\nWhen fabrics are listed, products are available in those materials:\n\n✓ Silk, Georgette, Chiffon, Cotton, Art Silk, Pure Silk, Raw Silk, Velvet, Brocade, Satin, Net, Organza, Taffeta, Cotton-Silk blend, Chanderi\n\n3. SPECIFIC PRODUCT CATEGORIES (CONFIRM THESE ARE AVAILABLE)\n\nSAREES:\n✓ Rajasthani Bandhani sarees (specialty product)\n✓ Banarasi sarees\n✓ Tussar sarees\n✓ Kanjivaram sarees\n✓ Gaji sarees\n✓ Pure Silk sarees\n✓ Art Silk sarees\n✓ Bridal sarees\n✓ Designer collection sarees\n✓ Festival collection sarees (Diwali, Karwa Chauth, Teej, Holi, Navratri, Raksha Bandhan)\n✓ Daily & Office wear cotton sarees\n✓ Party wear sarees (Georgette, sequin, heavy border)\n\nLEHENGAS:\n✓ Bridal lehengas (custom-stitched)\n✓ Wedding function lehengas (Sangeet, Mehendi, Haldi, Engagement, Reception)\n✓ Wedding guest lehengas\n✓ Girlish lehengas (ages 5-30)\n✓ Party wear lehengas (Cocktail, Birthday, Anniversary)\n✓ Festival lehengas (Navratri Chaniya Choli in all 9 colors, Diwali, Karwa Chauth, Teej)\n\nBLOUSES:\n✓ Unstitched blouse pieces (included with sarees)\n✓ Custom blouse stitching available\n✓ Ready-made blouses\n\n4. OCCASIONS SERVED (PRODUCTS AVAILABLE FOR)\n✓ Weddings (Bride, Pre-wedding functions, Reception, Guest)\n✓ Festivals (Diwali, Karwa Chauth, Teej, Navratri, Holi, Raksha Bandhan)\n✓ Parties & Social events (Birthday, Anniversary, Cocktail)\n✓ Professional/Office wear\n✓ Daily & Casual wear\n✓ Religious occasions (Temple visits, Pujas)\n\n5. SERVICES AVAILABLE\n✓ Custom stitching (lehengas, blouses)\n✓ Design customization\n✓ Color customization\n✓ Size customization (XS to XXL)\n✓ Professional measurements\n✓ Alteration services\n✓ Free home delivery in Jaipur\n✓ Outstation delivery (all India)\n✓ International shipping (USA, UK, Australia, Canada, Middle East, Europe)\n✓ WhatsApp shopping with photos/videos\n✓ Video call product viewing\n\n6. STORE INFORMATION\nLocation: Shop No. 12345, Lal Ji Sand Ka Rasta, Chaura Rasta, Modikhana, Jaipur\nPhone/WhatsApp: 09999999999\nTimings: Mon-Sat 11AM-9PM | Sun 11AM-7PM\nEstablished: 1990 (30+ years)\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nRESPONSE LOGIC (FOLLOW STRICTLY)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nIF customer asks about ANY item listed above:\n→ Answer: \"YES, [product] is available\" + provide relevant details from context\n\nIF customer asks about specific price/exact stock:\n→ Answer: \"For specific pricing and stock availability, please contact us on WhatsApp: 09999999999 or visit our store.\"\n\nIF customer asks about product NOT mentioned anywhere in context:\n→ Answer: \"I don't have specific information about [product]. Please contact our team on WhatsApp 09999999999 for details.\"\n\nNEVER say \"I don't know\" if the product category, work type, or fabric is mentioned in retrieved context.\n\nNEVER make up information not present in context.\n\nALWAYS provide store contact (09999999999) when detailed information is requested."
         },
         "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
@@ -4446,8 +4393,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          3008,
-          464
+          2496,
+          1616
         ],
         "id": "e13a9ca5-71aa-482f-b1c4-c9e8359c4a46",
         "name": "Get_Lead_Details_to_Send",
@@ -4488,8 +4435,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          2912,
-          656
+          2400,
+          1808
         ],
         "id": "673d0ca4-b0cc-4956-80e4-1ea5fc3b65d5",
         "name": "Get_Order_Details",
@@ -4678,6 +4625,27 @@
             "name": "Test n8n Google Sheet"
           }
         }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "=clothing:{{ $('Extract Data').first().json.phone }}",
+          "sessionTTL": 100000
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+        "typeVersion": 1.5,
+        "position": [
+          768,
+          208
+        ],
+        "id": "2de8148e-58ab-4457-b404-2848349d5115",
+        "name": "Redis Chat Memory",
+        "credentials": {
+          "redis": {
+            "id": "PIJplpb7DR92z81P",
+            "name": "Redis n8n-redis"
+          }
+        }
       }
     ],
     "connections": {
@@ -4710,18 +4678,7 @@
       },
       "Simple Memory1": {
         "ai_memory": [
-          [
-            {
-              "node": "AI Agent1",
-              "type": "ai_memory",
-              "index": 0
-            },
-            {
-              "node": "Order_Booking_Agent",
-              "type": "ai_memory",
-              "index": 0
-            }
-          ]
+          []
         ]
       },
       "Check Message Sender": {
@@ -4796,7 +4753,7 @@
           ],
           [
             {
-              "node": "Send Typing Indicator",
+              "node": "Fetch_Customer_Status",
               "type": "main",
               "index": 0
             }
@@ -5070,17 +5027,6 @@
           ]
         ]
       },
-      "Send Typing Indicator": {
-        "main": [
-          [
-            {
-              "node": "Fetch_Customer_Status",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
       "clothing-store-kb": {
         "ai_tool": [
           [
@@ -5248,10 +5194,26 @@
             }
           ]
         ]
+      },
+      "Redis Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent1",
+              "type": "ai_memory",
+              "index": 0
+            },
+            {
+              "node": "Order_Booking_Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version a58c35cd",
+    "name": "Version 4f7e65aa",
     "description": "",
     "autosaved": true
   },
