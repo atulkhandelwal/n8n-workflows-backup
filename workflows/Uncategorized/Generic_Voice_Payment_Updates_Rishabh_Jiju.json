@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-27T14:28:09.042Z",
+  "updatedAt": "2026-05-03T06:21:26.777Z",
   "createdAt": "2026-04-27T14:08:26.108Z",
   "id": "KyWSUu04bI5fVDvo",
   "name": "Generic Voice Payment Updates Rishabh Jiju",
@@ -41,7 +41,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        1088,
+        1456,
         -64
       ],
       "id": "f1998cb8-01e6-4877-926e-a65d8797eef8",
@@ -138,29 +138,6 @@
     },
     {
       "parameters": {
-        "resource": "audio",
-        "operation": "transcribe",
-        "options": {
-          "language": "hi"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 2.1,
-      "position": [
-        240,
-        -528
-      ],
-      "id": "e2efb684-88a6-4c40-b87c-50e8090b0264",
-      "name": "Transcribe a recording",
-      "credentials": {
-        "openAiApi": {
-          "id": "II0GP4luEE7DdARW",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "={{ $json.output }}",
         "additionalFields": {
@@ -170,7 +147,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1456,
+        1824,
         -64
       ],
       "id": "9d425867-bc5a-4edc-a6c1-b4a7e8d4de2a",
@@ -241,8 +218,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        976,
-        224
+        1248,
+        240
       ],
       "id": "13ac1017-54d3-4b05-a953-7ffe29e4a6c1",
       "name": "OpenAI Chat Model",
@@ -330,8 +307,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        1136,
-        256
+        1408,
+        272
       ],
       "id": "534848f9-db15-4eee-980f-a258b016da8f",
       "name": "Simple Memory"
@@ -451,8 +428,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1280,
-        192
+        1552,
+        208
       ],
       "id": "861744fc-db33-4fb9-bd9c-9a55b23c32b1",
       "name": "append_payment_entry",
@@ -488,8 +465,8 @@
       "type": "n8n-nodes-base.googleSheetsTool",
       "typeVersion": 4.7,
       "position": [
-        1456,
-        192
+        1728,
+        208
       ],
       "id": "f1f0f8ed-121a-4738-8d18-8755ff65e46a",
       "name": "fetch_payment_records",
@@ -590,11 +567,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "Transcribe a recording": {
-      "main": [
-        []
       ]
     },
     "AI Agent": {
@@ -722,20 +694,6 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {
-    "Transcribe a recording": [
-      {
-        "json": {
-          "text": "आजाये आजाये प्रेम नारान जी सत्र जार चलो काम कैसे चल रहा है बढ़िया जी बढ़िया है ठीक है ठीक है आप आजाये शशी देव रावत पांश लाग रुपए ठीक है नमस्कार भाई साहब कैसे है आप बढ़िया चलो बढ़िया है यह नच्छे आज वहाँ गया था मैं वो देख के आया बहुत बढ़िया था चलता रहता है यह था चलो शाम दिवाकर जी पचास जार छए जार नहीं छपन जार सही से लिखने ठीक है मिलते हैं फिर तक पाइपा चाहिए चलो तक पाइपा चाहिए ठीक है मिलते हैं फिर",
-          "usage": {
-            "type": "duration",
-            "seconds": 88
-          }
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ],
     "Telegram Trigger": [
       {
         "json": {
@@ -771,8 +729,8 @@
       }
     ]
   },
-  "versionId": "8df0544d-a5e1-4745-a864-602d02c1c92c",
-  "activeVersionId": "8df0544d-a5e1-4745-a864-602d02c1c92c",
+  "versionId": "525af328-36c5-4cc2-8fe8-c51ef2a4543f",
+  "activeVersionId": "525af328-36c5-4cc2-8fe8-c51ef2a4543f",
   "triggerCount": 1,
   "shared": [
     {
@@ -784,9 +742,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-27T14:28:13.000Z",
-    "createdAt": "2026-04-27T14:28:09.043Z",
-    "versionId": "8df0544d-a5e1-4745-a864-602d02c1c92c",
+    "updatedAt": "2026-05-03T06:21:31.000Z",
+    "createdAt": "2026-05-03T06:21:26.779Z",
+    "versionId": "525af328-36c5-4cc2-8fe8-c51ef2a4543f",
     "workflowId": "KyWSUu04bI5fVDvo",
     "nodes": [
       {
@@ -824,7 +782,7 @@
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 3.1,
         "position": [
-          1088,
+          1456,
           -64
         ],
         "id": "f1998cb8-01e6-4877-926e-a65d8797eef8",
@@ -921,29 +879,6 @@
       },
       {
         "parameters": {
-          "resource": "audio",
-          "operation": "transcribe",
-          "options": {
-            "language": "hi"
-          }
-        },
-        "type": "@n8n/n8n-nodes-langchain.openAi",
-        "typeVersion": 2.1,
-        "position": [
-          240,
-          -528
-        ],
-        "id": "e2efb684-88a6-4c40-b87c-50e8090b0264",
-        "name": "Transcribe a recording",
-        "credentials": {
-          "openAiApi": {
-            "id": "II0GP4luEE7DdARW",
-            "name": "OpenAi account"
-          }
-        }
-      },
-      {
-        "parameters": {
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
           "text": "={{ $json.output }}",
           "additionalFields": {
@@ -953,7 +888,7 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "position": [
-          1456,
+          1824,
           -64
         ],
         "id": "9d425867-bc5a-4edc-a6c1-b4a7e8d4de2a",
@@ -1024,8 +959,8 @@
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.3,
         "position": [
-          976,
-          224
+          1248,
+          240
         ],
         "id": "13ac1017-54d3-4b05-a953-7ffe29e4a6c1",
         "name": "OpenAI Chat Model",
@@ -1113,8 +1048,8 @@
         "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
         "typeVersion": 1.3,
         "position": [
-          1136,
-          256
+          1408,
+          272
         ],
         "id": "534848f9-db15-4eee-980f-a258b016da8f",
         "name": "Simple Memory"
@@ -1234,8 +1169,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1280,
-          192
+          1552,
+          208
         ],
         "id": "861744fc-db33-4fb9-bd9c-9a55b23c32b1",
         "name": "append_payment_entry",
@@ -1271,8 +1206,8 @@
         "type": "n8n-nodes-base.googleSheetsTool",
         "typeVersion": 4.7,
         "position": [
-          1456,
-          192
+          1728,
+          208
         ],
         "id": "f1f0f8ed-121a-4738-8d18-8755ff65e46a",
         "name": "fetch_payment_records",
@@ -1373,11 +1308,6 @@
               "index": 0
             }
           ]
-        ]
-      },
-      "Transcribe a recording": {
-        "main": [
-          []
         ]
       },
       "AI Agent": {
@@ -1493,7 +1423,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 8df0544d",
+    "name": "Version 525af328",
     "description": "",
     "autosaved": true
   },
