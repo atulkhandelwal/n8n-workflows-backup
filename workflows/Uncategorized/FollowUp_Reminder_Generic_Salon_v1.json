@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-27T09:47:14.798Z",
+  "updatedAt": "2026-05-03T06:19:08.194Z",
   "createdAt": "2026-04-24T06:31:29.753Z",
   "id": "26UmBACIu8h8Hhin",
   "name": "FollowUp Reminder Generic Salon v1",
@@ -420,7 +420,8 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "=shade:{{ $('Loop Over Items').item.json.Phone }}"
+        "sessionKey": "=shade:{{ $('Loop Over Items').item.json.Phone }}",
+        "sessionTTL": 100000
       },
       "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
       "typeVersion": 1.5,
@@ -602,7 +603,7 @@
       }
     ]
   },
-  "versionId": "5626c112-a4b9-41c6-a2d8-a37f92dcf7d8",
+  "versionId": "49854a73-4732-4f0a-bda4-c1e076666329",
   "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
