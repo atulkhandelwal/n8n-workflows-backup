@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-24T11:49:08.834Z",
+  "updatedAt": "2026-05-11T09:07:17.767Z",
   "createdAt": "2026-02-23T08:30:44.975Z",
   "id": "8HUtdcsTal9bMijB",
   "name": "Generic Demo Workflow v1",
@@ -587,7 +587,7 @@
           "value": "xsQ1PWBrRwmNBEsZTt-Xh",
           "mode": "list",
           "cachedResultUrl": "/workflow/xsQ1PWBrRwmNBEsZTt-Xh",
-          "cachedResultName": "UPVC Furniture Leads"
+          "cachedResultName": "UPVC Furniture Leads Generic"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -717,11 +717,40 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        1360,
-        -432
+        1952,
+        -576
       ],
       "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
       "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "47OyiPfqb5021v0i",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/47OyiPfqb5021v0i",
+          "cachedResultName": "Blush & Bloom Beauty US- Instagram AI v1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1376,
+        -432
+      ],
+      "id": "40a5147d-5688-45e6-b247-30b88540a0dc",
+      "name": "Call 'Blush & Bloom Beauty US- Instagram AI v1'"
     }
   ],
   "connections": {
@@ -905,7 +934,7 @@
       "main": [
         [
           {
-            "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'",
+            "node": "Call 'Blush & Bloom Beauty US- Instagram AI v1'",
             "type": "main",
             "index": 0
           }
@@ -1075,8 +1104,8 @@
       }
     ]
   },
-  "versionId": "b7123417-ae9f-4364-8da1-231683235540",
-  "activeVersionId": "b7123417-ae9f-4364-8da1-231683235540",
+  "versionId": "54f4c7ac-7217-4a1d-982b-a5865a25fc4b",
+  "activeVersionId": "54f4c7ac-7217-4a1d-982b-a5865a25fc4b",
   "triggerCount": 1,
   "shared": [
     {
@@ -1088,9 +1117,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-04-24T11:49:12.000Z",
-    "createdAt": "2026-04-24T11:49:08.835Z",
-    "versionId": "b7123417-ae9f-4364-8da1-231683235540",
+    "updatedAt": "2026-05-11T09:07:46.000Z",
+    "createdAt": "2026-05-11T09:07:17.768Z",
+    "versionId": "54f4c7ac-7217-4a1d-982b-a5865a25fc4b",
     "workflowId": "8HUtdcsTal9bMijB",
     "nodes": [
       {
@@ -1674,7 +1703,7 @@
             "value": "xsQ1PWBrRwmNBEsZTt-Xh",
             "mode": "list",
             "cachedResultUrl": "/workflow/xsQ1PWBrRwmNBEsZTt-Xh",
-            "cachedResultName": "UPVC Furniture Leads"
+            "cachedResultName": "UPVC Furniture Leads Generic"
           },
           "workflowInputs": {
             "mappingMode": "defineBelow",
@@ -1804,11 +1833,40 @@
         "type": "n8n-nodes-base.executeWorkflow",
         "typeVersion": 1.3,
         "position": [
-          1360,
-          -432
+          1952,
+          -576
         ],
         "id": "4c38de0c-f403-4955-8608-1b941e9fcd52",
         "name": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'"
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "47OyiPfqb5021v0i",
+            "mode": "list",
+            "cachedResultUrl": "/workflow/47OyiPfqb5021v0i",
+            "cachedResultName": "Blush & Bloom Beauty US- Instagram AI v1"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "mode": "each",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3,
+        "position": [
+          1376,
+          -432
+        ],
+        "id": "40a5147d-5688-45e6-b247-30b88540a0dc",
+        "name": "Call 'Blush & Bloom Beauty US- Instagram AI v1'"
       }
     ],
     "connections": {
@@ -1992,7 +2050,7 @@
         "main": [
           [
             {
-              "node": "Call 'Shades Skin & Hair Care - WhatsApp AI v3 Test'",
+              "node": "Call 'Blush & Bloom Beauty US- Instagram AI v1'",
               "type": "main",
               "index": 0
             }
@@ -2012,7 +2070,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version b7123417",
+    "name": "Version 54f4c7ac",
     "description": "",
     "autosaved": true
   },
