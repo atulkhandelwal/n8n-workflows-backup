@@ -1,0 +1,1189 @@
+{
+  "updatedAt": "2026-05-11T11:24:55.131Z",
+  "createdAt": "2026-05-11T09:32:28.766Z",
+  "id": "9HSRuYlQCCTJQERq",
+  "name": "FollowUp Reminder US Blush and Bloom Salon v1",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -48
+      ],
+      "id": "da67be2c-14ee-4cd2-9d88-8868697bda4d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 617231842,
+          "mode": "list",
+          "cachedResultName": "CustomerProfiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "FollowUp"
+            },
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Active"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -32,
+        -48
+      ],
+      "id": "40080e35-54ee-417d-aebd-0654a29a7747",
+      "name": "Fetch FolllowUp",
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        400,
+        -48
+      ],
+      "id": "ea8a8c51-4bdb-4c47-809f-9b149e07465a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = DateTime.now().setZone('Asia/Kolkata');\nconst results = [];\n\nfor (const item of $input.all()) {\n\n  const dripOptOut  = (item.json.DripOptOut   || '').trim().toUpperCase();\n  const lastDripSent = (item.json.LastDripSent || '').trim();\n  const raw          = (item.json.LastInboundAt || '').trim();\n\n  // Rule 1: skip if customer has opted out of drip\n  if (dripOptOut === 'YES') continue;\n\n  // Rule 2: skip if reminder was already sent\n  if (lastDripSent !== '') continue;\n\n  // Rule 3: skip if LastInboundAt is missing\n  if (!raw) continue;\n\n  // Rule 4: keep only if LastInboundAt was 2–3 hours ago\n  const lastInbound = DateTime.fromISO(raw, { zone: 'utc' }).setZone('Asia/Kolkata');\n  const hoursAgo = now.diff(lastInbound, 'hours').hours;\n\n  if (hoursAgo < 2 || hoursAgo > 3) continue;\n\n  results.push(item);\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -48
+      ],
+      "id": "df3ff4dc-390f-46b5-a5df-5d65920791e0",
+      "name": "Filter FollowUp Reminder"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Customer Name: {{ $json.Name || 'Valued Customer' }}\nLanguage: {{ $json.Language || 'English' }}\nNotes: {{ $json.Notes || 'None' }}\n\nYou have access to the full conversation history with this customer in your memory.\nReview it carefully. Reference ONE specific thing they asked about or showed interest in from the most recent chat sent by the user.\nWrite the reminder message now based on their actual conversation but not for the service with Booked Appointement.",
+        "options": {
+          "systemMessage": "You are a staff member at Blush & Bloom Beauty, a premium beauty salon in Nashville TN.\nWrite one gentle WhatsApp follow-up message to a customer who showed interest but has not replied.\nRemember not every Service is About Skin Care. You need to understand the service type and respond accordingly. Do not Say directly \"I want to follow up\"\n\nRules:\n- Maximum 2 sentences. No more.\n- Only Give importance to the most recent chat.\n- NEVER follow-up on Booked Appointments.\n- Sound like a real human team member, not a bot.\n- Use the customer's first name if provided. Otherwise use a warm opener.\n- If a service type is known, reference it naturally in one phrase.\n- Match the language field: English if English.\n- 1 or 2 emojis only. No markdown. Plain text only.\n- Never mention discounts, pressure, or urgency.\n- Sign off as: Team Blush & Bloom Beauty\n- Output the message text only. Nothing else."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        -64
+      ],
+      "id": "61e86156-36ca-48b7-bdf5-323b02136ba8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        176
+      ],
+      "id": "25b2fdf5-f9b6-46a0-ae13-5fb6a6e8c129",
+      "name": "OpenAI Chat Model",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "II0GP4luEE7DdARW",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+          "mode": "list",
+          "cachedResultName": "Generic Salon Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 617231842,
+          "mode": "list",
+          "cachedResultName": "CustomerProfiles",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone": "={{ $('Loop Over Items').item.json.Phone }}",
+            "FollowUpTimestamp": "={{ $now.toFormat('yyyy-MM-dd HH:mm:ss') }}",
+            "LastDripSent": "Reminder",
+            "UpdatedAt": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [
+            "Phone"
+          ],
+          "schema": [
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastContactAt",
+              "displayName": "LastContactAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastInboundAt",
+              "displayName": "LastInboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LastOutboundAt",
+              "displayName": "LastOutboundAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FollowUpTimestamp",
+              "displayName": "FollowUpTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LastDripSent",
+              "displayName": "LastDripSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DripOptOut",
+              "displayName": "DripOptOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "OptOutSource",
+              "displayName": "OptOutSource",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CurrentBookingStatus",
+              "displayName": "CurrentBookingStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestBookingDate",
+              "displayName": "LatestBookingDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LatestServiceType",
+              "displayName": "LatestServiceType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "CreatedAt",
+              "displayName": "CreatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UpdatedAt",
+              "displayName": "UpdatedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1120,
+        -48
+      ],
+      "id": "1b82b87f-89b8-4bf4-ae7a-56d428903fb8",
+      "name": "Update Remider Sent",
+      "retryOnFail": true,
+      "credentials": {
+        "googleApi": {
+          "id": "N9Lk7ZeXUrzmORvD",
+          "name": "Test n8n Google Sheet"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -208
+      ],
+      "id": "15dec64c-8cf8-4025-9a1e-cf4aa63f7024",
+      "name": "No Operation, do nothing",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\\"/g, '\\\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        912,
+        -48
+      ],
+      "id": "a9dd7cee-b6ca-4390-9524-f25383753d4e",
+      "name": "Send FollowUp to Customer",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WdUvUPfygw5l4xOH",
+          "name": "Evolution API Key - Atul-Demo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=bloom:{{ $('Loop Over Items').item.json.Phone }}",
+        "sessionTTL": 100000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        752,
+        176
+      ],
+      "id": "d379f0a7-7873-4d67-8c15-e94c2aaa50f6",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "PIJplpb7DR92z81P",
+          "name": "Redis n8n-redis"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = DateTime.now().setZone('Asia/Kolkata');\nconst results = [];\n\nfor (const item of $input.all()) {\n\n  const dripOptOut   = (item.json.DripOptOut   || '').trim().toUpperCase();\n  const lastDripSent = (item.json.LastDripSent || '').trim();\n  const raw          = (item.json.LastInboundAt || '').trim();\n\n  // Rule 1: skip if customer has opted out of drip\n  if (dripOptOut === 'YES') continue;\n\n  // Rule 2: skip if reminder was already sent\n  if (lastDripSent.trim() !== '') continue;\n\n  // Rule 3: skip if LastInboundAt is missing\n  if (!raw) continue;\n\n  // Rule 4: TEST MODE — keep only if LastInboundAt was 3–10 minutes ago\n  const lastInbound = DateTime.fromISO(raw, { zone: 'utc' }).setZone('Asia/Kolkata');\n  const minutesAgo = now.diff(lastInbound, 'minutes').minutes;\n\n  if (minutesAgo < 1 || minutesAgo > 10) continue;\n\n  results.push(item);\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        480
+      ],
+      "id": "a8831cf5-6a7d-4456-b122-80e761582528",
+      "name": "2 Min Reminder"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch FolllowUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch FolllowUp": {
+      "main": [
+        [
+          {
+            "node": "Filter FollowUp Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter FollowUp Reminder": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send FollowUp to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Remider Sent": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send FollowUp to Customer": {
+      "main": [
+        [
+          {
+            "node": "Update Remider Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2 Min Reminder": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-04-25T14:24:07.003+05:30",
+          "Readable date": "April 25th 2026, 2:24:07 pm",
+          "Readable time": "2:24:07 pm",
+          "Day of week": "Saturday",
+          "Year": "2026",
+          "Month": "April",
+          "Day of month": "25",
+          "Hour": "14",
+          "Minute": "24",
+          "Second": "07",
+          "Timezone": "Asia/Kolkata (UTC+05:30)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "38792586-da92-48a7-a98e-1983bca339c1",
+  "activeVersionId": "38792586-da92-48a7-a98e-1983bca339c1",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-05-11T09:32:28.768Z",
+      "createdAt": "2026-05-11T09:32:28.768Z",
+      "role": "workflow:owner",
+      "workflowId": "9HSRuYlQCCTJQERq",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-05-11T11:24:58.000Z",
+    "createdAt": "2026-05-11T11:24:55.133Z",
+    "versionId": "38792586-da92-48a7-a98e-1983bca339c1",
+    "workflowId": "9HSRuYlQCCTJQERq",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 30
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -240,
+          -48
+        ],
+        "id": "da67be2c-14ee-4cd2-9d88-8868697bda4d",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "documentId": {
+            "__rl": true,
+            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+            "mode": "list",
+            "cachedResultName": "Generic Salon Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 617231842,
+            "mode": "list",
+            "cachedResultName": "CustomerProfiles",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Status",
+                "lookupValue": "FollowUp"
+              },
+              {
+                "lookupColumn": "Status",
+                "lookupValue": "Active"
+              }
+            ]
+          },
+          "combineFilters": "OR",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -32,
+          -48
+        ],
+        "id": "40080e35-54ee-417d-aebd-0654a29a7747",
+        "name": "Fetch FolllowUp",
+        "retryOnFail": true,
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          400,
+          -48
+        ],
+        "id": "ea8a8c51-4bdb-4c47-809f-9b149e07465a",
+        "name": "Loop Over Items"
+      },
+      {
+        "parameters": {
+          "jsCode": "const now = DateTime.now().setZone('Asia/Kolkata');\nconst results = [];\n\nfor (const item of $input.all()) {\n\n  const dripOptOut  = (item.json.DripOptOut   || '').trim().toUpperCase();\n  const lastDripSent = (item.json.LastDripSent || '').trim();\n  const raw          = (item.json.LastInboundAt || '').trim();\n\n  // Rule 1: skip if customer has opted out of drip\n  if (dripOptOut === 'YES') continue;\n\n  // Rule 2: skip if reminder was already sent\n  if (lastDripSent !== '') continue;\n\n  // Rule 3: skip if LastInboundAt is missing\n  if (!raw) continue;\n\n  // Rule 4: keep only if LastInboundAt was 2–3 hours ago\n  const lastInbound = DateTime.fromISO(raw, { zone: 'utc' }).setZone('Asia/Kolkata');\n  const hoursAgo = now.diff(lastInbound, 'hours').hours;\n\n  if (hoursAgo < 2 || hoursAgo > 3) continue;\n\n  results.push(item);\n}\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          176,
+          -48
+        ],
+        "id": "df3ff4dc-390f-46b5-a5df-5d65920791e0",
+        "name": "Filter FollowUp Reminder"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Customer Name: {{ $json.Name || 'Valued Customer' }}\nLanguage: {{ $json.Language || 'English' }}\nNotes: {{ $json.Notes || 'None' }}\n\nYou have access to the full conversation history with this customer in your memory.\nReview it carefully. Reference ONE specific thing they asked about or showed interest in from the most recent chat sent by the user.\nWrite the reminder message now based on their actual conversation but not for the service with Booked Appointement.",
+          "options": {
+            "systemMessage": "You are a staff member at Blush & Bloom Beauty, a premium beauty salon in Nashville TN.\nWrite one gentle WhatsApp follow-up message to a customer who showed interest but has not replied.\nRemember not every Service is About Skin Care. You need to understand the service type and respond accordingly. Do not Say directly \"I want to follow up\"\n\nRules:\n- Maximum 2 sentences. No more.\n- Only Give importance to the most recent chat.\n- NEVER follow-up on Booked Appointments.\n- Sound like a real human team member, not a bot.\n- Use the customer's first name if provided. Otherwise use a warm opener.\n- If a service type is known, reference it naturally in one phrase.\n- Match the language field: English if English.\n- 1 or 2 emojis only. No markdown. Plain text only.\n- Never mention discounts, pressure, or urgency.\n- Sign off as: Team Blush & Bloom Beauty\n- Output the message text only. Nothing else."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          592,
+          -64
+        ],
+        "id": "61e86156-36ca-48b7-bdf5-323b02136ba8",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-nano",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-nano"
+          },
+          "builtInTools": {},
+          "options": {
+            "temperature": 0.7
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          544,
+          176
+        ],
+        "id": "25b2fdf5-f9b6-46a0-ae13-5fb6a6e8c129",
+        "name": "OpenAI Chat Model",
+        "retryOnFail": true,
+        "credentials": {
+          "openAiApi": {
+            "id": "II0GP4luEE7DdARW",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "authentication": "serviceAccount",
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY",
+            "mode": "list",
+            "cachedResultName": "Generic Salon Leads",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 617231842,
+            "mode": "list",
+            "cachedResultName": "CustomerProfiles",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-N73B9KlwdPIBGHls2xqnQdEkA62S7Dc1wjFxJRzQVY/edit#gid=617231842"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Phone": "={{ $('Loop Over Items').item.json.Phone }}",
+              "FollowUpTimestamp": "={{ $now.toFormat('yyyy-MM-dd HH:mm:ss') }}",
+              "LastDripSent": "Reminder",
+              "UpdatedAt": "={{ $now.toISO() }}"
+            },
+            "matchingColumns": [
+              "Phone"
+            ],
+            "schema": [
+              {
+                "id": "Phone",
+                "displayName": "Phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Name",
+                "displayName": "Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Language",
+                "displayName": "Language",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Status",
+                "displayName": "Status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "LastContactAt",
+                "displayName": "LastContactAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "LastInboundAt",
+                "displayName": "LastInboundAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "LastOutboundAt",
+                "displayName": "LastOutboundAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "FollowUpTimestamp",
+                "displayName": "FollowUpTimestamp",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "LastDripSent",
+                "displayName": "LastDripSent",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "DripOptOut",
+                "displayName": "DripOptOut",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "OptOutSource",
+                "displayName": "OptOutSource",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "CurrentBookingStatus",
+                "displayName": "CurrentBookingStatus",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "LatestBookingDate",
+                "displayName": "LatestBookingDate",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "LatestServiceType",
+                "displayName": "LatestServiceType",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Notes",
+                "displayName": "Notes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "CreatedAt",
+                "displayName": "CreatedAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "UpdatedAt",
+                "displayName": "UpdatedAt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1120,
+          -48
+        ],
+        "id": "1b82b87f-89b8-4bf4-ae7a-56d428903fb8",
+        "name": "Update Remider Sent",
+        "retryOnFail": true,
+        "credentials": {
+          "googleApi": {
+            "id": "N9Lk7ZeXUrzmORvD",
+            "name": "Test n8n Google Sheet"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          592,
+          -208
+        ],
+        "id": "15dec64c-8cf8-4025-9a1e-cf4aa63f7024",
+        "name": "No Operation, do nothing",
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://evolution-api:8080/message/sendText/Atul-Demo",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"number\": \"{{ $('Loop Over Items').item.json.Phone }}\",\n  \"text\": \"{{ $('AI Agent').first().json.output.replace(/\\\"/g, '\\\\\\\"').replace(/\\n/g, '\\\\n') }}\"\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          912,
+          -48
+        ],
+        "id": "a9dd7cee-b6ca-4390-9524-f25383753d4e",
+        "name": "Send FollowUp to Customer",
+        "retryOnFail": true,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "WdUvUPfygw5l4xOH",
+            "name": "Evolution API Key - Atul-Demo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "=bloom:{{ $('Loop Over Items').item.json.Phone }}",
+          "sessionTTL": 100000
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+        "typeVersion": 1.5,
+        "position": [
+          752,
+          176
+        ],
+        "id": "d379f0a7-7873-4d67-8c15-e94c2aaa50f6",
+        "name": "Redis Chat Memory",
+        "credentials": {
+          "redis": {
+            "id": "PIJplpb7DR92z81P",
+            "name": "Redis n8n-redis"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const now = DateTime.now().setZone('Asia/Kolkata');\nconst results = [];\n\nfor (const item of $input.all()) {\n\n  const dripOptOut   = (item.json.DripOptOut   || '').trim().toUpperCase();\n  const lastDripSent = (item.json.LastDripSent || '').trim();\n  const raw          = (item.json.LastInboundAt || '').trim();\n\n  // Rule 1: skip if customer has opted out of drip\n  if (dripOptOut === 'YES') continue;\n\n  // Rule 2: skip if reminder was already sent\n  if (lastDripSent.trim() !== '') continue;\n\n  // Rule 3: skip if LastInboundAt is missing\n  if (!raw) continue;\n\n  // Rule 4: TEST MODE — keep only if LastInboundAt was 3–10 minutes ago\n  const lastInbound = DateTime.fromISO(raw, { zone: 'utc' }).setZone('Asia/Kolkata');\n  const minutesAgo = now.diff(lastInbound, 'minutes').minutes;\n\n  if (minutesAgo < 1 || minutesAgo > 10) continue;\n\n  results.push(item);\n}\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -32,
+          480
+        ],
+        "id": "a8831cf5-6a7d-4456-b122-80e761582528",
+        "name": "2 Min Reminder"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Fetch FolllowUp",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fetch FolllowUp": {
+        "main": [
+          [
+            {
+              "node": "Filter FollowUp Reminder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter FollowUp Reminder": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Send FollowUp to Customer",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Remider Sent": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send FollowUp to Customer": {
+        "main": [
+          [
+            {
+              "node": "Update Remider Sent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Redis Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "2 Min Reminder": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "authors": "Atul thegiftsmartofficial@gmail.com",
+    "name": "Version 38792586",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
