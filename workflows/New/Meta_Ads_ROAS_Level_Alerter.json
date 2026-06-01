@@ -1,0 +1,275 @@
+{
+  "updatedAt": "2026-06-01T12:33:03.170Z",
+  "createdAt": "2026-06-01T12:30:14.549Z",
+  "id": "BLtQvSVo00gEJDpG",
+  "name": "Meta Ads ROAS Level Alerter",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "5fffc558-8d52-4816-a475-10acd41691ab",
+      "name": "Hourly Sync",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1440,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Thresholds",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "1a114628-68d7-47a2-ab19-4e77c516419f",
+      "name": "Read Thresholds",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.1,
+      "position": [
+        -1216,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Memory_Bank",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "a557c919-61c3-4d8b-ac79-f60f48729559",
+      "name": "Read Memory Bank",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.1,
+      "position": [
+        -992,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "node": "ACT_YOUR_AD_ACCOUNT_ID/insights",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "level",
+                "value": "ad"
+              },
+              {
+                "name": "fields",
+                "value": "ad_id,ad_name,spend,purchase_roas"
+              },
+              {
+                "name": "date_preset",
+                "value": "maximum"
+              }
+            ]
+          }
+        }
+      },
+      "id": "152105c0-1645-4356-8207-7b0051ba7733",
+      "name": "Fetch Meta Insights",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const thresholds = $items(\"Read Thresholds\").map(item => item.json);\nconst memoryBank = $items(\"Read Memory Bank\").map(item => item.json);\nconst fbResponse = $input.all()[0].json.data || [];\n\nlet alerts = [];\n\nfor (const ad of fbResponse) {\n  let spend = parseFloat(ad.spend || 0);\n  let roas = 0;\n  \n  if (ad.purchase_roas && ad.purchase_roas.length > 0) {\n      roas = parseFloat(ad.purchase_roas[0].value);\n  }\n\n  let highestLevelMet = 0;\n  let levelName = \"None\";\n\n  for (const t of thresholds) {\n     if (spend >= t.Min_Spend && roas >= t.Min_ROAS) {\n         let levelNum = parseInt(t.Level_Name.replace(/[^0-9]/g, ''));\n         if (levelNum > highestLevelMet) {\n             highestLevelMet = levelNum;\n             levelName = t.Level_Name;\n         }\n     }\n  }\n\n  if (highestLevelMet > 0) {\n      const memoryRecord = memoryBank.find(m => String(m.Ad_ID) === String(ad.ad_id));\n      const prevLevel = memoryRecord ? parseInt(memoryRecord.Highest_Level_Alerted.replace(/[^0-9]/g, '')) || 0 : 0;\n\n      if (highestLevelMet > prevLevel) {\n          alerts.push({\n             json: {\n                Ad_ID: ad.ad_id,\n                Ad_Name: ad.ad_name,\n                Level_Reached: levelName,\n                Spend: spend.toFixed(2),\n                ROAS: roas.toFixed(2),\n                Timestamp: new Date().toISOString()\n             }\n          });\n      }\n  }\n}\n\nreturn alerts;"
+      },
+      "id": "f9dd744a-29e7-47cc-960a-6b4e3f3c8478",
+      "name": "Deduplication Engine",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "text": "🚀 *Winning Ad Alert!*\n\n*Creative Name:* {{$json.Ad_Name}}\n*Ad ID:* {{$json.Ad_ID}}\n*Milestone:* Reached *{{$json.Level_Reached}}*\n\n💰 *Spend:* ${{$json.Spend}}\n📈 *ROAS:* {{$json.ROAS}}x",
+        "otherOptions": {}
+      },
+      "id": "bc22a98a-9f0b-427a-92e1-4dc32a53c330",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        0
+      ],
+      "webhookId": "f99f7741-be46-4d2a-b38d-bfa1f3402584"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Memory_Bank",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Ad_ID": "={{ $json.Ad_ID }}",
+            "Highest_Level_Alerted": "={{ $json.Level_Reached }}",
+            "Last_Updated": "={{ $json.Timestamp }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "45aa76df-3799-435a-b9e5-4af42b691d4c",
+      "name": "Update Memory Bank",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.1,
+      "position": [
+        -336,
+        208
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3DVNjxVa1srn971H",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Hourly Sync": {
+      "main": [
+        [
+          {
+            "node": "Read Thresholds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Thresholds": {
+      "main": [
+        [
+          {
+            "node": "Read Memory Bank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Memory Bank": {
+      "main": [
+        [
+          {
+            "node": "Fetch Meta Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Meta Insights": {
+      "main": [
+        [
+          {
+            "node": "Deduplication Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplication Engine": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Memory Bank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "affa7863-6abf-45cc-ac16-ac7dca14de99",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-06-01T12:30:14.554Z",
+      "createdAt": "2026-06-01T12:30:14.554Z",
+      "role": "workflow:owner",
+      "workflowId": "BLtQvSVo00gEJDpG",
+      "projectId": "iAhlMQ43wIQPVv31"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-17T11:30:21.235Z",
+      "createdAt": "2026-02-17T11:30:21.235Z",
+      "id": "aFPNIhQRrsKgfowp",
+      "name": "New"
+    }
+  ]
+}
