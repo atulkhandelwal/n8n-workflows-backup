@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-02T17:04:42.268Z",
+  "updatedAt": "2026-06-01T08:02:42.714Z",
   "createdAt": "2026-03-05T06:37:00.153Z",
   "id": "GiAIYRyljOEaLbXK",
   "name": "Generic Clothing Store Capture Leads Orders v9 Price Final",
@@ -2011,7 +2011,7 @@
     {
       "parameters": {
         "sessionIdType": "customKey",
-        "sessionKey": "=clothing:{{ $('Extract Data').first().json.phone }}",
+        "sessionKey": "=clothing1:{{ $('Extract Data').first().json.phone }}",
         "sessionTTL": 100000
       },
       "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
@@ -2606,8 +2606,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
-  "activeVersionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
+  "versionId": "c49ca3d3-7f06-4225-9a63-8c5389acb2b4",
+  "activeVersionId": "c49ca3d3-7f06-4225-9a63-8c5389acb2b4",
   "triggerCount": 0,
   "shared": [
     {
@@ -2619,9 +2619,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-05-02T17:04:44.000Z",
-    "createdAt": "2026-05-02T17:04:42.272Z",
-    "versionId": "4f7e65aa-391f-437f-b51f-bae56032da33",
+    "updatedAt": "2026-06-01T08:03:11.000Z",
+    "createdAt": "2026-06-01T08:02:42.717Z",
+    "versionId": "c49ca3d3-7f06-4225-9a63-8c5389acb2b4",
     "workflowId": "GiAIYRyljOEaLbXK",
     "nodes": [
       {
@@ -4629,7 +4629,7 @@
       {
         "parameters": {
           "sessionIdType": "customKey",
-          "sessionKey": "=clothing:{{ $('Extract Data').first().json.phone }}",
+          "sessionKey": "=clothing1:{{ $('Extract Data').first().json.phone }}",
           "sessionTTL": 100000
         },
         "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
@@ -5213,7 +5213,7 @@
       }
     },
     "authors": "Atul thegiftsmartofficial@gmail.com",
-    "name": "Version 4f7e65aa",
+    "name": "Version c49ca3d3",
     "description": "",
     "autosaved": true
   },
