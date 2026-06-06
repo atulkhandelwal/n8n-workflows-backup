@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-30T12:24:50.743Z",
+  "updatedAt": "2026-06-06T10:23:13.970Z",
   "createdAt": "2026-05-30T09:23:54.851Z",
   "id": "ujWpQ2yfW12bGvUR",
   "name": "Reels Trends Watcher",
@@ -23,8 +23,10 @@
         "operation": "getAll",
         "databaseId": {
           "__rl": true,
+          "value": "3d38ca5d-bbd5-4111-a00d-0c73bc0cc658",
           "mode": "list",
-          "value": ""
+          "cachedResultName": "Sources",
+          "cachedResultUrl": "https://app.notion.com/p/3d38ca5dbbd54111a00d0c73bc0cc658"
         },
         "options": {}
       },
@@ -45,7 +47,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const variables = {\n  // https://apify.com/apify/instagram-scraper \n  // Instagram Scraper = apify/instagram-scraper, \n  \"scrapingActorId\" : \"shu8hvrXbJbY3Eb9W\", // ID of Apify scraper\n  \"daysLimit\" : 7, // Date limit \n  \"resultsLimit\" : 3, // Results per account\n  \"maxDays\" : 2, // Sleeping || Active\n  \"translationLang\" : \"Hinglish\",\n}\n\n\nreturn [{json : variables}]"
+        "jsCode": "const variables = {\n  // https://apify.com/apify/instagram-scraper \n  // Instagram Scraper = apify/instagram-scraper, \n  \"scrapingActorId\" : \"shu8hvrXbJbY3Eb9W\", // ID of Apify scraper\n  \"daysLimit\" : 3, // Date limit \n  \"resultsLimit\" : 3, // Results per account\n  \"maxDays\" : 2, // Sleeping || Active\n  \"translationLang\" : \"Hinglish\",\n}\n\n\nreturn [{json : variables}]"
       },
       "id": "4d0feb13-03d5-4050-b950-6c0ad703d4fd",
       "name": "Variables",
@@ -58,7 +60,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// required Simplify = true\n\nconst query = {\n    \"addParentData\": false,\n    \"directUrls\": [],\n    \"enhanceUserSearchWithFacebookPage\": false,\n    \"isUserReelFeedURL\": false,\n    \"isUserTaggedFeedURL\": false,\n    \"onlyPostsNewerThan\": ($('Variables').first().json.daysLimit ?? 10) + ' days',\n    \"resultsLimit\": $('Variables').first().json.resultsLimit ?? 5,\n    \"resultsType\": \"stories\"\n};\n\nconst urls = [];\nconst map = {};\n\nitems.forEach(item => {\n  const username = item.json.property_username || '';\n  if (username) {\n    urls.push('https://www.instagram.com/' + username + '/');\n    map[username.toLowerCase()] = item.json.id;   // Notion pageId\n  }\n});\n\nquery.directUrls = urls;\n\nreturn [\n  {\n    json: {\n      query,\n      urls,\n      map     \n    }\n  }\n];\n"
+        "jsCode": "// required Simplify = true\n\nconst query = {\n    \"addParentData\": false,\n    \"directUrls\": [],\n    \"enhanceUserSearchWithFacebookPage\": false,\n    \"isUserReelFeedURL\": false,\n    \"isUserTaggedFeedURL\": false,\n    \"onlyPostsNewerThan\": ($('Variables').first().json.daysLimit ?? 10) + ' days',\n    \"resultsLimit\": $('Variables').first().json.resultsLimit ?? 5,\n    \"resultsType\": \"reels\"\n};\n\nconst urls = [];\nconst map = {};\n\nitems.forEach(item => {\n  const username = item.json.property_username || '';\n  if (username) {\n    urls.push('https://www.instagram.com/' + username + '/');\n    map[username.toLowerCase()] = item.json.id;   // Notion pageId\n  }\n});\n\nquery.directUrls = urls;\n\nreturn [\n  {\n    json: {\n      query,\n      urls,\n      map     \n    }\n  }\n];\n"
       },
       "id": "612b9353-6afb-4fc4-b976-ca34f9c1839f",
       "name": "Apify Payload",
@@ -215,6 +217,7 @@
         832
       ],
       "typeVersion": 1,
+      "retryOnFail": true,
       "credentials": {
         "apifyApi": {
           "id": "sRQp03pY3CPKMDIf",
@@ -240,6 +243,7 @@
         832
       ],
       "typeVersion": 1,
+      "retryOnFail": true,
       "credentials": {
         "apifyApi": {
           "id": "sRQp03pY3CPKMDIf",
@@ -263,7 +267,7 @@
               "selectValue": "={{ $json.publishingStatus }}"
             },
             {
-              "key": "Title|title",
+              "key": "Name|title",
               "title": "={{ $json.ownerFullName }}"
             },
             {
@@ -295,8 +299,10 @@
         "operation": "getAll",
         "databaseId": {
           "__rl": true,
+          "value": "45fe482c-c0a4-4bb7-b7f6-6dd2dd4a5c7e",
           "mode": "list",
-          "cachedResultName": "Reels"
+          "cachedResultName": "Reels",
+          "cachedResultUrl": "https://app.notion.com/p/45fe482cc0a44bb7b7f66dd2dd4a5c7e"
         },
         "returnAll": true,
         "filterType": "manual",
@@ -372,8 +378,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
+          "value": "45fe482c-c0a4-4bb7-b7f6-6dd2dd4a5c7e",
           "mode": "list",
-          "cachedResultName": "Reels"
+          "cachedResultName": "Reels",
+          "cachedResultUrl": "https://app.notion.com/p/45fe482cc0a44bb7b7f66dd2dd4a5c7e"
         },
         "title": "={{ ($json.response.hook ?? $json.Caption).substring(0, 50) }}",
         "propertiesUi": {
@@ -1269,7 +1277,7 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "11ae7cb0-c242-497c-a1d7-9e773ee287ef",
+  "versionId": "3a2909c6-4f12-4ccf-aeb8-7581ea928889",
   "activeVersionId": null,
   "triggerCount": 0,
   "shared": [
