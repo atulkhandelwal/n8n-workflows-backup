@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-01T07:12:23.702Z",
+  "updatedAt": "2026-06-16T13:22:48.000Z",
   "createdAt": "2026-03-28T08:24:39.701Z",
   "id": "fo040EzLt7tIOci2",
   "name": "Generic Payment/Stock Updates 9115",
@@ -22,6 +22,7 @@
       "id": "813ac07d-4e84-4bd5-a3cb-f344f57245de",
       "name": "Telegram Trigger",
       "webhookId": "eb6c605f-478e-4cdb-81b7-15eea3699b31",
+      "retryOnFail": true,
       "credentials": {
         "telegramApi": {
           "id": "UedrHgp1nI3WkRhq",
@@ -44,7 +45,8 @@
         16
       ],
       "id": "439509ec-bd55-4cc9-a1ea-70f382234401",
-      "name": "AI Agent"
+      "name": "AI Agent",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -149,6 +151,7 @@
       ],
       "id": "5da33a71-b4f1-478b-9047-f5ccec99084d",
       "name": "Transcribe a recording",
+      "retryOnFail": true,
       "credentials": {
         "openAiApi": {
           "id": "II0GP4luEE7DdARW",
@@ -805,7 +808,7 @@
       }
     ]
   },
-  "versionId": "3bd465fe-4793-445e-85ce-f3bb48ba548f",
+  "versionId": "3a1ad908-2043-4488-ba10-7f166b7b2f0a",
   "activeVersionId": null,
   "triggerCount": 1,
   "shared": [
